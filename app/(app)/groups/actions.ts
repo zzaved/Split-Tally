@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { recordActivity } from "@/lib/activity";
-import { round2, toDateInput } from "@/lib/format";
+import { MAX_ENTRY, round2, toDateInput } from "@/lib/format";
 import { computePairBalances, groupNets, resolveSplit, simplifyDebts, type SplitMode } from "@/lib/ledger";
 import { scoreStatsFor } from "@/lib/ledger";
 import { tallyScore } from "@/lib/score";
@@ -199,6 +199,9 @@ export async function addExpense(input: AddExpenseInput): Promise<ActionResult &
 
   if (!description) return { error: "What was it for? A couple of words is enough." };
   if (!Number.isFinite(amount) || amount <= 0) return { error: "The amount has to be above zero." };
+  if (amount > MAX_ENTRY) {
+    return { error: "That is larger than one entry can hold. Check the amount and try again." };
+  }
 
   const { data: group } = await supabase
     .from("groups")
@@ -363,6 +366,7 @@ export async function settleUp(_prev: ActionResult, formData: FormData): Promise
   const { supabase, user } = await session();
   if (!user) return { error: "Log in again to record a payment." };
   if (!Number.isFinite(amount) || amount <= 0) return { error: "The amount has to be above zero." };
+  if (amount > MAX_ENTRY) return { error: "That is more than one payment can hold." };
   if (fromUser === toUser) return { error: "Those are the same person." };
 
   const { data: group } = await supabase

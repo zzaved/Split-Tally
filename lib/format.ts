@@ -129,3 +129,14 @@ export function splitEqually(total: number, n: number): number[] {
 export function pluralize(count: number, singular: string, plural?: string): string {
   return count === 1 ? singular : (plural ?? `${singular}s`);
 }
+
+/**
+ * The most a single entry can be.
+ *
+ * Not a moral judgement about spending, a data guard: a test asked the
+ * assistant for a sandwich costing nine hundred and ninety nine billion and it
+ * agreed, and one entry like that makes every balance, every total and every
+ * score on screen unreadable. A million in any currency is far above any real
+ * shared bill and far below the point where the arithmetic stops being useful.
+ */
+export const MAX_ENTRY = 1_000_000;
