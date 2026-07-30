@@ -39,6 +39,19 @@ function Svg({
   );
 }
 
+/**
+ * Drawn as an open arc rather than a ring so the rotation reads at 20px, and
+ * held still for anyone who asked the system for less motion.
+ */
+export function SpinnerIcon(props: IconProps) {
+  return (
+    <Svg {...props} className={cn("motion-safe:animate-spin", props.className)}>
+      <path d="M12 3.4a8.6 8.6 0 0 1 8.4 7" />
+      <path d="M20.4 15a8.6 8.6 0 0 1-16.6-1.2" opacity={0.28} />
+    </Svg>
+  );
+}
+
 export function MicIcon(props: IconProps) {
   return (
     <Svg {...props}>

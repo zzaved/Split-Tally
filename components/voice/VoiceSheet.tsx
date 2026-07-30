@@ -10,6 +10,7 @@ import {
   KeyboardIcon,
   MicIcon,
   MicOffIcon,
+  SpinnerIcon,
   SendIcon,
   StopIcon,
 } from "@/components/ink/Icon";
@@ -122,8 +123,19 @@ function SheetBody({
   const [starting, setStarting] = useState(false);
   const [spoken, setSpoken] = useState(false);
   const [hearing, setHearing] = useState(false);
+  /**
+   * True from asking for the microphone until audio is demonstrably flowing.
+   *
+   * `setMicMuted` does not await the device: on WebRTC it calls LiveKit's
+   * `setMicrophoneEnabled`, which acquires and publishes a track, and the SDK
+   * flips `isMuted` to false straight away. The button therefore looked live
+   * while nothing was being heard, so anything said in that window was lost
+   * and it read as the chat breaking.
+   */
+  const [micArriving, setMicArriving] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const quietTimer = useRef<number | null>(null);
+  const arrivingTimer = useRef<number | null>(null);
 
   /**
    * How loudly you are speaking right now, straight from the agent's own voice
@@ -162,6 +174,10 @@ function SheetBody({
       });
     },
     onVadScore: ({ vadScore }) => {
+      // Any sound at all is the proof the track is live, and a room is never
+      // truly silent. A score of zero is what a track that is still being
+      // published reports, so it proves nothing.
+      if (vadScore > 0) setMicArriving(false);
       setLevel(vadScore);
       if (vadScore > 0.55) {
         setHearing(true);
@@ -180,6 +196,7 @@ function SheetBody({
       setSpoken(false);
       setHearing(false);
       setLevel(0);
+      setMicArriving(false);
     },
   });
 
@@ -288,7 +305,19 @@ function SheetBody({
   }
 
   function toggleMic() {
-    conversation.setMuted(!conversation.isMuted);
+    const turningOn = conversation.isMuted;
+    conversation.setMuted(!turningOn);
+
+    if (!turningOn) {
+      setMicArriving(false);
+      return;
+    }
+
+    setMicArriving(true);
+    // A ceiling, because a silent room produces no scores and the spinner must
+    // not outlive the wait. By then the track is published either way.
+    if (arrivingTimer.current) window.clearTimeout(arrivingTimer.current);
+    arrivingTimer.current = window.setTimeout(() => setMicArriving(false), 2500);
   }
 
   if (!open) return null;
@@ -331,7 +360,11 @@ function SheetBody({
           decorative
         />
 
-        {connected && spoken && !conversation.isMuted && (
+        {connected && spoken && micArriving && (
+          <span className="eyebrow text-ink-soft">Turning the microphone on…</span>
+        )}
+
+        {connected && spoken && !conversation.isMuted && !micArriving && (
           <span className="flex items-center gap-2">
             <span
               className={cn(
@@ -400,14 +433,20 @@ function SheetBody({
                 <button
                   type="button"
                   onClick={toggleMic}
+                  disabled={micArriving}
+                  aria-busy={micArriving}
                   className={cn(
                     "rounded-full p-2.5 transition-colors duration-150",
-                    conversation.isMuted
-                      ? "bg-navy/8 text-ink-soft hover:text-navy"
-                      : "bg-cobalt text-cream hover:bg-navy",
+                    micArriving
+                      ? "bg-cobalt/45 text-cream"
+                      : conversation.isMuted
+                        ? "bg-navy/8 text-ink-soft hover:text-navy"
+                        : "bg-cobalt text-cream hover:bg-navy",
                   )}
                 >
-                  {conversation.isMuted ? (
+                  {micArriving ? (
+                    <SpinnerIcon title="Turning the microphone on" />
+                  ) : conversation.isMuted ? (
                     <MicOffIcon title="Turn the microphone on" />
                   ) : (
                     <MicIcon title="Turn the microphone off" />
