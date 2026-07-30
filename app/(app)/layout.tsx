@@ -2,6 +2,8 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BottomTabs, TopNav } from "@/components/app/Nav";
+import { DockedOrb } from "@/components/voice/DockedOrb";
+import { AmbientStroke } from "@/components/ink/AmbientStroke";
 import { Avatar } from "@/components/ink/Card";
 import { Wordmark } from "@/components/ink/Wordmark";
 import { getMyProfile } from "@/lib/data";
@@ -12,6 +14,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-dvh flex-col">
+      <AmbientStroke />
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-full focus:bg-cobalt focus:px-4 focus:py-2 focus:text-14 focus:text-cream"
@@ -41,6 +44,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         {children}
       </main>
 
+      <DockedOrb voiceId={profile.voice_id} />
       <BottomTabs />
     </div>
   );

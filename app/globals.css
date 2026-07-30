@@ -332,6 +332,18 @@
     animation-delay: -1.7s;
   }
 
+  /* --- Ambient stroke --------------------------------------
+     One mark at a time, drawn slowly behind the page and then
+     faded out so the next placement can take over. */
+  .ambient-stroke {
+    opacity: 0;
+    animation: ambient-cycle 13s ease-in-out forwards;
+  }
+
+  .ambient-stroke-ink .ink-draw--in {
+    animation-duration: 5.5s;
+  }
+
   /* --- Rise-in for content -------------------------------- */
   .rise {
     opacity: 0;
@@ -484,6 +496,21 @@
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+@keyframes ambient-cycle {
+  0% {
+    opacity: 0;
+  }
+  14% {
+    opacity: 0.13;
+  }
+  70% {
+    opacity: 0.13;
+  }
+  100% {
+    opacity: 0;
   }
 }
 
