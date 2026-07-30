@@ -18,6 +18,7 @@ import {
   getMyProfile,
   getProfileMap,
 } from "@/lib/data";
+import { convertTotals } from "@/lib/fx";
 import { computePairBalances, groupNets, totalsFor } from "@/lib/ledger";
 import { firstName } from "@/lib/utils";
 
@@ -39,6 +40,18 @@ export default async function DashboardPage() {
   const pairs = computePairBalances(rows);
   const totals = totalsFor(profile.id, pairs);
 
+  // One figure across currencies, at today's ECB rate, alongside the originals.
+  const [owedConverted, owingConverted] = await Promise.all([
+    convertTotals(
+      Object.fromEntries(Object.entries(totals).map(([c, t]) => [c, t.owedToYou])),
+      profile.currency,
+    ),
+    convertTotals(
+      Object.fromEntries(Object.entries(totals).map(([c, t]) => [c, t.youOwe])),
+      profile.currency,
+    ),
+  ]);
+
   const activeGroups = groups.filter((g) => !g.archived);
   const expenseCounts = new Map<string, number>();
   for (const e of rows.expenses) {
@@ -56,7 +69,11 @@ export default async function DashboardPage() {
         <div>
           <p className="eyebrow text-cobalt">Good to see you, {firstName(profile.name)}</p>
           <div className="mt-8">
-            <Balances totals={totals} />
+            <Balances
+              totals={totals}
+              owedConverted={owedConverted}
+              owingConverted={owingConverted}
+            />
           </div>
         </div>
 
