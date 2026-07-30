@@ -31,7 +31,10 @@ export function ListingCard({
   const body = (
     <>
       <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
-        <div className="flex min-w-0 flex-1 items-center gap-3">
+        {/* The floor matters: with `min-w-0` this block shrinks to nothing, so
+            the chip never gets pushed onto its own line and lands on top of the
+            name instead. A floor forces the wrap on a narrow card. */}
+        <div className="flex min-w-[10rem] flex-1 items-center gap-3">
           <Avatar name={debtor?.name ?? "?"} size={40} managed={debtor?.is_managed} />
           <div>
             <p className="truncate text-14 font-medium text-navy">

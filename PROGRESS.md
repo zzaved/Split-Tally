@@ -74,10 +74,24 @@ Browse, my listings, the three-step sell flow with AI pricing and a 2–35% clam
 server-side, the listing detail with the score broken down line by line, and the demo purchase
 writing the listing, both settlements, the claim and three feed entries in one act.
 
-## Stage 7 — Activity, settings, polish 🟡
+## Stage 7 — Activity, settings, polish ✅
 
-Done: `/activity` grouped by day, `/settings`, `/join/[code]`, per-page titles, the tally-glyph
-favicon, reduced-motion handling, focus rings, and colour never carrying meaning alone.
+`/activity` grouped by day, `/settings`, `/join/[code]`, per-page titles, the tally-glyph favicon,
+the OG image, reduced-motion handling, focus rings, and colour never carrying meaning alone.
+
+## Deployed
+
+Live at **https://split-tally-seven.vercel.app**, swept in production at 1440 and 375: no console
+errors, nothing over HTTP 400, no horizontal overflow on any of the nine routes. The demo login
+lands on the dashboard.
+
+Both AI paths verified against the deployment rather than assumed:
+
+- `/api/price-listing` answered `source: "ai"` — a real Anthropic response pricing Paulo's €50 at
+  25% off and citing his score, his 19-day average and his two overdue tallies. The 2–35% clamp
+  held.
+- The agent connected and read the live ledger: *"Paulo owes you €50, Sofia owes you $848, and you
+  owe Marina $35."*
 
 ---
 
@@ -108,6 +122,15 @@ favicon, reduced-motion handling, focus rings, and colour never carrying meaning
 - `app/(app)/voice/actions.ts` ended with `export type { Profile }`. A `"use server"` file may only
   export async functions, and the transform turned it into a runtime re-export that threw
   `ReferenceError: Profile is not defined` on every tool call.
+- Vercel treated the project as a static site and failed with *No Output Directory named "public"
+  found*. A project connected to an empty repository has nothing to auto-detect; `vercel.json` now
+  pins the framework so the next person to connect it does not hit the same wall.
+- Two server actions called this app's own API routes through `NEXT_PUBLIC_SITE_URL`, which on a
+  deployment without that variable would reach for localhost, fail, and silently fall back to the
+  local pricing model — working, but never asking the model anything.
+- The listing card's identity block carried `min-w-0`, so on a narrow card it shrank to nothing
+  instead of pushing the "AI fair price" chip onto its own line, and the chip landed on top of the
+  debtor's name.
 - `tailwind-merge` read the numeric type scale (`text-12`) as a colour and was dropping
   `text-cream` from primary buttons, leaving navy-on-cobalt. The scale is now declared to it.
 - `scoreStatsFor` counted `exchange_transfer` as a settled debt, so a debtor's Tally Score improved
