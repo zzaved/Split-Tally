@@ -58,6 +58,13 @@ export function firstName(name: string): string {
   return name.trim().split(/\s+/)[0] ?? name;
 }
 
+/** "Sofia" -> "Sofia's", "Lucas" -> "Lucas'". */
+export function possessive(name?: string | null): string {
+  const n = (name ?? "").trim();
+  if (!n) return "their";
+  return n.endsWith("s") ? `${n}'` : `${n}'s`;
+}
+
 /** lowercase, accents stripped — the basis of the name resolution rule (§5.4). */
 export function normalizeName(name: string): string {
   return name

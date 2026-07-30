@@ -7,8 +7,9 @@ import { TallyMarks } from "@/components/ink/TallyMarks";
 import { formatMoney } from "@/lib/format";
 import { getKnownProfiles, getLedgerRows, getListing, getMyProfile } from "@/lib/data";
 import { computeScores } from "@/lib/scores";
-import { scoreBreakdown, scoreClusters } from "@/lib/score";
-import { firstName } from "@/lib/utils";
+import { BAND_LABEL, buyingRisk, scoreBreakdown, scoreClusters } from "@/lib/score";
+import { localPricing } from "@/lib/pricing";
+import { firstName, possessive } from "@/lib/utils";
 import { BuyButton } from "../ListingActions";
 
 export const metadata: Metadata = { title: "Listing" };
@@ -37,6 +38,31 @@ export default async function ListingPage(props: { params: Promise<{ id: string 
   const clusters = scoreClusters(score);
   const breakdown = entry ? scoreBreakdown(entry.stats) : [];
 
+  // The discount being asked, against what this debtor's own record prices it
+  // at — that comparison is the only honest way to answer "is this a good buy".
+  const offeredDiscount = discountOf(listing);
+  const fair = entry
+    ? localPricing({
+        faceValue: Number(listing.face_value),
+        currency: listing.currency,
+        debtorName: firstName(debtor?.name ?? "They"),
+        score,
+        settledCount: entry.stats.settledCount,
+        avgDays: entry.stats.avgDaysToSettle,
+        overdueCount: entry.stats.overdueCount,
+      })
+    : null;
+
+  const risk = entry
+    ? buyingRisk(
+        firstName(debtor?.name ?? "They"),
+        score,
+        entry.stats,
+        offeredDiscount,
+        fair?.discountPct ?? offeredDiscount,
+      )
+    : null;
+
   const isMine = listing.seller_id === profile.id;
   const isDebtor = listing.debtor_id === profile.id;
   const buyable = listing.status === "open" && !isMine && !isDebtor;
@@ -52,6 +78,7 @@ export default async function ListingPage(props: { params: Promise<{ id: string 
         debtor={debtor}
         seller={seller}
         debtorScore={score}
+        debtorStats={entry?.stats}
       />
 
       {/* ---- Why this price ------------------------------------------ */}
@@ -94,6 +121,31 @@ export default async function ListingPage(props: { params: Promise<{ id: string 
         </p>
       </Card>
 
+      {/* ---- What the score means for a buyer ------------------------- */}
+      {entry && risk && (
+        <Card
+          className={
+            risk.band === "weak" || risk.band === "unproven"
+              ? "border-vermilion/25 p-6 md:p-8"
+              : "p-6 md:p-8"
+          }
+        >
+          <p
+            className={`eyebrow ${
+              risk.band === "weak" || risk.band === "unproven" ? "text-vermilion" : "text-cobalt"
+            }`}
+          >
+            {BAND_LABEL[risk.band]}
+          </p>
+          <p className="mt-4 font-display text-28 leading-snug text-navy">{risk.headline}</p>
+          <p className="mt-3 text-14 text-ink-soft">{risk.detail}</p>
+          <p className="mt-5 text-12 text-ink-soft">
+            Nobody is obliged to pay a tally faster because it changed hands. What you are buying is
+            the wait, and the discount is what you are paid for taking it.
+          </p>
+        </Card>
+      )}
+
       {/* ---- Buy ------------------------------------------------------ */}
       <Card className="p-6 md:p-8">
         {buyable ? (
@@ -101,7 +153,7 @@ export default async function ListingPage(props: { params: Promise<{ id: string 
             <p className="eyebrow text-ink-soft">Buy</p>
             <p className="mt-3 text-14 text-ink-soft">
               You pay {formatMoney(listing.asking_price, listing.currency)} and take on{" "}
-              {firstName(debtor?.name ?? "their")} tally of{" "}
+              {possessive(firstName(debtor?.name ?? ""))} tally of{" "}
               {formatMoney(listing.face_value, listing.currency)} — {discountOf(listing)}% in your
               favour if they pay.
             </p>

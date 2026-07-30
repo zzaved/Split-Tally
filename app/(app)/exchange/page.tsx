@@ -108,6 +108,7 @@ export default async function ExchangePage() {
                     debtor={byId.get(listing.debtor_id)}
                     seller={byId.get(listing.seller_id)}
                     debtorScore={scores.get(listing.debtor_id)?.score ?? 50}
+                    debtorStats={scores.get(listing.debtor_id)?.stats}
                     href={`/exchange/${listing.id}`}
                   />
                 ))}
@@ -125,6 +126,7 @@ export default async function ExchangePage() {
                       listing={listing}
                       debtor={byId.get(listing.debtor_id)}
                       debtorScore={scores.get(listing.debtor_id)?.score ?? 50}
+                      debtorStats={scores.get(listing.debtor_id)?.stats}
                     />
                     {listing.status === "open" && <WithdrawButton id={listing.id} />}
                     {listing.status === "sold" && (

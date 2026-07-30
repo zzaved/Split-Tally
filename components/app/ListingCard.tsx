@@ -4,7 +4,7 @@ import { Avatar } from "@/components/ink/Card";
 import { OrbGlyph } from "@/components/ink/Orb";
 import { TallyMarks } from "@/components/ink/TallyMarks";
 import { daysBetween, formatMoney } from "@/lib/format";
-import { scoreClusters } from "@/lib/score";
+import { BAND_LABEL, scoreBand, scoreClusters, type ScoreInput } from "@/lib/score";
 import type { Listing, Profile } from "@/lib/types";
 
 export function discountOf(listing: Listing): number {
@@ -16,15 +16,19 @@ export function ListingCard({
   debtor,
   seller,
   debtorScore,
+  debtorStats,
   href,
 }: {
   listing: Listing;
   debtor?: Profile;
   seller?: Profile;
   debtorScore: number;
+  /** The record behind the score, so an unproven 50 is never dressed up. */
+  debtorStats?: ScoreInput;
   href?: string;
 }) {
   const clusters = scoreClusters(debtorScore);
+  const band = scoreBand(debtorScore, debtorStats);
   const openDays = daysBetween(new Date(listing.created_at), new Date());
   const discount = discountOf(listing);
 
@@ -49,7 +53,9 @@ export function ListingCard({
                 animate={false}
                 label={`Tally Score ${debtorScore} out of 100`}
               />
-              <span className="text-12 whitespace-nowrap text-ink-soft">Tally Score {debtorScore}</span>
+              <span className="text-12 whitespace-nowrap text-ink-soft">
+              {BAND_LABEL[band]} · {debtorScore}
+            </span>
             </div>
           </div>
         </div>

@@ -9,6 +9,7 @@ import { currencySymbol, round2, toDateInput } from "@/lib/format";
 import { resolveSplit, type SplitMode } from "@/lib/ledger";
 import { CATEGORIES } from "@/lib/types";
 import type { Profile } from "@/lib/types";
+import type { RiskNote } from "@/lib/score";
 import { cn } from "@/lib/utils";
 import { addExpenseForm, type ActionResult } from "../actions";
 
@@ -38,11 +39,14 @@ export function ExpenseForm({
   currency,
   members,
   meId,
+  risks,
 }: {
   groupId: string;
   currency: string;
   members: Profile[];
   meId: string;
+  /** Repayment record of each member, keyed by id. Only the ones worth a word appear. */
+  risks: Record<string, RiskNote>;
 }) {
   const [state, action] = useActionState<ActionResult, FormData>(addExpenseForm, {});
 
@@ -50,6 +54,8 @@ export function ExpenseForm({
   const [mode, setMode] = useState<SplitMode>("equal");
   const [participants, setParticipants] = useState<string[]>(members.map((m) => m.id));
   const [values, setValues] = useState<Record<string, string>>({});
+  const [paidBy, setPaidBy] = useState(meId);
+  const paidByMe = paidBy === meId;
 
   const symbol = currencySymbol(currency);
   const total = round2(Number(amount) || 0);
@@ -129,7 +135,12 @@ export function ExpenseForm({
         </Field>
 
         <Field label="Paid by" htmlFor="paidBy">
-          <Select id="paidBy" name="paidBy" defaultValue={meId}>
+          <Select
+            id="paidBy"
+            name="paidBy"
+            value={paidBy}
+            onChange={(e) => setPaidBy(e.currentTarget.value)}
+          >
             {members.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.id === meId ? `${m.name} (you)` : m.name}
@@ -233,6 +244,37 @@ export function ExpenseForm({
           </p>
         )}
       </div>
+
+      {/* Whoever is about to owe you, and has a record that says something.
+          Only shown when the money is going out from you — being owed by a
+          slow payer is the risk; owing one is not. */}
+      {paidByMe &&
+        participants
+          .filter((id) => id !== meId && risks[id])
+          .map((id) => {
+            const note = risks[id];
+            return (
+              <div
+                key={id}
+                className={cn(
+                  "rounded-well border px-3.5 py-3",
+                  note.band === "weak"
+                    ? "border-vermilion/30 bg-vermilion/5"
+                    : "border-navy/12 bg-cream",
+                )}
+              >
+                <p
+                  className={cn(
+                    "text-14",
+                    note.band === "weak" ? "text-vermilion" : "text-navy",
+                  )}
+                >
+                  {note.headline}
+                </p>
+                <p className="mt-1 text-12 text-ink-soft">{note.detail}</p>
+              </div>
+            );
+          })}
 
       {state.error && <FormMessage>{state.error}</FormMessage>}
       {state.ok && <FormMessage tone="notice">{state.ok}</FormMessage>}

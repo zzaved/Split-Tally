@@ -308,14 +308,23 @@ function SheetBody({
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-6">
         {lines.length === 0 ? (
           <div className="flex flex-col gap-4">
+            {/* The reason this product is spoken, stated with the real numbers.
+                Speech runs around 150 words a minute; composing text — not
+                copying it — runs about 19 on a keyboard and 36 on a phone
+                (Karat et al. 1999; mobile figure 2019). Four times, not the
+                fifteen the internet likes to claim. */}
+            <p className="text-14 text-ink-soft">
+              You speak at about <span className="text-navy">150 words a minute</span> and type at
+              about <span className="text-navy">36</span>. That is why this is a conversation and
+              not a form.
+            </p>
             <p className="text-14 text-ink-soft">
               Everything the assistant says is written here too, so you never have to rely on the
               audio.
             </p>
             <p className="text-14 text-ink-soft">
-              Something already in the ledger wrong? Just say so. Talking is far quicker than
-              hunting for the row and editing four fields — tell me what it should have been and I
-              will rebuild it with you.
+              Something already in the ledger wrong? Just say so — tell me what it should have been
+              and I will rebuild it with you, rather than sending you to hunt for the row.
             </p>
           </div>
         ) : (

@@ -2,6 +2,7 @@ import { Avatar } from "@/components/ink/Card";
 import { OrbGlyph } from "@/components/ink/Orb";
 import { formatMoney, formatRelative } from "@/lib/format";
 import type { Activity, Json, Profile } from "@/lib/types";
+import { possessive } from "@/lib/utils";
 
 /**
  * One line of the feed. Each type gets a sentence written out rather than a
@@ -38,12 +39,6 @@ export function ActivityItem({
       </div>
     </li>
   );
-}
-
-/** "Sofia" -> "Sofia's", and a bare "a" when we do not know the name. */
-function possessive(name?: string): string {
-  if (!name) return "a";
-  return name.endsWith("s") ? `${name}'` : `${name}'s`;
 }
 
 type Ctx = {

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ActivityItem } from "@/components/app/ActivityItem";
 import { Balances } from "@/components/app/Balances";
 import { GroupCard } from "@/components/app/GroupCard";
+import { HeldTallies, type HeldTally } from "@/components/app/HeldTallies";
 import { BrushStroke } from "@/components/ink/BrushStroke";
 import { ButtonLink } from "@/components/ink/Button";
 import { Card, SectionHeading } from "@/components/ink/Card";
@@ -16,6 +17,8 @@ import {
   getGroupMembers,
   getLedgerRows,
   getMyGroups,
+  getListings,
+  getMyClaims,
   getMyProfile,
   getProfileMap,
 } from "@/lib/data";
@@ -26,15 +29,18 @@ import { firstName } from "@/lib/utils";
 export const metadata: Metadata = { title: "Dashboard" };
 
 export default async function DashboardPage() {
-  const [profile, rows, groups, memberships, profiles, activity, checkins] = await Promise.all([
-    getMyProfile(),
-    getLedgerRows(),
-    getMyGroups(),
-    getGroupMembers(),
-    getProfileMap(),
-    getActivity(6),
-    getCheckins(),
-  ]);
+  const [profile, rows, groups, memberships, profiles, activity, checkins, claims, listings] =
+    await Promise.all([
+      getMyProfile(),
+      getLedgerRows(),
+      getMyGroups(),
+      getGroupMembers(),
+      getProfileMap(),
+      getActivity(6),
+      getCheckins(),
+      getMyClaims(),
+      getListings(),
+    ]);
 
   if (!profile) return null;
 
@@ -58,6 +64,18 @@ export default async function DashboardPage() {
   for (const e of rows.expenses) {
     expenseCounts.set(e.group_id, (expenseCounts.get(e.group_id) ?? 0) + 1);
   }
+
+  // Tallies bought on the Exchange: what was paid against what is owed. This
+  // is the whole reason a receivable is worth buying — the gap is the return
+  // for waiting, and it stays a position until the debtor actually pays.
+  const listingById = new Map(listings.map((l) => [l.id, l]));
+  const held: HeldTally[] = claims
+    .filter((c) => c.holder_id === profile.id && c.open)
+    .map((claim) => ({
+      claim,
+      listing: claim.listing_id ? listingById.get(claim.listing_id) : undefined,
+      debtor: profiles.get(claim.debtor_id),
+    }));
 
   const lastCheckin = checkins[0];
   const daysSinceCheckin = lastCheckin ? daysBetween(new Date(lastCheckin.created_at), new Date()) : null;
@@ -84,6 +102,9 @@ export default async function DashboardPage() {
           <LastCheckinCard summary={lastCheckin?.summary ?? null} days={daysSinceCheckin ?? 0} />
         )}
       </section>
+
+      {/* ---- Tallies bought on the Exchange -------------------------- */}
+      <HeldTallies held={held} />
 
       {/* ---- Groups -------------------------------------------------- */}
       <section>

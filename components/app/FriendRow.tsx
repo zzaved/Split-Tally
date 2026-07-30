@@ -1,7 +1,7 @@
 import { AmountDisplay } from "@/components/ink/AmountDisplay";
 import { Avatar } from "@/components/ink/Card";
 import { TallyMarks } from "@/components/ink/TallyMarks";
-import { scoreClusters } from "@/lib/score";
+import { BAND_LABEL, scoreBand, scoreClusters, type ScoreInput } from "@/lib/score";
 import type { Profile } from "@/lib/types";
 
 export type FriendBalance = { currency: string; amount: number };
@@ -13,15 +13,20 @@ export type FriendBalance = { currency: string; amount: number };
 export function FriendRow({
   profile,
   balances,
+  stats,
   action,
 }: {
   profile: Profile;
   /** Omit entirely on rows where a balance would be meaningless, such as a
       request that has not been accepted yet. */
   balances?: FriendBalance[];
+  /** The history behind the score, so a brand-new 50 never reads as a
+      measured one. */
+  stats?: ScoreInput;
   action?: React.ReactNode;
 }) {
   const clusters = scoreClusters(profile.tally_score);
+  const band = scoreBand(profile.tally_score, stats);
   const owed = balances?.filter((b) => b.amount > 0) ?? [];
   const owing = balances?.filter((b) => b.amount < 0) ?? [];
 

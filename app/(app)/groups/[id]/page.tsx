@@ -14,9 +14,11 @@ import {
   type LedgerRows,
   type Transfer,
 } from "@/lib/ledger";
-import { coverVariantFor } from "@/lib/utils";
+import { coverVariantFor, firstName } from "@/lib/utils";
+import { computeScores } from "@/lib/scores";
+import { lendingRisk, type RiskNote } from "@/lib/score";
 import { createClient } from "@/lib/supabase/server";
-import { getMyProfile } from "@/lib/data";
+import { getLedgerRows, getMyProfile } from "@/lib/data";
 import type { Expense, ExpenseSplit, Group, Profile, Settlement } from "@/lib/types";
 import { DeleteExpense } from "./DeleteExpense";
 import { ExpenseForm } from "./ExpenseForm";
@@ -106,6 +108,23 @@ export default async function GroupPage(props: { params: Promise<{ id: string }>
   const outstanding: Record<string, number> = {};
   for (const t of active) outstanding[`${t.from}|${t.to}`] = t.amount;
 
+  // What each member's repayment record says, for the people it says something
+  // about. Computed from the whole visible ledger, not just this group.
+  const allRows = await getLedgerRows();
+  const memberScores = computeScores(
+    allRows,
+    memberIds,
+    new Map(members.map((m) => [m.id, m.tally_score])),
+  );
+  const risks: Record<string, RiskNote> = {};
+  for (const m of members) {
+    if (m.id === me.id) continue;
+    const entry = memberScores.get(m.id);
+    if (!entry) continue;
+    const note = lendingRisk(firstName(m.name), entry.score, entry.stats);
+    if (note) risks[m.id] = note;
+  }
+
   const names = new Map(members.map((m) => [m.id, m.name]));
   const sharesByExpense = new Map<string, Map<string, number>>();
   for (const s of splits) {
@@ -193,6 +212,7 @@ export default async function GroupPage(props: { params: Promise<{ id: string }>
                 currency={theGroup.currency}
                 members={members}
                 meId={me.id}
+                risks={risks}
               />
             </div>
           </Card>

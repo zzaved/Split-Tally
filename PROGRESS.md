@@ -112,6 +112,18 @@ Both AI paths verified against the deployment rather than assumed:
   anyone into. Flipping it lands in every member's feed. Verified on a three-way ring: literal
   shows three transfers of $5, netted shows nobody owing anything.
 - **OG image** — cream, cobalt strokes, the jelly and the wordmark, generated at build time.
+- **The Tally Score, read rather than displayed.** A number is not a judgement, so `lib/score.ts`
+  now turns it into one: a band, a confidence, a lending note and a buying note. The band
+  distinguishes `unproven` from `mixed`, because 50 is both the starting value and a middling
+  result and an interface must never pass off the first as the second. The expense form warns you
+  about whoever is about to owe you — only when you are the one paying, and only when the record
+  says something. The listing detail compares the discount on offer against what the debtor's own
+  history prices it at.
+- **Return on bought tallies** on the dashboard: what you paid against what you are owed, per
+  currency, labelled "if they all pay" — it is a position until the debtor settles, not a profit.
+- **The reason for speaking, with the real numbers.** ~150 words a minute spoken against ~36 typed
+  on a phone (Karat et al. 1999 measured 19 wpm composing on a keyboard). Roughly four times, not
+  the fifteen the claim usually gets inflated to.
 
 ## Fixed along the way
 

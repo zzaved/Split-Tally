@@ -223,6 +223,31 @@ that is the row that lifts a debtor's obligation off the original creditor when 
 hands. For the same reason only `settle` counts toward the Tally Score: a debtor's score must not
 improve because somebody else sold their debt.
 
+### Reading the Tally Score
+
+The score answers "will this person actually pay", so it appears wherever that
+question is being asked: on a friend, on a listing card, on the listing detail,
+and inside the expense form the moment you are about to be owed by someone.
+
+The trap it is built around: **50 is both the starting value and a middling
+result.** Somebody brand new and somebody with a genuinely mixed record score
+identically, and those two 50s mean completely different things to anyone
+deciding whether to lend or to buy. `scoreBand()` returns `unproven` rather
+than `mixed` when there is no settled history at all, so the interface can
+never present an absence of information as a measurement. `scoreConfidence()`
+says how much history is behind the number.
+
+Two readings, because the decisions differ:
+
+- **Lending** (`lendingRisk`) — shown in the expense form, but only when *you*
+  are the one paying, and only about people whose record actually says
+  something. A good payer gets no banner: a reliable friend should be quiet,
+  not congratulated.
+- **Buying** (`buyingRisk`) — the useful question is not "is this person good"
+  but "is this discount enough for this person". So it compares the discount
+  being asked against what that debtor's own record prices it at, and says
+  plainly when a listing is priced tighter than the history justifies.
+
 ### Two ways to answer "who pays whom"
 
 Every group carries a `simplify_debts` switch. Off, it lists the literal debts — each pair that

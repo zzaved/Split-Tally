@@ -4,6 +4,7 @@ import { Card, SectionHeading } from "@/components/ink/Card";
 import { EmptyState } from "@/components/ink/EmptyState";
 import { getFriendships, getLedgerRows, getMyProfile, getProfileMap } from "@/lib/data";
 import { balancesFor, computePairBalances } from "@/lib/ledger";
+import { computeScores } from "@/lib/scores";
 import { siteUrl } from "@/lib/site";
 import { AddFriend } from "./AddFriend";
 import { RequestActions } from "./RequestActions";
@@ -46,6 +47,14 @@ export default async function FriendsPage() {
     .map((id) => profiles.get(id))
     .filter((p): p is NonNullable<typeof p> => Boolean(p))
     .sort((a, b) => a.name.localeCompare(b.name));
+
+  // The history behind each score, so a friend who has simply never settled
+  // anything reads as "no record yet" rather than as a measured middling 50.
+  const scores = computeScores(
+    rows,
+    friends.map((f) => f.id),
+    new Map(friends.map((f) => [f.id, f.tally_score])),
+  );
 
   return (
     <div className="flex flex-col gap-14">
@@ -96,6 +105,7 @@ export default async function FriendsPage() {
                       key={friend.id}
                       profile={friend}
                       balances={balancesByPerson.get(friend.id) ?? []}
+                      stats={scores.get(friend.id)?.stats}
                     />
                   ))}
                 </ul>
