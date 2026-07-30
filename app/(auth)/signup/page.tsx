@@ -14,8 +14,8 @@ export default async function SignupPage(props: {
       <p className="eyebrow text-cobalt">First tally</p>
       <h1 className="mt-4 font-display text-40 font-medium text-navy">Create your ledger.</h1>
       <p className="mt-5 text-14 text-ink-soft">
-        An email and a password is all we need. Everything else — your name, your currency, who you
-        share costs with — you tell the orb out loud in the next minute.
+        An email and a password is all we need. Everything else, your name, your currency and who you
+        share costs with, you tell the orb out loud in the next minute.
       </p>
 
       <div className="mt-10">

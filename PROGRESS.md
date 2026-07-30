@@ -121,6 +121,14 @@ Both AI paths verified against the deployment rather than assumed:
   history prices it at.
 - **Return on bought tallies** on the dashboard: what you paid against what you are owed, per
   currency, labelled "if they all pay" — it is a position until the debtor settles, not a profit.
+- **The score, readable and improvable.** `/score` shows the dial, the arithmetic behind it, every
+  settlement with how long it took, every debt still open with how long it has sat, and what each
+  concrete action would add. The tips are computed from the formula, so none of them promises more
+  than it can deliver.
+- **The "I'm improving" standing.** Earned rather than given: only a record that already reached 80
+  can claim it, only while the score is below 50, spent once, and returned only by climbing back to
+  80 and falling again. The peak is replayed from the ledger rather than stored, so every reader
+  gets the same answer. `/exchange` carries a legend documenting every state.
 - **The reason for speaking, with the real numbers.** ~150 words a minute spoken against ~36 typed
   on a phone (Karat et al. 1999 measured 19 wpm composing on a keyboard). Roughly four times, not
   the fifteen the claim usually gets inflated to.
@@ -147,6 +155,11 @@ Both AI paths verified against the deployment rather than assumed:
   `text-cream` from primary buttons, leaving navy-on-cobalt. The scale is now declared to it.
 - `scoreStatsFor` counted `exchange_transfer` as a settled debt, so a debtor's Tally Score improved
   when somebody else sold their debt. Only `settle` counts now.
+
+## Copy convention
+
+No em dashes in user-facing text: a colon where what follows explains, a comma where it is an
+aside. Applied across every route, action message and agent reply.
 
 ## Deliberately deferred
 

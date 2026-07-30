@@ -348,6 +348,6 @@ export async function buyListing(_prev: ActionResult, formData: FormData): Promi
   revalidatePath("/activity");
 
   return {
-    ok: `Bought. ${nameOf(listing.debtor_id)}'s tally is yours now — they owe you ${listing.face_value} ${listing.currency}.`,
+    ok: `Bought. ${nameOf(listing.debtor_id)}'s tally is yours now, they owe you ${listing.face_value} ${listing.currency}.`,
   };
 }

@@ -82,7 +82,7 @@ export function describeScore(score: number, input?: ScoreInput): string {
   if (input && input.settledCount === 0) return "No repayment history yet.";
   if (score >= 85) return "Settles quickly and has never let a tally age.";
   if (score >= 70) return "Reliable, usually settles within a fortnight.";
-  if (score >= 50) return "Mixed record — settles, but takes their time.";
+  if (score >= 50) return "Mixed record: settles, but takes their time.";
   return "Slow to settle, with tallies left open past a month.";
 }
 
@@ -122,6 +122,80 @@ export const BAND_LABEL: Record<ScoreBand, string> = {
   steady: "Reliable",
   strong: "Settles fast",
 };
+
+// ---------------------------------------------------------------------------
+// "I'm improving"
+//
+// A low score with no explanation tells a lender one thing; a low score held by
+// someone who was reliable for a long stretch tells them something else. This
+// flag lets the second person say so.
+//
+// The declaration itself is cheap talk, so it is not what carries the weight.
+// The weight is in the eligibility rule: you can only say it if the record
+// already shows you reaching HIGH_MARK at some point, which the ledger proves
+// on its own. Somebody who has never been reliable simply cannot make the
+// claim, and a new account cannot make it at all.
+//
+// Spending the credit is permanent until the record earns it back. Reaching
+// HIGH_MARK again after the last use, which means actually paying people, is
+// the only thing that returns it. It is a second chance you have to pay for
+// twice.
+// ---------------------------------------------------------------------------
+
+/** The score a record must have reached for the claim to be available. */
+export const HIGH_MARK = 80;
+/** Below this, a score is low enough that the claim means something. */
+export const LOW_MARK = 50;
+/** At or above this, the person has recovered and the flag retires itself. */
+export const RECOVERED_MARK = 70;
+
+export type ImprovingState =
+  /** Never been reliable, so there is nothing to claim. */
+  | { status: "unavailable"; reason: "never-high" }
+  /** Score is not low; the claim would say nothing. */
+  | { status: "unavailable"; reason: "not-low" }
+  /** Used it, and has not earned it back yet. */
+  | { status: "unavailable"; reason: "spent"; usedAt: string }
+  /** Eligible right now. */
+  | { status: "available"; peak: number; peakOn: string | null }
+  /** Declared and standing. */
+  | { status: "active"; since: string; peak: number; peakOn: string | null };
+
+export function improvingState(input: {
+  score: number;
+  peak: number;
+  peakOn: string | null;
+  /** The highest the record reached after the credit was last spent. */
+  peakSinceUsed: number | null;
+  improvingSince: string | null;
+  improvingUsedAt: string | null;
+}): ImprovingState {
+  const { score, peak, peakOn, improvingSince, improvingUsedAt } = input;
+
+  if (improvingSince) {
+    // Recovering retires the flag on its own: the number now speaks for itself.
+    if (score >= RECOVERED_MARK) return { status: "unavailable", reason: "not-low" };
+    return { status: "active", since: improvingSince, peak, peakOn };
+  }
+
+  if (peak < HIGH_MARK) return { status: "unavailable", reason: "never-high" };
+  if (score >= LOW_MARK) return { status: "unavailable", reason: "not-low" };
+
+  if (improvingUsedAt) {
+    const earnedBack = (input.peakSinceUsed ?? 0) >= HIGH_MARK;
+    if (!earnedBack) return { status: "unavailable", reason: "spent", usedAt: improvingUsedAt };
+  }
+
+  return { status: "available", peak, peakOn };
+}
+
+/**
+ * What to tell a buyer or a lender when someone carries the flag. Deliberately
+ * states the fact that can be checked, never the intention that cannot.
+ */
+export function improvingNote(name: string, peak: number): string {
+  return `${name} reached ${peak} at their best and has since fallen. They have acknowledged it and are working it back up.`;
+}
 
 export type RiskNote = { band: ScoreBand; headline: string; detail: string };
 
@@ -211,7 +285,7 @@ export function buyingRisk(
     return {
       band,
       headline: `${name} is a slow payer, and the discount reflects it.`,
-      detail: `${input.overdueCount > 0 ? `${input.overdueCount} of their tallies sit past a month. ` : ""}At ${offeredDiscountPct}% you are being paid to wait — and to carry the chance they keep waiting.`,
+      detail: `${input.overdueCount > 0 ? `${input.overdueCount} of their tallies sit past a month. ` : ""}At ${offeredDiscountPct}% you are being paid to wait, and to carry the chance they keep waiting.`,
     };
   }
 
@@ -230,6 +304,65 @@ export function buyingRisk(
     }.`,
     detail: `At ${offeredDiscountPct}% off you are paid ${gap > 3 ? "more than" : "about"} what the wait is worth on that record.`,
   };
+}
+
+export type ScoreTip = { action: string; gain: number; why: string };
+
+/**
+ * How to move the number, worked out from this person's own arithmetic rather
+ * than offered as advice. Every gain here is what the formula would actually
+ * award, so nothing promises more than it can deliver.
+ */
+export function improvementTips(input: ScoreInput): ScoreTip[] {
+  const now = tallyScore(input);
+  const tips: ScoreTip[] = [];
+
+  if (input.overdueCount > 0) {
+    const cleared = tallyScore({ ...input, overdueCount: 0 });
+    tips.push({
+      action:
+        input.overdueCount === 1
+          ? "Clear the tally that has been open past a month"
+          : `Clear the ${input.overdueCount} tallies that have been open past a month`,
+      gain: cleared - now,
+      why: "Each one sitting past thirty days costs five points, up to twenty five.",
+    });
+  }
+
+  if (input.avgDaysToSettle !== null && input.avgDaysToSettle > OK_DAYS) {
+    tips.push({
+      action: "Bring your average down to a fortnight",
+      gain: OK_BONUS,
+      why: `You are at about ${Math.round(input.avgDaysToSettle)} days. Under fourteen adds eight, under seven adds fifteen.`,
+    });
+  } else if (
+    input.avgDaysToSettle !== null &&
+    input.avgDaysToSettle > FAST_DAYS &&
+    input.avgDaysToSettle <= OK_DAYS
+  ) {
+    tips.push({
+      action: "Bring your average under a week",
+      gain: FAST_BONUS - OK_BONUS,
+      why: `You are at about ${Math.round(input.avgDaysToSettle)} days. Under seven is worth another seven points.`,
+    });
+  }
+
+  const settledRoom = SETTLED_BONUS_CAP - Math.min(input.settledCount * SETTLED_BONUS, SETTLED_BONUS_CAP);
+  if (settledRoom > 0) {
+    tips.push({
+      action:
+        input.settledCount === 0
+          ? "Settle your first tally"
+          : "Keep settling; each one still counts",
+      gain: Math.min(SETTLED_BONUS, settledRoom),
+      why: `Two points per tally settled, up to thirty. You have banked ${Math.min(
+        input.settledCount * SETTLED_BONUS,
+        SETTLED_BONUS_CAP,
+      )} of them.`,
+    });
+  }
+
+  return tips.filter((t) => t.gain > 0);
 }
 
 /** Five clusters of 20 points each, drawn as tally marks. */

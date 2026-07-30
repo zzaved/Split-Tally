@@ -148,7 +148,7 @@ export async function addManagedFriend(
   const email = String(formData.get("email") ?? "").trim() || null;
   const { supabase, user } = await me();
   if (!user) return { error: "Log in again to add friends." };
-  if (!name) return { error: "Give them a name — a first name is enough." };
+  if (!name) return { error: "Give them a name, a first name is enough." };
 
   const { data: profile, error } = await supabase
     .from("profiles")

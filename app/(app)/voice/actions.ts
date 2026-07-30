@@ -107,7 +107,7 @@ export async function saveProfileField(params: {
 
   const field = String(params.field ?? "").toLowerCase().trim();
   const value = String(params.value ?? "").trim();
-  if (!value) return "I did not catch that — say it once more?";
+  if (!value) return "I did not catch that, say it once more?";
 
   if (PROFILE_FIELDS.includes(field as (typeof PROFILE_FIELDS)[number])) {
     const patch =
@@ -247,7 +247,7 @@ export async function createGroup(params: {
   revalidatePath("/dashboard");
 
   if (unknown.length) {
-    return `${group.name} is set up. I do not know ${unknown.join(" or ")} yet — should I add them as friends?`;
+    return `${group.name} is set up. I do not know ${unknown.join(" or ")} yet, should I add them as friends?`;
   }
   return `${group.name} is set up with ${memberIds.length + 1} people.`;
 }
@@ -281,7 +281,7 @@ export async function addExpenseTool(params: {
 
   const group = findGroup(groups, params.group_name) ?? (groups.length === 1 ? groups[0] : undefined);
   if (!group) {
-    return `Which group is that in — ${groups.slice(0, 3).map((g) => g.name).join(", ")}?`;
+    return `Which group is that in: ${groups.slice(0, 3).map((g) => g.name).join(", ")}?`;
   }
 
   const people = await knownPeople(supabase, userId);
@@ -291,7 +291,7 @@ export async function addExpenseTool(params: {
     const match = resolvePerson(params.paid_by_name, people);
     if (match.status === "many") return disambiguationQuestion(params.paid_by_name, match.candidates);
     if (match.status === "none") {
-      return `I do not know ${params.paid_by_name} yet — should I add them as a friend?`;
+      return `I do not know ${params.paid_by_name} yet, should I add them as a friend?`;
     }
     paidBy = match.profile.id;
   }
@@ -655,7 +655,7 @@ export async function listReceivable(params: {
     overdueCount: stats.overdueCount,
   });
 
-  return `${firstName(debtor.name)} owes you ${formatMoney(face, line.currency)}. ${rationale} I would ask ${formatMoney(price, line.currency)} — that is ${discountPct}% off. Open the Exchange and I will fill it in.`;
+  return `${firstName(debtor.name)} owes you ${formatMoney(face, line.currency)}. ${rationale} I would ask ${formatMoney(price, line.currency)}, that is ${discountPct}% off. Open the Exchange and I will fill it in.`;
 }
 
 /**

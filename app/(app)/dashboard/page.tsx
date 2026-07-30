@@ -8,6 +8,7 @@ import { BrushStroke } from "@/components/ink/BrushStroke";
 import { ButtonLink } from "@/components/ink/Button";
 import { Card, SectionHeading } from "@/components/ink/Card";
 import { EmptyState } from "@/components/ink/EmptyState";
+import { ScoreDial } from "@/components/ink/ScoreDial";
 import { TallyMarks } from "@/components/ink/TallyMarks";
 import { StartCheckin } from "./StartCheckin";
 import { daysBetween } from "@/lib/format";
@@ -23,7 +24,8 @@ import {
   getProfileMap,
 } from "@/lib/data";
 import { convertTotals } from "@/lib/fx";
-import { computePairBalances, groupNets, totalsFor } from "@/lib/ledger";
+import { computePairBalances, groupNets, scoreStatsFor, totalsFor } from "@/lib/ledger";
+import { tallyScore } from "@/lib/score";
 import { firstName } from "@/lib/utils";
 
 export const metadata: Metadata = { title: "Dashboard" };
@@ -77,6 +79,9 @@ export default async function DashboardPage() {
       debtor: profiles.get(claim.debtor_id),
     }));
 
+  const myStats = scoreStatsFor(profile.id, rows);
+  const myScore = tallyScore(myStats);
+
   const lastCheckin = checkins[0];
   const daysSinceCheckin = lastCheckin ? daysBetween(new Date(lastCheckin.created_at), new Date()) : null;
   const checkinDue = daysSinceCheckin === null || daysSinceCheckin >= 7;
@@ -86,7 +91,22 @@ export default async function DashboardPage() {
       {/* ---- Balances ------------------------------------------------ */}
       <section className="grid gap-12 md:grid-cols-[1fr_0.9fr] md:gap-16">
         <div>
-          <p className="eyebrow text-cobalt">Good to see you, {firstName(profile.name)}</p>
+          <div className="flex items-center justify-between gap-6">
+            <p className="eyebrow text-cobalt">Good to see you, {firstName(profile.name)}</p>
+            <Link
+              href="/score"
+              className="group flex shrink-0 items-center gap-3 rounded-full transition-opacity duration-150 hover:opacity-80"
+              aria-label="Your Tally Score, and the record behind it"
+            >
+              <span className="eyebrow hidden text-ink-soft sm:inline">Your score</span>
+              <ScoreDial
+                score={myScore}
+                stats={myStats}
+                size={72}
+                improving={Boolean(profile.improving_since)}
+              />
+            </Link>
+          </div>
           <div className="mt-8">
             <Balances
               totals={totals}
@@ -122,7 +142,7 @@ export default async function DashboardPage() {
           <Card className="mt-8">
             <EmptyState
               title="No groups yet"
-              copy="A group is anything you share costs on — a flat, a trip, a dinner club. Make one and add the people in it."
+              copy="A group is anything you share costs on: a flat, a trip, a dinner club. Make one and add the people in it."
               action={<ButtonLink href="/groups/new">Create your first group</ButtonLink>}
             />
           </Card>

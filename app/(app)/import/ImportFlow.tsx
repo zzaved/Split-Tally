@@ -91,7 +91,7 @@ export function ImportFlow({ userId, currency }: { userId: string; currency: str
       const data = (await response.json()) as { transactions?: ReviewRow[]; error?: string };
 
       if (!response.ok || !data.transactions) {
-        setError(data.error ?? "Couldn't read this one — try a clearer screenshot.");
+        setError(data.error ?? "Couldn't read this one, try a clearer screenshot.");
         setStage("pick");
         return;
       }
@@ -302,7 +302,7 @@ export function ImportFlow({ userId, currency }: { userId: string; currency: str
       >
         <p className="font-display text-28 text-navy">Drop a screenshot of your statement</p>
         <p className="max-w-sm text-14 text-ink-soft">
-          Anything your banking app can show — a list of transactions is all it needs. The image
+          Anything your banking app can show: a list of transactions is all it needs. The image
           goes to a private bucket and is read once.
         </p>
 

@@ -52,6 +52,10 @@ export type Profile = {
   voice_id: string | null;
   context: Json;
   tally_score: number;
+  /** Set when this person declared they are working their score back up. */
+  improving_since: string | null;
+  /** When the declaration credit was last spent. */
+  improving_used_at: string | null;
   onboarded_at: string | null;
   deleted: boolean;
   created_at: string;

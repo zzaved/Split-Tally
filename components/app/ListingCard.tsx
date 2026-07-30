@@ -60,6 +60,12 @@ export function ListingCard({
           </div>
         </div>
 
+        {debtor?.improving_since && (
+          <span className="eyebrow flex shrink-0 items-center gap-1.5 rounded-full border border-cobalt/40 bg-cobalt/6 px-2.5 py-1 text-cobalt">
+            Improving
+          </span>
+        )}
+
         {listing.ai_suggested_price !== null && (
           <span className="eyebrow flex shrink-0 items-center gap-1.5 rounded-full border border-cobalt/30 px-2.5 py-1 text-cobalt">
             <OrbGlyph className="size-2.5" title="Priced by AI" />

@@ -119,7 +119,7 @@ export function TalkOnboarding({
         onClick={() => setManual(true)}
         className="text-14 text-ink-soft underline underline-offset-4 hover:text-navy"
       >
-        Skip — set up manually
+        Skip: set up manually
       </button>
     </div>
   );

@@ -15,7 +15,7 @@ const PROMPT =
   "If the year is not visible assume the current year. " +
   'If you cannot read the image, respond {"transactions":[]}.';
 
-const UNREADABLE = "Couldn't read this one — try a clearer screenshot.";
+const UNREADABLE = "Couldn't read this one, try a clearer screenshot.";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 
   if (!hasAnthropic()) {
     return NextResponse.json(
-      { error: "Statement reading is not switched on — ANTHROPIC_API_KEY is missing." },
+      { error: "Statement reading is not switched on: ANTHROPIC_API_KEY is missing." },
       { status: 503 },
     );
   }

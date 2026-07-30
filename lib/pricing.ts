@@ -73,7 +73,7 @@ function localRationale(input: PricingInput, discountPct: number): string {
   if (input.avgDays !== null && input.avgDays <= 7) {
     return `${name} settles in about ${Math.round(input.avgDays)} days, so ${discountPct}% is enough.`;
   }
-  return `${name} settles in about ${Math.round(input.avgDays ?? 14)} days — ${discountPct}% is fair.`;
+  return `${name} settles in about ${Math.round(input.avgDays ?? 14)} days, so ${discountPct}% is fair.`;
 }
 
 /**

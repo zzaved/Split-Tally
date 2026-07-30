@@ -248,6 +248,28 @@ Two readings, because the decisions differ:
   being asked against what that debtor's own record prices it at, and says
   plainly when a listing is priced tighter than the history justifies.
 
+### Earning the right to say "I'm improving"
+
+A low score with no explanation tells a lender one thing. A low score held by
+somebody who was reliable for a long stretch tells them something else, and the
+flag lets that second person say so.
+
+The declaration itself is cheap talk, so it is not what carries the weight. The
+weight is the eligibility rule, which the ledger proves on its own:
+
+- the record must already have reached **80** at some point, replayed from the
+  settlements rather than stored, so a new account can never claim it and
+  neither can anyone who has never paid on time
+- the current score must be below **50**, or there is nothing to explain
+- it is spent once. It returns only if the record climbs back to 80 and falls
+  again, which is a second chance you have to earn twice
+- it retires itself at **70**, because by then the number speaks for itself
+
+It never raises a score and never softens what the risk figures say. It adds
+the one piece of context they cannot carry: that the drop is recent rather than
+the whole story. `/exchange` documents every state on the page, so the signal a
+market prices on is legible to everyone using it.
+
 ### Two ways to answer "who pays whom"
 
 Every group carries a `simplify_debts` switch. Off, it lists the literal debts — each pair that
@@ -301,6 +323,11 @@ Under `prefers-reduced-motion` strokes render static, the orb only breathes, the
 gently, and nothing else moves.
 
 ---
+
+## Copy conventions
+
+No em dashes in user-facing text. Where one would have gone, the sentence takes
+a colon when what follows explains, and a comma when it is an aside.
 
 ## Notes and known limits
 

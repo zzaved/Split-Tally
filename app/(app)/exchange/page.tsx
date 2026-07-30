@@ -13,6 +13,7 @@ import {
 import { balancesFor, computePairBalances } from "@/lib/ledger";
 import { computeScores } from "@/lib/scores";
 import { firstName } from "@/lib/utils";
+import { Legend } from "./Legend";
 import { SellFlow, type Receivable } from "./SellFlow";
 import { WithdrawButton } from "./ListingActions";
 
@@ -142,7 +143,7 @@ export default async function ExchangePage() {
         </div>
 
         {/* ---- Sell ------------------------------------------------- */}
-        <div className="lg:sticky lg:top-24 lg:h-fit">
+        <div className="flex flex-col gap-8 lg:sticky lg:top-24 lg:h-fit">
           <Card className="p-6 md:p-8">
             <p className="eyebrow text-ink-soft">Sell a tally</p>
             <p className="mt-2 text-12 text-ink-soft">
@@ -152,6 +153,8 @@ export default async function ExchangePage() {
               <SellFlow receivables={receivables} />
             </div>
           </Card>
+
+          <Legend />
         </div>
       </div>
     </div>

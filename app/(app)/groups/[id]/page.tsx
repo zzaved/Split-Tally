@@ -204,7 +204,7 @@ export default async function GroupPage(props: { params: Promise<{ id: string }>
           <Card className="p-6 md:p-8">
             <p className="eyebrow text-ink-soft">Add an expense</p>
             <p className="mt-2 text-12 text-ink-soft">
-              Or tap the orb and just say it — same ledger, fewer fields.
+              Or tap the orb and just say it, same ledger and fewer fields.
             </p>
             <div className="mt-6">
               <ExpenseForm

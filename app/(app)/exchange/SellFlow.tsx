@@ -155,8 +155,8 @@ export function SellFlow({ receivables }: { receivables: Receivable[] }) {
                   aria-label="Discount percentage"
                 />
                 <span className="mt-2 flex justify-between text-12 text-ink-soft">
-                  <span>{MIN_DISCOUNT}% — barely a haircut</span>
-                  <span>{MAX_DISCOUNT}% — paid today whatever it costs</span>
+                  <span>{MIN_DISCOUNT}%, barely a haircut</span>
+                  <span>{MAX_DISCOUNT}%, paid today whatever it costs</span>
                 </span>
               </label>
             </div>

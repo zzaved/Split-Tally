@@ -21,7 +21,7 @@ export type Voice = {
   description: string;
 };
 
-const SAMPLE = (name: string) => `Hi — I'm ${name}. Let's keep your tallies.`;
+const SAMPLE = (name: string) => `Hi, I'm ${name}. Let's keep your tallies.`;
 
 export const VOICES: Voice[] = [
   {

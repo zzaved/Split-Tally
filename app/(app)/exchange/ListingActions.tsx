@@ -53,7 +53,7 @@ export function BuyButton({
       <input type="hidden" name="id" value={id} />
 
       <div className="rounded-card border border-cobalt/30 bg-cobalt/5 p-5">
-        <p className="eyebrow text-cobalt">Demo settlement — no real money moves</p>
+        <p className="eyebrow text-cobalt">Demo settlement: no real money moves</p>
         <p className="mt-3 text-14 text-navy">
           You pay {price} now. {debtorName} then owes you {faceValue} instead of the seller. The
           payment itself is simulated for this demo; everything it does to the ledger is real.
@@ -63,7 +63,7 @@ export function BuyButton({
       {state.error && <FormMessage>{state.error}</FormMessage>}
 
       <div className="flex flex-wrap gap-2">
-        <Pending label={`Confirm — pay ${price}`} pendingLabel="Buying…" />
+        <Pending label={`Confirm: pay ${price}`} pendingLabel="Buying…" />
         <Button type="button" variant="ghost" size="lg" onClick={() => setConfirming(false)}>
           Not now
         </Button>

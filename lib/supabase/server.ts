@@ -50,7 +50,7 @@ export function createAdminClient() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!key) {
     throw new Error(
-      "SUPABASE_SERVICE_ROLE_KEY is not set. Add it to .env — see .env.example.",
+      "SUPABASE_SERVICE_ROLE_KEY is not set. Add it to .env, see .env.example.",
     );
   }
 

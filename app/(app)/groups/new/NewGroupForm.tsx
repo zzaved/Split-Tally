@@ -52,7 +52,7 @@ export function NewGroupForm({
           <EmptyState
             illustration="strokes"
             title="No friends to add yet"
-            copy="You can make the group now and add people later, or add a friend first — a first name is enough."
+            copy="You can make the group now and add people later, or add a friend first, a first name is enough."
             action={
               <ButtonLink href="/friends" variant="secondary" size="sm">
                 Add a friend

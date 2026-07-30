@@ -10,7 +10,7 @@ import { TallyMarks } from "@/components/ink/TallyMarks";
 import { Wordmark } from "@/components/ink/Wordmark";
 
 export const metadata: Metadata = {
-  title: "Split Tally — finance without forms",
+  title: "Split Tally: finance without forms",
 };
 
 export default function LandingPage() {
@@ -92,8 +92,8 @@ function Hero() {
 
           <Reveal delay={0.16}>
             <p className="mt-10 max-w-lg text-16 text-ink-soft">
-              Say what you spent. Split Tally writes the ledger, keeps everyone square, and —
-              when you need the money before your friend can pay — lets you sell what you are
+              Say what you spent. Split Tally writes the ledger, keeps everyone square and,
+              when you need the money before your friend can pay, lets you sell what you are
               owed.
             </p>
           </Reveal>
@@ -158,7 +158,7 @@ function LedgerBand() {
             </div>
             <p className="mt-8 max-w-sm text-14 text-ink-soft">
               One number for what is coming to you, one for what is going out. The colour is
-              never the only signal — the words say it too.
+              never the only signal: the words say it too.
             </p>
           </div>
         </Reveal>
@@ -284,7 +284,7 @@ function OrbSection() {
             You talk. It writes the ledger.
           </h2>
           <p className="mt-6 max-w-lg text-16 text-ink-soft">
-            The orb is docked on every screen. It listens, confirms once, and writes — friends,
+            The orb is docked on every screen. It listens, confirms once, and writes: friends,
             groups, expenses, settlements, budgets. If the room is loud or the microphone is
             blocked, type into the same conversation and nothing else changes.
           </p>
@@ -331,8 +331,8 @@ function ExchangeSection() {
           </h2>
           <div className="mt-8 space-y-5 text-16 text-ink-soft">
             <p>
-              England kept its debts in notched hazel. The creditor kept the thicker half — the
-              stock — and the debtor kept the foil. Only the matching halves fit together, so
+              England kept its debts in notched hazel. The creditor kept the thicker half, the
+              stock, and the debtor kept the foil. Only the matching halves fit together, so
               neither side could quietly re-cut the story.
             </p>
             <p>
@@ -387,7 +387,7 @@ function ExchangeSection() {
             </div>
 
             <p className="mt-5 text-14 text-ink-soft">
-              “Paulo settles in about 21 days on average — an 8% discount is fair.”
+              “Paulo settles in about 21 days on average, an 8% discount is fair.”
             </p>
 
             <div className="mt-6 flex items-center justify-between">
@@ -416,7 +416,7 @@ function WeeklyTallySection() {
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-16 text-ink-soft">
             The orb asks three questions: the cash you spent that never reaches a statement, what
-            is coming up, and who you should settle with. Your answers become entries — not a
+            is coming up, and who you should settle with. Your answers become entries, not a
             form you had to remember to fill.
           </p>
           <div className="mt-10 flex justify-center">

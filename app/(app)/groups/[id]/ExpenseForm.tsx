@@ -246,7 +246,7 @@ export function ExpenseForm({
       </div>
 
       {/* Whoever is about to owe you, and has a record that says something.
-          Only shown when the money is going out from you — being owed by a
+          Only shown when the money is going out from you: being owed by a
           slow payer is the risk; owing one is not. */}
       {paidByMe &&
         participants

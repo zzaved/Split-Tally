@@ -53,7 +53,7 @@ export function disambiguationQuestion(query: string, candidates: Profile[]): st
     labels.length === 2
       ? `${labels[0]} or ${labels[1]}`
       : `${labels.slice(0, -1).join(", ")}, or ${labels[labels.length - 1]}`;
-  return `Which ${query} — ${list}?`;
+  return `Which ${query}: ${list}?`;
 }
 
 /** "Paulo M." when a surname separates them, otherwise the full name. */

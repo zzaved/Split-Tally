@@ -123,8 +123,8 @@ function SheetBody({
     onError: (message) => {
       setNotice(
         message?.includes("permission") || message?.includes("NotAllowed")
-          ? "I could not reach your microphone — we can type instead."
-          : "Voice is unavailable — we can type.",
+          ? "I could not reach your microphone, we can type instead."
+          : "Voice is unavailable, we can type.",
       );
       setTextOnly(true);
     },
@@ -179,7 +179,7 @@ function SheetBody({
 
         if (!response.ok || data.error === "not_configured") {
           setNotice(
-            "The assistant is not connected on this deployment. Everything it does is on the page too — record an expense, settle up, or list a tally by hand.",
+            "The assistant is not connected on this deployment. Everything it does is on the page too: record an expense, settle up, or list a tally by hand.",
           );
           setTextOnly(true);
           setStarting(false);
@@ -191,7 +191,7 @@ function SheetBody({
           try {
             await navigator.mediaDevices.getUserMedia({ audio: true });
           } catch {
-            setNotice("I could not reach your microphone — we can type instead.");
+            setNotice("I could not reach your microphone, we can type instead.");
             setTextOnly(true);
             asText = true;
           }
@@ -215,7 +215,7 @@ function SheetBody({
           dynamicVariables: { mode },
         });
       } catch {
-        setNotice("Voice is unavailable — we can type.");
+        setNotice("Voice is unavailable, we can type.");
         setTextOnly(true);
       } finally {
         setStarting(false);
@@ -309,8 +309,8 @@ function SheetBody({
         {lines.length === 0 ? (
           <div className="flex flex-col gap-4">
             {/* The reason this product is spoken, stated with the real numbers.
-                Speech runs around 150 words a minute; composing text — not
-                copying it — runs about 19 on a keyboard and 36 on a phone
+                Speech runs around 150 words a minute; composing text, not
+                copying it, runs about 19 on a keyboard and 36 on a phone
                 (Karat et al. 1999; mobile figure 2019). Four times, not the
                 fifteen the internet likes to claim. */}
             <p className="text-14 text-ink-soft">
@@ -323,7 +323,7 @@ function SheetBody({
               audio.
             </p>
             <p className="text-14 text-ink-soft">
-              Something already in the ledger wrong? Just say so — tell me what it should have been
+              Something already in the ledger wrong? Just say so, tell me what it should have been
               and I will rebuild it with you, rather than sending you to hunt for the row.
             </p>
           </div>

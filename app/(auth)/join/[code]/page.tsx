@@ -57,7 +57,7 @@ export default async function JoinPage(props: { params: Promise<{ code: string }
             {inviterName} wants to keep tallies with you.
           </h1>
           <p className="max-w-sm text-14 text-ink-soft">
-            Create your ledger and the two of you are connected the moment you join — no request to
+            Create your ledger and the two of you are connected the moment you join, no request to
             accept, nothing to look up.
           </p>
           <ButtonLink href={`/signup?invite=${encodeURIComponent(code)}`} size="lg" className="mt-2">

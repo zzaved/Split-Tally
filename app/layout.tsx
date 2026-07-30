@@ -20,22 +20,22 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl()),
   title: {
-    default: "Split Tally — finance without forms",
+    default: "Split Tally: finance without forms",
     template: "%s · Split Tally",
   },
   description:
-    "Tell it what you spent. Split Tally splits, tallies and settles with your friends — and lets you sell what you are owed when you need the cash today.",
+    "Tell it what you spent. Split Tally splits, tallies and settles with your friends, and lets you sell what you are owed when you need the cash today.",
   applicationName: "Split Tally",
   openGraph: {
     type: "website",
     siteName: "Split Tally",
-    title: "Split Tally — finance without forms",
+    title: "Split Tally: finance without forms",
     description:
       "Speak an expense, snap a statement, trade a tally. The rewrite of splitting costs with friends.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Split Tally — finance without forms",
+    title: "Split Tally: finance without forms",
     description:
       "Speak an expense, snap a statement, trade a tally. The rewrite of splitting costs with friends.",
   },

@@ -35,7 +35,7 @@ export function Wordmark({
   if (!href) return inner;
 
   return (
-    <Link href={href} className="inline-flex rounded-sm" aria-label="Split Tally — home">
+    <Link href={href} className="inline-flex rounded-sm" aria-label="Split Tally, home">
       {inner}
     </Link>
   );

@@ -71,7 +71,7 @@ export function SettleMode({
         <div>
           <p className="eyebrow text-ink-soft">Who pays whom</p>
           <p className="mt-2 text-12 text-ink-soft">
-            {enabled ? "Netted — circles cancel" : "Literal — everyone pays who they owe"}
+            {enabled ? "Netted: circles cancel" : "Literal: everyone pays who they owe"}
           </p>
         </div>
 

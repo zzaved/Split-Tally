@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Split Tally — finance without forms";
+export const alt = "Split Tally: finance without forms";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -105,7 +105,7 @@ export default async function OpengraphImage() {
             Finance without forms.
           </div>
           <div style={{ fontSize: 30, color: "#5A679E", lineHeight: 1.45, maxWidth: 760 }}>
-            Say what you spent. Split Tally writes the ledger — and lets you sell what you are owed.
+            Say what you spent. Split Tally writes the ledger, and lets you sell what you are owed.
           </div>
         </div>
 

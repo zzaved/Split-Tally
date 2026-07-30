@@ -275,6 +275,147 @@ export function scoreStatsFor(
 }
 
 // ---------------------------------------------------------------------------
+// The record behind a score
+// ---------------------------------------------------------------------------
+
+export type ScoreEvent = {
+  kind: "settled" | "open";
+  date: string;
+  /** Days between the debt arising and the payment, for a settlement. */
+  days: number;
+  amount: number;
+  currency: string;
+  groupId: string | null;
+  /** The other party, so the log can name them. */
+  otherId: string;
+};
+
+/**
+ * Every moment that moved this person's score, oldest first. The score is
+ * arithmetic on this list, so showing the list is the only complete answer to
+ * "why is my score what it is".
+ */
+export function scoreEvents(
+  personId: string,
+  rows: LedgerRows,
+  now: Date = new Date(),
+): ScoreEvent[] {
+  const expenseById = new Map(rows.expenses.map((e) => [e.id, e]));
+
+  const sharedDatesByGroup = new Map<string, string[]>();
+  for (const split of rows.splits) {
+    if (split.user_id !== personId) continue;
+    const expense = expenseById.get(split.expense_id);
+    if (!expense || expense.deleted) continue;
+    const list = sharedDatesByGroup.get(expense.group_id) ?? [];
+    list.push(expense.expense_date);
+    sharedDatesByGroup.set(expense.group_id, list);
+  }
+  for (const list of sharedDatesByGroup.values()) list.sort();
+
+  const events: ScoreEvent[] = [];
+
+  for (const payment of rows.settlements) {
+    if (payment.from_user !== personId || payment.kind !== "settle") continue;
+
+    const paidOn = payment.settled_at.slice(0, 10);
+    let latest: string | null = null;
+    if (payment.group_id) {
+      for (const d of sharedDatesByGroup.get(payment.group_id) ?? []) {
+        if (d <= paidOn) latest = d;
+        else break;
+      }
+    }
+
+    events.push({
+      kind: "settled",
+      date: paidOn,
+      days: latest ? daysBetween(parseDateOnly(latest), parseDateOnly(paidOn)) : 0,
+      amount: Number(payment.amount),
+      currency: payment.currency,
+      groupId: payment.group_id,
+      otherId: payment.to_user,
+    });
+  }
+
+  // Anything still owed, with how long it has been sitting there.
+  for (const pair of computePairBalances(rows)) {
+    if (pair.debtor !== personId || !pair.since) continue;
+    events.push({
+      kind: "open",
+      date: pair.since,
+      days: daysBetween(parseDateOnly(pair.since), now),
+      amount: pair.amount,
+      currency: pair.currency,
+      groupId: null,
+      otherId: pair.creditor,
+    });
+  }
+
+  return events.sort((a, b) => a.date.localeCompare(b.date));
+}
+
+/**
+ * Replays the record day by day to find the highest this person's score has
+ * ever been, and when.
+ *
+ * Deriving it beats storing it: a stored peak is only ever as good as the
+ * moments somebody happened to look, whereas this is a property of the record
+ * itself and gives the same answer to everyone reading it.
+ */
+export function scorePeak(
+  personId: string,
+  rows: LedgerRows,
+  scoreOf: (stats: ScoreStats) => number,
+  now: Date = new Date(),
+): { peak: number; on: string | null } {
+  const payments = rows.settlements
+    .filter((s) => s.from_user === personId && s.kind === "settle")
+    .map((s) => s.settled_at.slice(0, 10))
+    .sort();
+
+  if (payments.length === 0) {
+    const stats = scoreStatsFor(personId, rows, now);
+    return { peak: scoreOf(stats), on: null };
+  }
+
+  let peak = -1;
+  let on: string | null = null;
+
+  // The score only moves when a payment lands or a debt crosses a month, so
+  // checking each payment date plus today catches every high point.
+  for (const date of [...payments, now.toISOString().slice(0, 10)]) {
+    const asOf = parseDateOnly(date);
+    const stats = scoreStatsForAsOf(personId, rows, asOf);
+    const score = scoreOf(stats);
+    if (score > peak) {
+      peak = score;
+      on = date;
+    }
+  }
+
+  return { peak, on };
+}
+
+/** `scoreStatsFor`, but as the record stood on a given day. */
+export function scoreStatsForAsOf(
+  personId: string,
+  rows: LedgerRows,
+  asOf: Date,
+): ScoreStats {
+  const cutoff = asOf.toISOString().slice(0, 10);
+
+  const trimmed: LedgerRows = {
+    expenses: rows.expenses.filter((e) => e.expense_date <= cutoff),
+    splits: rows.splits,
+    settlements: rows.settlements.filter((s) => s.settled_at.slice(0, 10) <= cutoff),
+    claims: rows.claims.filter((c) => c.created_at.slice(0, 10) <= cutoff),
+  };
+
+  return scoreStatsFor(personId, trimmed, asOf);
+}
+
+// ---------------------------------------------------------------------------
 // Split helpers — used by the manual expense form and by `add_expense`
 // ---------------------------------------------------------------------------
 

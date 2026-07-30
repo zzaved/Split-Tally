@@ -30,6 +30,12 @@ create table if not exists public.profiles (
   voice_id text,
   context jsonb not null default '{}'::jsonb,
   tally_score int not null default 50 check (tally_score between 0 and 100),
+  -- The "I'm improving" standing (BUILD.MD extension). Only these two columns
+  -- are stored: the peak a record has reached is replayed from the ledger, so
+  -- every reader gets the same answer rather than whatever was true the last
+  -- time somebody happened to look.
+  improving_since timestamptz,
+  improving_used_at timestamptz,
   onboarded_at timestamptz,
   deleted boolean not null default false,
   created_at timestamptz not null default now()

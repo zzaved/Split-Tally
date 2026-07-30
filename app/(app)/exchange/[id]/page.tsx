@@ -154,7 +154,7 @@ export default async function ListingPage(props: { params: Promise<{ id: string 
             <p className="mt-3 text-14 text-ink-soft">
               You pay {formatMoney(listing.asking_price, listing.currency)} and take on{" "}
               {possessive(firstName(debtor?.name ?? ""))} tally of{" "}
-              {formatMoney(listing.face_value, listing.currency)} — {discountOf(listing)}% in your
+              {formatMoney(listing.face_value, listing.currency)}, {discountOf(listing)}% in your
               favour if they pay.
             </p>
             <div className="mt-6">
@@ -174,7 +174,7 @@ export default async function ListingPage(props: { params: Promise<{ id: string 
                 ? "This listing was withdrawn."
                 : isMine
                   ? "This is your listing."
-                  : "This is your own tally — you cannot buy your own debt."}
+                  : "This is your own tally: you cannot buy your own debt."}
           </p>
         )}
       </Card>

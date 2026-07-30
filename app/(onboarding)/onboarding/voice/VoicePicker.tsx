@@ -96,7 +96,7 @@ export function VoicePicker({ voices, current }: { voices: Voice[]; current: str
                   <span className="voice-orb-gloss" />
                 </span>
                 <span className="sr-only">
-                  {voice.name} — {voice.description}
+                  {voice.name}, {voice.description}
                 </span>
               </button>
 

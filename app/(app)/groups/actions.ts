@@ -52,7 +52,7 @@ export async function createGroup(_prev: ActionResult, formData: FormData): Prom
 
   const { supabase, user } = await session();
   if (!user) return { error: "Log in again to create a group." };
-  if (!name) return { error: "Give the group a name — where are these costs from?" };
+  if (!name) return { error: "Give the group a name: where are these costs from?" };
 
   const { data: group, error } = await supabase
     .from("groups")
