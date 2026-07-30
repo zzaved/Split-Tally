@@ -1,0 +1,497 @@
+@import "tailwindcss";
+
+/* ============================================================
+   INK ON CREAM — design tokens (source of truth: BUILD.MD §4)
+   No dark mode. No glassmorphism. No gradients outside the orb.
+   ============================================================ */
+
+@theme {
+  /* --- Color ------------------------------------------------ */
+  --color-cream: #f4f0e5; /* page background */
+  --color-cream-deep: #ebe5d6; /* cards, wells */
+  --color-cobalt: #2547c9; /* strokes, primary, "owed to you" */
+  --color-navy: #1b2b6b; /* text */
+  --color-ink-soft: #5a679e; /* secondary text */
+  --color-vermilion: #c0391b; /* you-owe, overdue, destructive */
+
+  /* Orb palette — the only place gradients are allowed */
+  --color-orb-cobalt: #2547c9;
+  --color-orb-cyan: #35c8e8;
+  --color-orb-violet: #3a1f9e;
+
+  /* --- Type ------------------------------------------------- */
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+
+  /* Scale: 11 / 12 / 14 / 16 / 20 / 28 / 40 / 56 / 72 */
+  --text-11: 0.6875rem;
+  --text-11--line-height: 1.2;
+  --text-12: 0.75rem;
+  --text-12--line-height: 1.45;
+  --text-14: 0.875rem;
+  --text-14--line-height: 1.55;
+  --text-16: 1rem;
+  --text-16--line-height: 1.65;
+  --text-20: 1.25rem;
+  --text-20--line-height: 1.55;
+  --text-28: 1.75rem;
+  --text-28--line-height: 1.25;
+  --text-40: 2.5rem;
+  --text-40--line-height: 1.1;
+  --text-56: 3.5rem;
+  --text-56--line-height: 1.02;
+  --text-72: 4.5rem;
+  --text-72--line-height: 0.98;
+
+  /* --- Radius / shadow -------------------------------------- */
+  --radius-card: 4px;
+  --radius-well: 3px;
+
+  --shadow-ink-sm: 0 1px 2px rgba(27, 43, 107, 0.04);
+  --shadow-ink: 0 1px 2px rgba(27, 43, 107, 0.03), 0 8px 24px rgba(27, 43, 107, 0.05);
+  --shadow-ink-lg: 0 2px 4px rgba(27, 43, 107, 0.03), 0 18px 48px rgba(27, 43, 107, 0.06);
+}
+
+/* Spacing intentionally uses the Tailwind default 0.25rem step, which
+   lands exactly on the spec scale: 1=4 2=8 3=12 4=16 6=24 10=40 16=64 24=96 */
+
+/* ============================================================
+   Base
+   ============================================================ */
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  *,
+  *::before,
+  *::after {
+    border-color: color-mix(in srgb, var(--color-navy) 10%, transparent);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-cream);
+    color: var(--color-navy);
+    font-family: var(--font-sans);
+    font-size: var(--text-16);
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-cobalt) 18%, transparent);
+    color: var(--color-navy);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-cobalt);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}
+
+/* ============================================================
+   Utilities
+   ============================================================ */
+
+@utility eyebrow {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: var(--text-11);
+  line-height: 1.2;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+@utility eyebrow-12 {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: var(--text-12);
+  line-height: 1.2;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+/* Numbers in the display face are a signature — keep them even */
+@utility tabular {
+  font-variant-numeric: lining-nums tabular-nums;
+  font-feature-settings: "lnum" 1, "tnum" 1;
+}
+
+/* Page rhythm: max width 1100px */
+@utility shell {
+  width: 100%;
+  max-width: 1100px;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+/* Section padding: 56px mobile, 96px from md up */
+@utility section-y {
+  padding-block: 3.5rem;
+  @media (width >= 48rem) {
+    padding-block: 6rem;
+  }
+}
+
+@utility hairline {
+  border-top: 1px solid color-mix(in srgb, var(--color-navy) 10%, transparent);
+}
+
+/* ============================================================
+   Components — motion + the orb. Everything here is disabled or
+   reduced under prefers-reduced-motion at the end of the layer.
+   ============================================================ */
+
+@layer components {
+  /* --- BrushStroke draw-in -------------------------------- */
+  .ink-draw {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+  }
+
+  .ink-draw--in {
+    animation: ink-draw 1.2s cubic-bezier(0.22, 0.72, 0.2, 1) forwards;
+  }
+
+  /* --- TallyMarks draw-in --------------------------------- */
+  .tally-mark {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation: ink-draw 0.34s cubic-bezier(0.3, 0.8, 0.25, 1) forwards;
+  }
+
+  .tally-static .tally-mark {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+
+  /* --- Orb ------------------------------------------------ */
+  .orb {
+    position: relative;
+    width: var(--orb-size);
+    height: var(--orb-size);
+    flex: none;
+  }
+
+  .orb-shell {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    overflow: hidden;
+    /* isolate keeps the screen-blended aurora layers inside the sphere */
+    isolation: isolate;
+    background: radial-gradient(circle at 50% 52%, #241463 0%, #0e0930 100%);
+    box-shadow:
+      inset 0 0 calc(var(--orb-size) * 0.05) rgba(255, 255, 255, 0.16),
+      inset 0 calc(var(--orb-size) * -0.09) calc(var(--orb-size) * 0.18) rgba(4, 2, 22, 0.6),
+      0 calc(var(--orb-size) * 0.04) calc(var(--orb-size) * 0.12) rgba(27, 43, 107, 0.16);
+  }
+
+  /* Four light pools drifting at different rates. Screen blending is what
+     makes them read as aurora rather than as one averaged gradient. */
+  .orb-aurora {
+    position: absolute;
+    inset: calc(var(--orb-size) * -0.25);
+    transform-origin: 50% 50%;
+    will-change: transform;
+  }
+
+  .orb-aurora--1 {
+    background: conic-gradient(
+      from 210deg,
+      var(--color-orb-cobalt) 0deg,
+      var(--color-orb-cyan) 68deg,
+      #6e4bff 152deg,
+      var(--color-orb-violet) 234deg,
+      var(--color-orb-cobalt) 360deg
+    );
+    filter: blur(calc(var(--orb-size) * 0.1));
+    opacity: 0.8;
+    animation: orb-spin 20s linear infinite;
+  }
+
+  .orb-aurora--2 {
+    background: radial-gradient(
+      circle at 34% 30%,
+      var(--color-orb-cyan) 0%,
+      rgba(53, 200, 232, 0.28) 20%,
+      transparent 44%
+    );
+    filter: blur(calc(var(--orb-size) * 0.06));
+    mix-blend-mode: screen;
+    opacity: 0.95;
+    animation: orb-spin-rev 15s linear infinite;
+  }
+
+  .orb-aurora--3 {
+    background: radial-gradient(
+      circle at 70% 70%,
+      #7b5bff 0%,
+      rgba(123, 91, 255, 0.22) 22%,
+      transparent 46%
+    );
+    filter: blur(calc(var(--orb-size) * 0.07));
+    mix-blend-mode: screen;
+    opacity: 0.9;
+    animation: orb-spin 26s linear infinite;
+  }
+
+  .orb-aurora--4 {
+    background: radial-gradient(circle at 64% 22%, var(--color-orb-cobalt) 0%, transparent 38%);
+    filter: blur(calc(var(--orb-size) * 0.05));
+    mix-blend-mode: screen;
+    opacity: 0.85;
+    animation: orb-spin-rev 34s linear infinite;
+  }
+
+  .orb-gloss {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    background:
+      radial-gradient(
+        circle at 34% 22%,
+        rgba(255, 255, 255, 0.4) 0%,
+        rgba(255, 255, 255, 0.05) 22%,
+        transparent 42%
+      ),
+      radial-gradient(circle at 50% 116%, rgba(53, 200, 232, 0.2) 0%, transparent 44%);
+    pointer-events: none;
+  }
+
+  .orb-body {
+    animation: orb-breathe 6s ease-in-out infinite;
+  }
+
+  .orb[data-state="listening"] .orb-body {
+    animation: orb-breathe 3.4s ease-in-out infinite;
+  }
+
+  .orb[data-state="thinking"] .orb-aurora--1 {
+    animation-duration: 4s;
+  }
+
+  .orb[data-state="thinking"] .orb-aurora--2 {
+    animation-duration: 6s;
+  }
+
+  .orb[data-state="speaking"] .orb-body {
+    animation: orb-pulse 0.82s ease-in-out infinite;
+  }
+
+  .orb-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in srgb, var(--color-cobalt) 45%, transparent);
+    opacity: 0;
+    animation: orb-ripple 1.9s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+    pointer-events: none;
+  }
+
+  .orb-ring--2 {
+    animation-delay: 0.63s;
+  }
+
+  .orb-ring--3 {
+    animation-delay: 1.26s;
+  }
+
+  /* --- Jellyfish ------------------------------------------ */
+  .jelly-body {
+    animation: jelly-float 5.4s ease-in-out infinite;
+    transform-box: fill-box;
+    transform-origin: 50% 30%;
+  }
+
+  .jelly-tentacle {
+    transform-box: fill-box;
+    transform-origin: 50% 0%;
+    animation: jelly-sway 4.2s ease-in-out infinite;
+  }
+
+  .jelly-tentacle--2 {
+    animation-duration: 4.8s;
+    animation-delay: -0.5s;
+  }
+
+  .jelly-tentacle--3 {
+    animation-duration: 5.2s;
+    animation-delay: -1.1s;
+  }
+
+  .jelly-tentacle--4 {
+    animation-duration: 4.5s;
+    animation-delay: -1.7s;
+  }
+
+  /* --- Rise-in for content -------------------------------- */
+  .rise {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  .rise--in {
+    animation: rise 0.7s cubic-bezier(0.22, 0.72, 0.2, 1) forwards;
+  }
+
+  /* --- Skeletons ------------------------------------------ */
+  .skeleton {
+    background-color: color-mix(in srgb, var(--color-navy) 7%, transparent);
+    background-image: linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in srgb, var(--color-cream) 60%, transparent) 50%,
+      transparent 100%
+    );
+    background-size: 220% 100%;
+    animation: skeleton-slide 1.5s ease-in-out infinite;
+    border-radius: 2px;
+  }
+
+  /* --- Reduced motion (BUILD.MD §10) ---------------------- */
+  @media (prefers-reduced-motion: reduce) {
+    .ink-draw,
+    .ink-draw--in {
+      stroke-dashoffset: 0;
+      animation: none;
+    }
+
+    .tally-mark {
+      stroke-dashoffset: 0;
+      animation: none;
+    }
+
+    .rise {
+      opacity: 1;
+      transform: none;
+    }
+
+    .rise--in {
+      animation: none;
+    }
+
+    .orb-aurora {
+      animation: none;
+    }
+
+    .orb-body,
+    .orb[data-state="listening"] .orb-body,
+    .orb[data-state="speaking"] .orb-body {
+      animation: orb-breathe 7s ease-in-out infinite;
+    }
+
+    .orb-ring {
+      animation: none;
+      opacity: 0.28;
+    }
+
+    .jelly-body {
+      animation: jelly-float 9s ease-in-out infinite;
+    }
+
+    .jelly-tentacle {
+      animation: none;
+    }
+
+    .skeleton {
+      animation: none;
+    }
+  }
+}
+
+/* ============================================================
+   Keyframes
+   ============================================================ */
+
+@keyframes ink-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes orb-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes orb-spin-rev {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes orb-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.022);
+  }
+}
+
+@keyframes orb-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes orb-ripple {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.55);
+    opacity: 0;
+  }
+}
+
+@keyframes jelly-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-2.5%) rotate(-0.8deg);
+  }
+}
+
+@keyframes jelly-sway {
+  0%,
+  100% {
+    transform: rotate(-2.2deg);
+  }
+  50% {
+    transform: rotate(2.2deg);
+  }
+}
+
+@keyframes rise {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes skeleton-slide {
+  0% {
+    background-position: 120% 0;
+  }
+  100% {
+    background-position: -120% 0;
+  }
+}
