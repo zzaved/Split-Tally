@@ -217,7 +217,9 @@ export function GuidedFill({
   // returns a fresh object each time, so an effect keyed on `stop` would run
   // its cleanup constantly and switch the panel off the moment it appeared.
   const stopRef = useRef(stop);
-  stopRef.current = stop;
+  useEffect(() => {
+    stopRef.current = stop;
+  });
   useEffect(() => () => stopRef.current(), []);
 
   if (!active) {
