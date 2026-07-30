@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { round2 } from "@/lib/format";
 import { createClient } from "@/lib/supabase/server";
+import { siteUrl } from "@/lib/site";
 import type { ParsedTransaction } from "@/lib/types";
 
 export type ReviewRow = ParsedTransaction & {
@@ -78,8 +79,7 @@ export async function saveStatementRows(input: {
   // Categorise in one batch before writing, so the rows land already filed.
   let categories: string[] = [];
   try {
-    const base = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-    const response = await fetch(`${base}/api/categorize`, {
+    const response = await fetch(`${siteUrl()}/api/categorize`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ descriptions: rows.map((r) => r.description) }),

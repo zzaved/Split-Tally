@@ -89,7 +89,22 @@ a media pipeline at all. `app/api/voice/token/route.ts` picks the transport from
 Without an agent id the orb still opens, says the assistant is not connected on this deployment,
 and points at the forms that do the same work.
 
-### 4. Currency rates
+### 4. Deploying
+
+Vercel builds this fine with no environment variables at all — and then every
+page answers 500, because `proxy.ts` needs Supabase on each request. A green
+deploy is not a working one. Paste the whole of your `.env` into the project's
+environment variables before the first real visit, then change
+`NEXT_PUBLIC_SITE_URL` to the deployed domain.
+
+If you forget that last one, `lib/site.ts` falls back to Vercel's own
+`VERCEL_URL`, so the app still talks to itself instead of to localhost. Set it
+anyway: a custom domain is the one case the fallback cannot guess.
+
+In Supabase, set **Authentication → URL Configuration → Site URL** to the same
+domain so confirmation and recovery links point at the deployment.
+
+### 5. Currency rates
 
 None needed. Conversions use the European Central Bank's daily reference rates via
 `api.frankfurter.dev` — no key, no account. If it is unreachable, the dashboard shows the

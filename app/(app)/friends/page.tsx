@@ -4,6 +4,7 @@ import { Card, SectionHeading } from "@/components/ink/Card";
 import { EmptyState } from "@/components/ink/EmptyState";
 import { getFriendships, getLedgerRows, getMyProfile, getProfileMap } from "@/lib/data";
 import { balancesFor, computePairBalances } from "@/lib/ledger";
+import { siteUrl } from "@/lib/site";
 import { AddFriend } from "./AddFriend";
 import { RequestActions } from "./RequestActions";
 
@@ -45,8 +46,6 @@ export default async function FriendsPage() {
     .map((id) => profiles.get(id))
     .filter((p): p is NonNullable<typeof p> => Boolean(p))
     .sort((a, b) => a.name.localeCompare(b.name));
-
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
   return (
     <div className="flex flex-col gap-14">
@@ -121,7 +120,7 @@ export default async function FriendsPage() {
         </div>
 
         <div className="lg:sticky lg:top-24 lg:h-fit">
-          <AddFriend siteUrl={siteUrl} />
+          <AddFriend siteUrl={siteUrl()} />
         </div>
       </div>
     </div>

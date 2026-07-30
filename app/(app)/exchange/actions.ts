@@ -7,6 +7,7 @@ import { balancesFor, computePairBalances, scoreStatsFor, type LedgerRows } from
 import { clampDiscount, localPricing, priceFromDiscount, MAX_DISCOUNT, MIN_DISCOUNT } from "@/lib/pricing";
 import { tallyScore } from "@/lib/score";
 import { createAdminClient, createClient, hasAdminClient } from "@/lib/supabase/server";
+import { siteUrl } from "@/lib/site";
 import type { Listing, Profile } from "@/lib/types";
 import { firstName } from "@/lib/utils";
 
@@ -90,8 +91,7 @@ export async function priceReceivable(input: {
 
   // Ask the model through the route, so the prompt lives in exactly one place.
   try {
-    const base = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-    const response = await fetch(`${base}/api/price-listing`, {
+    const response = await fetch(`${siteUrl()}/api/price-listing`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({
