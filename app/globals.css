@@ -270,6 +270,17 @@
     animation: orb-breathe 6s ease-in-out infinite;
   }
 
+  /* Swelling with the voice says "I can hear you" far better than a word does,
+     and unlike a label it moves the instant you start talking. */
+  .orb[data-state="listening"] .orb-body {
+    transform: scale(calc(1 + var(--orb-level, 0) * 0.13));
+    transition: transform 90ms ease-out;
+  }
+
+  .orb[data-state="listening"] .orb-aurora--2 {
+    opacity: calc(0.6 + var(--orb-level, 0) * 0.4);
+  }
+
   .orb[data-state="listening"] .orb-body {
     animation: orb-breathe 3.4s ease-in-out infinite;
   }

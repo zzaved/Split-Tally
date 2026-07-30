@@ -60,9 +60,11 @@ const STEPS: FillStep[] = [
 export function TalkOnboarding({
   voiceId,
   currency,
+  name,
 }: {
   voiceId: string | null;
   currency: string;
+  name: string;
 }) {
   const [manual, setManual] = useState(false);
   const [state, action] = useActionState<ActionResult, FormData>(completeManualOnboarding, {});
@@ -151,7 +153,13 @@ export function TalkOnboarding({
       </div>
 
       <div className="w-full overflow-hidden rounded-card border border-navy/12 bg-cream shadow-ink">
-        <VoiceSheet open mode="onboarding" voiceId={voiceId} onClose={() => {}} fullscreen />
+        <VoiceSheet
+          open
+          mode="onboarding"
+          user={{ name, currency, onboarded: false, voiceId }}
+          onClose={() => {}}
+          fullscreen
+        />
       </div>
 
       <button

@@ -102,6 +102,9 @@ export function GuidedFill({
     setPhase("asking");
     setHeard("");
     setError(null);
+    // Clear the caption rather than restarting the recogniser: one microphone
+    // session covers the whole walk.
+    dictation.clear();
     await speak(step.question);
     setPhase("listening");
     dictation.start();
@@ -167,15 +170,14 @@ export function GuidedFill({
   const capture = useCallback(() => {
     const raw = dictation.interim.trim();
     if (!raw) return;
-    dictation.stop();
 
     const value = step?.parse ? step.parse(raw) : raw;
     const complaint = step?.validate?.(value) ?? null;
 
     if (complaint) {
       setError(complaint);
+      dictation.clear();
       setPhase("listening");
-      dictation.start();
       return;
     }
 
@@ -236,6 +238,7 @@ export function GuidedFill({
             <Orb
               size={52}
               state={phase === "listening" ? "listening" : phase === "asking" ? "speaking" : "idle"}
+              intensity={phase === "listening" && dictation.interim ? 1 : 0}
               decorative
             />
             <div className="min-w-0 flex-1">

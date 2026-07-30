@@ -117,7 +117,7 @@ export default async function DashboardPage() {
         </div>
 
         {checkinDue ? (
-          <WeeklyTallyCard days={daysSinceCheckin} voiceId={profile.voice_id} />
+          <WeeklyTallyCard days={daysSinceCheckin} />
         ) : (
           <LastCheckinCard summary={lastCheckin?.summary ?? null} days={daysSinceCheckin ?? 0} />
         )}
@@ -210,7 +210,7 @@ export default async function DashboardPage() {
 
 /* ------------------------------------------------------------------ */
 
-function WeeklyTallyCard({ days, voiceId }: { days: number | null; voiceId: string | null }) {
+function WeeklyTallyCard({ days }: { days: number | null }) {
   return (
     <Card className="relative flex h-fit flex-col overflow-hidden p-8 md:sticky md:top-24">
       <BrushStroke
@@ -231,7 +231,7 @@ function WeeklyTallyCard({ days, voiceId }: { days: number | null; voiceId: stri
       </div>
 
       <div className="relative mt-8 flex items-center gap-4">
-        <StartCheckin voiceId={voiceId} />
+        <StartCheckin />
         <TallyMarks count={3} max={3} size="md" tone="soft" />
       </div>
     </Card>

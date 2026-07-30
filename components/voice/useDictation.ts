@@ -114,7 +114,14 @@ export function useDictation({ lang = "en-US" }: { lang?: string } = {}) {
 
   useEffect(() => () => stop(), [stop]);
 
-  /** Called when the agent's own transcript lands, so the caption gives way. */
+  /**
+   * Empties the caption without touching the recogniser.
+   *
+   * This is what lets a guided form keep one microphone session open across
+   * every field: stopping and starting between questions cycles the device and
+   * makes the browser's microphone indicator flicker, which reads as the app
+   * grabbing and dropping the microphone over and over.
+   */
   const clear = useCallback(() => setInterim(""), []);
 
   return { supported, interim, running, start, stop, clear };

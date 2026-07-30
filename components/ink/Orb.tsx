@@ -20,22 +20,33 @@ const STATE_LABEL: Record<OrbState, string> = {
 export function Orb({
   size = 96,
   state = "idle",
+  intensity = 0,
   className,
   decorative = false,
 }: {
   size?: number | string;
   state?: OrbState;
+  /**
+   * How loudly it is being spoken to, 0 to 1. Drives the sphere's size in real
+   * time, so the orb swells with your voice instead of a label telling you it
+   * is listening.
+   */
+  intensity?: number;
   className?: string;
   /** Hide from assistive tech when a nearby caption already says the state. */
   decorative?: boolean;
 }) {
   const cssSize = typeof size === "number" ? `${size}px` : size;
+  const level = Math.max(0, Math.min(1, intensity));
 
   return (
     <div
       className={cn("orb", className)}
       data-state={state}
-      style={{ ["--orb-size" as string]: cssSize }}
+      style={{
+        ["--orb-size" as string]: cssSize,
+        ["--orb-level" as string]: level.toFixed(3),
+      }}
       role={decorative ? undefined : "img"}
       aria-label={decorative ? undefined : STATE_LABEL[state]}
       aria-hidden={decorative ? true : undefined}

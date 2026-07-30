@@ -2,7 +2,8 @@
 
 import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
-import { Button, ButtonLink } from "@/components/ink/Button";
+import { Button } from "@/components/ink/Button";
+import { DemoButton } from "../DemoButton";
 import { Field, FormMessage, Input } from "@/components/ink/Field";
 import { signIn, type AuthResult } from "../actions";
 
@@ -57,9 +58,7 @@ export function LoginForm({ next, demoError }: { next?: string; demoError?: stri
       </div>
 
       <div className="flex flex-col gap-2">
-        <ButtonLink href="/demo" variant="secondary" size="lg" className="w-full" prefetch={false}>
-          Explore the demo
-        </ButtonLink>
+        <DemoButton label="Explore the demo" variant="secondary" size="lg" className="[&>button]:w-full" />
         <p className="text-center text-12 text-ink-soft">
           Ana&rsquo;s account, with a season of tallies already in it.
         </p>

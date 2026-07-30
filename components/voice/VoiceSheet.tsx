@@ -16,7 +16,6 @@ import {
 import { Orb, type OrbState } from "@/components/ink/Orb";
 import { cn } from "@/lib/utils";
 import { buildClientTools, type ToolEvent } from "./clientTools";
-import { useDictation } from "./useDictation";
 
 export type VoiceMode = "ledger" | "onboarding" | "checkin";
 
@@ -46,33 +45,59 @@ const OPENERS: Record<VoiceMode, { title: string; detail: string }> = {
 };
 
 /**
+ * The first thing said, chosen by what you pressed. A conversation that opens
+ * by naming its subject cannot drift into a different one.
+ */
+const FIRST_MESSAGE: Record<VoiceMode, (name: string) => string> = {
+  ledger: (name) => `Hi ${name}. What did you spend?`,
+  onboarding: () => "Let's set your ledger up. What should I call you?",
+  checkin: (name) =>
+    `Hi ${name}, time for your weekly tally. Did you spend any cash this week that would not show up on a statement?`,
+};
+
+/**
+ * Models sometimes narrate their own planning into a reply. Prompting against
+ * it is the real fix and is in the agent's instructions, but a stray line of
+ * reasoning should never reach the screen if it slips through.
+ */
+function withoutReasoning(text: string): string {
+  const cut = text.search(
+    /(The user (has|is|said|provided|confirmed)|According to (the )?(onboarding )?instructions|I need to (ask|call|confirm)|So,? I (need|will|should))/,
+  );
+  return (cut > 0 ? text.slice(0, cut) : cut === 0 ? "" : text).trim();
+}
+
+/**
  * The voice surface. It takes the screen behind a blur rather than sitting in
  * an outlined box, so it is unmistakably the thing you are talking to while the
  * page it is filling in stays visible behind it.
  */
+export type VoiceUserContext = {
+  name: string;
+  currency: string;
+  onboarded: boolean;
+  voiceId: string | null;
+};
+
 export function VoiceSheet({
   open,
   onClose,
   mode = "ledger",
-  voiceId,
+  user,
   fullscreen = false,
 }: {
   open: boolean;
   onClose: () => void;
   mode?: VoiceMode;
-  voiceId?: string | null;
+  /** Who the agent is talking to. Without this it asks a returning user their
+      name as though they had just arrived. */
+  user: VoiceUserContext;
   /** Onboarding runs the orb full-screen rather than in a sheet. */
   fullscreen?: boolean;
 }) {
   return (
     <ConversationProvider>
-      <SheetBody
-        open={open}
-        onClose={onClose}
-        mode={mode}
-        voiceId={voiceId}
-        fullscreen={fullscreen}
-      />
+      <SheetBody open={open} onClose={onClose} mode={mode} user={user} fullscreen={fullscreen} />
     </ConversationProvider>
   );
 }
@@ -81,13 +106,13 @@ function SheetBody({
   open,
   onClose,
   mode,
-  voiceId,
+  user,
   fullscreen,
 }: {
   open: boolean;
   onClose: () => void;
   mode: VoiceMode;
-  voiceId?: string | null;
+  user: VoiceUserContext;
   fullscreen: boolean;
 }) {
   const router = useRouter();
@@ -100,11 +125,19 @@ function SheetBody({
   const scrollRef = useRef<HTMLDivElement>(null);
   const quietTimer = useRef<number | null>(null);
 
-  // Live captions come from the browser's own recogniser so the screen keeps up
-  // with your mouth. The agent transcribes separately and that is the version
-  // that reaches the ledger; this is a caption and gives way the moment the
-  // real transcript arrives.
-  const dictation = useDictation();
+  /**
+   * How loudly you are speaking right now, straight from the agent's own voice
+   * activity score.
+   *
+   * There used to be a second transcriber here, the browser's, running purely
+   * to caption your words as you said them. It had to go: the agent already
+   * holds the microphone over WebRTC, and Chrome ends its own recogniser at
+   * every pause, so restarting it left two consumers fighting over one device
+   * and the microphone indicator flickering on and off through the whole
+   * conversation. The orb swelling with your voice says the same thing without
+   * touching the microphone twice.
+   */
+  const [level, setLevel] = useState(0);
 
   const onToolResult = useCallback(
     (event: ToolEvent) => {
@@ -119,15 +152,17 @@ function SheetBody({
   const conversation = useConversation({
     clientTools: buildClientTools(onToolResult),
     onMessage: ({ message, source }) => {
-      dictation.clear();
+      const clean = source === "user" ? message : withoutReasoning(message);
+      if (!clean) return;
       setLines((current) => {
         const from = source === "user" ? ("you" as const) : ("orb" as const);
         const last = current[current.length - 1];
-        if (last && last.from === from && last.text === message) return current;
-        return [...current, { from, text: message }];
+        if (last && last.from === from && last.text === clean) return current;
+        return [...current, { from, text: clean }];
       });
     },
     onVadScore: ({ vadScore }) => {
+      setLevel(vadScore);
       if (vadScore > 0.55) {
         setHearing(true);
         if (quietTimer.current) window.clearTimeout(quietTimer.current);
@@ -142,14 +177,13 @@ function SheetBody({
       );
     },
     onDisconnect: () => {
-      dictation.stop();
       setSpoken(false);
       setHearing(false);
+      setLevel(0);
     },
   });
 
   const connected = conversation.status === "connected";
-  const live = spoken && !conversation.isMuted ? dictation.interim : "";
 
   // The aura only stirs while it is genuinely picking you up, so the movement
   // carries information instead of running the whole time.
@@ -163,7 +197,7 @@ function SheetBody({
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
-  }, [lines, live]);
+  }, [lines]);
 
   useEffect(() => {
     if (!open) return;
@@ -218,16 +252,23 @@ function SheetBody({
             : ({ agentId: data.agentId!, connectionType: "webrtc" } as const);
 
         setSpoken(!asText);
-        if (!asText) dictation.start();
 
         conversation.startSession({
           ...session,
           textOnly: asText,
           overrides: {
-            ...(voiceId ? { tts: { voiceId } } : {}),
+            ...(user.voiceId ? { tts: { voiceId: user.voiceId } } : {}),
             ...(asText ? { conversation: { textOnly: true } } : {}),
+            // Opening on the subject you pressed for, rather than a blank
+            // "what would you like to do", is the whole point of pressing it.
+            agent: { firstMessage: FIRST_MESSAGE[mode](user.name) },
           },
-          dynamicVariables: { mode },
+          dynamicVariables: {
+            mode,
+            user_name: user.name,
+            user_currency: user.currency,
+            onboarded: user.onboarded ? "yes" : "no",
+          },
         });
       } catch {
         setNotice("Voice is unavailable, we can type.");
@@ -235,7 +276,7 @@ function SheetBody({
         setStarting(false);
       }
     },
-    [conversation, dictation, mode, voiceId],
+    [conversation, mode, user],
   );
 
   function send(text: string) {
@@ -247,10 +288,7 @@ function SheetBody({
   }
 
   function toggleMic() {
-    const nextMuted = !conversation.isMuted;
-    conversation.setMuted(nextMuted);
-    if (nextMuted) dictation.stop();
-    else dictation.start();
+    conversation.setMuted(!conversation.isMuted);
   }
 
   if (!open) return null;
@@ -286,7 +324,12 @@ function SheetBody({
       </header>
 
       <div className="flex flex-col items-center gap-4 px-6 pb-6">
-        <Orb size={fullscreen ? "clamp(180px, 40vw, 240px)" : 104} state={orbState} decorative />
+        <Orb
+          size={fullscreen ? "clamp(180px, 40vw, 240px)" : 104}
+          state={orbState}
+          intensity={level}
+          decorative
+        />
 
         {connected && spoken && !conversation.isMuted && (
           <span className="flex items-center gap-2">
@@ -338,12 +381,6 @@ function SheetBody({
           </ul>
         )}
 
-        {/* Your words, as you are saying them. */}
-        {live && (
-          <p className="pb-4 text-right text-14 italic text-ink-soft/70" aria-live="polite">
-            {live}
-          </p>
-        )}
       </div>
 
       {/* ---- Controls ----------------------------------------------- */}

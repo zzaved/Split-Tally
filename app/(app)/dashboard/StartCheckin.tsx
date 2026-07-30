@@ -1,26 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ink/Button";
-import { VoiceSheet } from "@/components/voice/VoiceSheet";
+import { useVoice } from "@/components/voice/VoiceDock";
 
 /**
- * Opens the orb straight into check-in mode rather than sending anyone to
- * another page first — the weekly tally is a two-minute conversation, so it
- * should start where the card is (BUILD.MD §5.6).
+ * Opens the one orb the app has, pointed at the weekly tally. It used to own a
+ * second sheet of its own, which left the docked orb floating on top of the
+ * conversation it had just started.
  */
-export function StartCheckin({ voiceId }: { voiceId: string | null }) {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <>
-      <Button onClick={() => setOpen(true)}>Start the tally</Button>
-      <VoiceSheet
-        open={open}
-        onClose={() => setOpen(false)}
-        mode="checkin"
-        voiceId={voiceId}
-      />
-    </>
-  );
+export function StartCheckin() {
+  const voice = useVoice();
+  return <Button onClick={() => voice.open("checkin")}>Start the tally</Button>;
 }

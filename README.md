@@ -324,6 +324,29 @@ gently, and nothing else moves.
 
 ---
 
+## The microphone, and why there is only one consumer of it
+
+The agent holds the microphone over WebRTC for the whole conversation. A second
+transcriber running alongside it, which is what the browser's own recogniser
+was doing to caption speech live, meant two consumers fighting over one device:
+Chrome ends its recogniser at every pause, restarting it cycles the microphone,
+and the indicator flickers on and off through the entire conversation.
+
+So the agent conversation now has exactly one microphone consumer. The feedback
+that caption was providing comes from the agent's own voice-activity score
+instead, driving the orb's size in real time. It swells as you speak, which
+says "I can hear you" more immediately than a word ever did and costs nothing.
+
+The guided form filler is the opposite case: no agent is running, so the
+browser recogniser is the only transcriber and can hold a single session for
+the whole walk. Between fields it clears its caption rather than restarting,
+because stopping and starting is exactly what cycles the device.
+
+If the caption ever needs to be authoritative, `useScribe` from
+`@elevenlabs/react` streams real partials over its own socket. It is not used
+here because in the agent conversation it would be a second stream billing for
+audio the agent already transcribes.
+
 ## Copy conventions
 
 No em dashes in user-facing text. Where one would have gone, the sentence takes

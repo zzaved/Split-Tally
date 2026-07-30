@@ -8,5 +8,11 @@ export default async function TalkPage() {
   const profile = await getMyProfile();
   if (!profile) return null;
 
-  return <TalkOnboarding voiceId={profile.voice_id} currency={profile.currency} />;
+  return (
+    <TalkOnboarding
+      voiceId={profile.voice_id}
+      currency={profile.currency}
+      name={profile.name}
+    />
+  );
 }

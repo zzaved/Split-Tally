@@ -30,23 +30,25 @@ export async function signIn(_prev: AuthResult, formData: FormData): Promise<Aut
   redirect(next);
 }
 
-/** One click into the seeded account (BUILD.MD §5.1). */
-export async function signInDemo(): Promise<AuthResult> {
+/**
+ * One press into the seeded account (BUILD.MD §5.1).
+ *
+ * A form action rather than a link on purpose: a GET that signs you in gets
+ * prefetched by the router and changes who you are without anybody asking.
+ */
+export async function signInDemo(): Promise<void> {
   const email = process.env.DEMO_EMAIL;
   const password = process.env.DEMO_PASSWORD;
 
-  if (!email || !password) {
-    return { error: "The demo account is not configured. Set DEMO_EMAIL and DEMO_PASSWORD." };
-  }
+  if (!email || !password) redirect("/login?demo=unconfigured");
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { error } = await supabase.auth.signInWithPassword({
+    email: email!,
+    password: password!,
+  });
 
-  if (error) {
-    return {
-      error: "The demo account is not there yet. Run supabase/seed.sql against your project.",
-    };
-  }
+  if (error) redirect("/login?demo=missing");
 
   redirect("/dashboard");
 }

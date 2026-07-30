@@ -9,6 +9,7 @@ import { Reveal } from "@/components/ink/Reveal";
 import { TallyMarks } from "@/components/ink/TallyMarks";
 import { Wordmark } from "@/components/ink/Wordmark";
 import { getMyProfile } from "@/lib/data";
+import { DemoButton } from "./(auth)/DemoButton";
 
 export const metadata: Metadata = {
   title: "Split Tally: finance without forms",
@@ -58,10 +59,7 @@ function LandingHeader({ profile }: { profile: { name: string } | null }) {
               <ButtonLink href="/login" variant="ghost" size="sm">
                 Log in
               </ButtonLink>
-              <ButtonLink href="/demo" variant="primary" size="sm">
-                <span className="sm:hidden">Demo</span>
-                <span className="hidden sm:inline">Explore the demo</span>
-              </ButtonLink>
+              <DemoButton label="Explore the demo" />
             </>
           )}
         </nav>
@@ -118,9 +116,7 @@ function Hero() {
 
           <Reveal delay={0.24}>
             <div className="mt-10 flex flex-wrap items-center gap-3">
-              <ButtonLink href="/demo" size="lg">
-                Explore the demo
-              </ButtonLink>
+              <DemoButton label="Explore the demo" size="lg" />
               <ButtonLink href="/signup" variant="secondary" size="lg">
                 Create your ledger
               </ButtonLink>
@@ -463,9 +459,7 @@ function ClosingCta() {
         </Reveal>
         <Reveal delay={0.16}>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
-            <ButtonLink href="/demo" size="lg">
-              Explore the demo
-            </ButtonLink>
+            <DemoButton label="Explore the demo" size="lg" />
             <ButtonLink href="/signup" variant="secondary" size="lg">
               Create your ledger
             </ButtonLink>

@@ -8,7 +8,7 @@ import { NextResponse, type NextRequest } from "next/server";
  * Next.js 16 renamed the `middleware` convention to `proxy`; the runtime is
  * Node and is not configurable.
  */
-const PUBLIC_PREFIXES = ["/", "/login", "/signup", "/join", "/demo"];
+const PUBLIC_PREFIXES = ["/", "/login", "/signup", "/join"];
 
 function isPublic(pathname: string) {
   if (pathname === "/") return true;

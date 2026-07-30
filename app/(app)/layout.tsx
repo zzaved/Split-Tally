@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BottomTabs, TopNav } from "@/components/app/Nav";
-import { DockedOrb } from "@/components/voice/DockedOrb";
+import { VoiceDock } from "@/components/voice/VoiceDock";
 import { AmbientStroke } from "@/components/ink/AmbientStroke";
 import { Avatar } from "@/components/ink/Card";
 import { Wordmark } from "@/components/ink/Wordmark";
@@ -40,11 +40,19 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main id="main" className="shell w-full flex-1 pt-8 pb-32 md:pb-24">
-        {children}
-      </main>
+      <VoiceDock
+        user={{
+          name: profile.name,
+          currency: profile.currency,
+          onboarded: Boolean(profile.onboarded_at),
+          voiceId: profile.voice_id,
+        }}
+      >
+        <main id="main" className="shell w-full flex-1 pt-8 pb-32 md:pb-24">
+          {children}
+        </main>
+      </VoiceDock>
 
-      <DockedOrb voiceId={profile.voice_id} />
       <BottomTabs />
     </div>
   );
