@@ -5,7 +5,7 @@ import { recordActivity } from "@/lib/activity";
 import { round2, formatMoney, toDateInput } from "@/lib/format";
 import { balancesFor, computePairBalances, scoreStatsFor, type LedgerRows } from "@/lib/ledger";
 import { disambiguationQuestion, resolvePerson } from "@/lib/resolve";
-import { describeScore, tallyScore } from "@/lib/score";
+import { describeScore, improvementTips, scoreBand, tallyScore } from "@/lib/score";
 import { createClient } from "@/lib/supabase/server";
 import type { Group, Profile } from "@/lib/types";
 import { firstName, normalizeName } from "@/lib/utils";
@@ -674,3 +674,140 @@ async function suggestPrice(input: {
   const { priceFromStats } = await import("@/lib/pricing");
   return priceFromStats(input);
 }
+
+/**
+ * The score, and why it is what it is.
+ *
+ * Added after a test asked "what is my Tally Score and why" and the agent
+ * answered that it could not say. The score is the most distinctive thing in
+ * the app, and a number the assistant cannot discuss is a number nobody
+ * trusts. Returns the reading, not the raw figure: a 50 that is a default and
+ * a 50 that was earned mean opposite things to anyone deciding whether to
+ * lend.
+ */
+export async function getScore(params: { person_name?: string }): Promise<string> {
+  const { supabase, userId } = await context();
+  if (!userId) return NO_SESSION;
+
+  // In parallel, not one after the other: asking for somebody else's score
+  // needed the whole ledger and the whole address book, and fetching them in
+  // sequence took long enough to blow the agent's tool timeout, which reaches
+  // the person as "I couldn't get that just now".
+  const [rows, people] = await Promise.all([
+    ledgerRows(supabase),
+    params.person_name ? knownPeople(supabase, userId) : Promise.resolve([]),
+  ]);
+
+  let subjectId = userId;
+  let subjectName = "you";
+
+  if (params.person_name) {
+    const match = resolvePerson(params.person_name, people);
+    if (match.status === "none") {
+      return `I could not find anybody called ${params.person_name}.`;
+    }
+    if (match.status === "many") {
+      return disambiguationQuestion(params.person_name, match.candidates);
+    }
+    subjectId = match.profile.id;
+    subjectName = firstName(match.profile.name);
+  }
+
+  const stats = scoreStatsFor(subjectId, rows);
+  const score = tallyScore(stats);
+  const band = scoreBand(score, stats);
+  const who = subjectId === userId ? "Your" : `${subjectName}'s`;
+
+  if (band === "unproven") {
+    // Not "that is the starting point": overdue tallies pull the number below
+    // fifty before anyone has settled anything, and calling 45 the starting
+    // point is simply false.
+    return `${who} score is ${score}, but nothing has been settled yet, so it is not a verdict on anybody. Settling one tally is what turns it into a real number.`;
+  }
+
+  const reading = describeScore(score, stats);
+  const tips =
+    subjectId === userId
+      ? improvementTips(stats)
+          .slice(0, 2)
+          .map((t) => t.action)
+      : [];
+
+  const advice = tips.length ? ` The quickest way up: ${tips.join(", and ")}.` : "";
+  return `${who} score is ${score}. ${reading}${advice}`;
+}
+
+/**
+ * What was actually spent, as opposed to who is out of pocket.
+ *
+ * `get_balances` answers "who owes whom", and a test showed the agent reaching
+ * for it when asked "how much did I spend in Lisbon" and confidently giving
+ * the balance instead. Two different questions deserve two different tools.
+ */
+export async function getSpending(params: {
+  group_name?: string;
+  days?: number;
+}): Promise<string> {
+  const { supabase, userId } = await context();
+  if (!userId) return NO_SESSION;
+
+  // Named group first, and only then, because looking up every group on every
+  // question cost a round trip nobody asked for. The first version of this
+  // made three sequential queries and blew the agent's fifteen second tool
+  // timeout, which reaches the person as "I was not able to get that".
+  let group: Group | undefined;
+  if (params.group_name) {
+    group = findGroup(await myGroups(supabase), params.group_name);
+    if (!group) return `I could not find a group called ${params.group_name}.`;
+  }
+
+  // One round trip: the splits come nested inside their expense rather than in
+  // a second query keyed on the ids of the first.
+  let query = supabase
+    .from("expenses")
+    .select("amount,currency,expense_splits(user_id,share_amount)")
+    .eq("deleted", false);
+
+  if (group) query = query.eq("group_id", group.id);
+  if (params.days) {
+    const since = new Date(Date.now() - params.days * 86400000).toISOString().slice(0, 10);
+    query = query.gte("expense_date", since);
+  }
+
+  const { data: expenses } = await query;
+  if (!expenses || expenses.length === 0) {
+    return group
+      ? `Nothing has been recorded in ${group.name} yet.`
+      : "Nothing has been recorded yet.";
+  }
+
+  // Your share, not the total on the receipt: what you spent is what fell to
+  // you, whoever happened to be holding the card.
+  const mine: Record<string, number> = {};
+  const all: Record<string, number> = {};
+
+  for (const expense of expenses) {
+    const currency = expense.currency as string;
+    all[currency] = round2((all[currency] ?? 0) + Number(expense.amount));
+    const splits = (expense.expense_splits ?? []) as {
+      user_id: string;
+      share_amount: number;
+    }[];
+    for (const split of splits) {
+      if (split.user_id !== userId) continue;
+      mine[currency] = round2((mine[currency] ?? 0) + Number(split.share_amount));
+    }
+  }
+
+  const say = (totals: Record<string, number>) =>
+    Object.entries(totals)
+      .map(([currency, amount]) => formatMoney(amount, currency))
+      .join(" and ");
+
+  const where = group ? ` in ${group.name}` : "";
+  const when = params.days ? ` over the last ${params.days} days` : "";
+  const yours = Object.keys(mine).length ? say(mine) : "nothing";
+
+  return `Your share${where}${when} comes to ${yours}, out of ${say(all)} recorded across ${expenses.length} ${expenses.length === 1 ? "entry" : "entries"}.`;
+}
+
