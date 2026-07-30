@@ -91,6 +91,11 @@ and points at the forms that do the same work.
 
 ### 4. Deploying
 
+`vercel.json` pins the framework to Next.js. Without it, a project created
+against an empty repository never auto-detects the framework, falls back to the
+static preset, and fails with *No Output Directory named "public" found* — this
+app has no `public/` directory because it needs none.
+
 Vercel builds this fine with no environment variables at all — and then every
 page answers 500, because `proxy.ts` needs Supabase on each request. A green
 deploy is not a working one. Paste the whole of your `.env` into the project's
