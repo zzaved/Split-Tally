@@ -238,8 +238,12 @@ export function scoreStatsFor(
   }
   for (const list of sharedDatesByGroup.values()) list.sort();
 
+  // Only a real repayment counts toward the score. `exchange_purchase` is a
+  // buyer paying a seller, and `exchange_transfer` is bookkeeping that moves an
+  // obligation to its new holder — crediting the debtor for either would mean
+  // their score improved because somebody else sold their debt.
   const payments = rows.settlements.filter(
-    (s) => s.from_user === personId && s.kind !== "exchange_purchase",
+    (s) => s.from_user === personId && s.kind === "settle",
   );
 
   const gaps: number[] = [];
