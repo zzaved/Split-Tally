@@ -62,11 +62,24 @@ const FIRST_MESSAGE: Record<VoiceMode, (name: string) => string> = {
  * reasoning should never reach the screen if it slips through.
  */
 function withoutReasoning(text: string): string {
-  const cut = text.search(
-    /(The user (has|is|said|provided|confirmed)|According to (the )?(onboarding )?instructions|I need to (ask|call|confirm)|So,? I (need|will|should))/,
-  );
+  const cut = text.search(REASONING);
   return (cut > 0 ? text.slice(0, cut) : cut === 0 ? "" : text).trim();
 }
+
+/**
+ * Where a reply stops being speech and starts being thinking out loud.
+ *
+ * The giveaway is person: the assistant talks *to* someone, so it says "you".
+ * The moment a reply refers to "the user", or quotes its own instructions, it
+ * has stopped speaking and started explaining itself.
+ *
+ * Written this way after a test produced "I didn't understand that, Ana. What
+ * would you like to do?" immediately followed by three sentences of planning.
+ * The old pattern missed it on an apostrophe: it matched "The user is" but not
+ * "The user's input".
+ */
+const REASONING =
+  /(The user|My instructions|According to (the )?(onboarding )?instructions|I need to (ask|call|confirm|prompt)|I should (ask|call|confirm|prompt)|So,? I (need|will|should))/;
 
 /**
  * The voice surface. It takes the screen behind a blur rather than sitting in
@@ -398,7 +411,13 @@ function SheetBody({
         {lines.length > 0 && (
           <ul className="flex flex-col gap-3 pb-4">
             {lines.map((line, i) => (
-              <li key={i} className={line.from === "you" ? "flex justify-end" : ""}>
+              // Marked so a test can tell who said what without reading the
+              // styling, which is the sort of thing that changes.
+              <li
+                key={i}
+                data-from={line.from}
+                className={line.from === "you" ? "flex justify-end" : ""}
+              >
                 <p
                   className={cn(
                     "max-w-[85%] text-14",
