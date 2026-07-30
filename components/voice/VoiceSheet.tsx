@@ -80,7 +80,11 @@ function SheetBody({
    * speak and then the recognised sentence for a beat after.
    */
   const [live, setLive] = useState<{ text: string; settled: boolean } | null>(null);
+  const [listening, setListening] = useState(false);
+  /** True only when the session actually opened with a microphone. */
+  const [spoken, setSpoken] = useState(false);
   const liveTimer = useRef<number | null>(null);
+  const quietTimer = useRef<number | null>(null);
 
   const onToolResult = useCallback(
     (event: ToolEvent) => {
@@ -116,8 +120,13 @@ function SheetBody({
       }
     },
     onVadScore: ({ vadScore }) => {
-      if (vadScore > 0.6) {
-        setLive((current) => (current?.settled ? current : { text: "listening…", settled: false }));
+      if (vadScore > 0.55) {
+        setListening(true);
+        setLive((current) =>
+          current?.settled ? current : { text: "…", settled: false },
+        );
+        if (quietTimer.current) window.clearTimeout(quietTimer.current);
+        quietTimer.current = window.setTimeout(() => setListening(false), 700);
       }
     },
     onError: (message) => {
@@ -205,6 +214,8 @@ function SheetBody({
             ? ({ conversationToken: data.conversationToken, connectionType: "webrtc" } as const)
             : ({ agentId: data.agentId!, connectionType: "webrtc" } as const);
 
+        setSpoken(!asText);
+
         conversation.startSession({
           ...session,
           textOnly: asText,
@@ -279,24 +290,47 @@ function SheetBody({
         <Orb size={fullscreen ? "clamp(180px, 44vw, 260px)" : 96} state={orbState} />
         <p className="text-center text-14 text-ink-soft" aria-live="polite">
           {connected
-            ? conversation.isSpeaking
-              ? "Speaking"
-              : "Listening"
+            ? conversation.isMuted
+              ? "Your microphone is off. Type below, or turn it back on."
+              : spoken
+                ? ""
+                : "Typing only. Everything works the same."
             : starting
               ? "Connecting…"
               : OPENERS[mode]}
         </p>
 
-        {/* Your words, on their way to the assistant. */}
-        <p
-          className={cn(
-            "min-h-6 max-w-sm text-center text-14 italic transition-opacity duration-300",
-            live ? "opacity-55" : "opacity-0",
-          )}
-          aria-live="polite"
-        >
-          {live?.text ?? ""}
-        </p>
+        {/* What the microphone is picking up, as it happens. Without this you
+            cannot tell whether it heard you, which was the single most
+            confusing thing about the sheet. */}
+        {connected && spoken && !conversation.isMuted && (
+          <div className="flex min-h-12 w-full max-w-sm flex-col items-center gap-2">
+            <span className="flex items-center gap-2">
+              <span
+                className={cn(
+                  "size-2 rounded-full",
+                  listening ? "bg-vermilion motion-safe:animate-pulse" : "bg-navy/25",
+                )}
+              />
+              <span className="eyebrow text-ink-soft">
+                {conversation.isSpeaking
+                  ? "The orb is speaking"
+                  : listening
+                    ? "Hearing you"
+                    : "Listening for you"}
+              </span>
+            </span>
+            <p
+              className={cn(
+                "text-center text-14 italic transition-opacity duration-300",
+                live ? "text-ink-soft opacity-100" : "opacity-0",
+              )}
+              aria-live="polite"
+            >
+              {live?.text ?? ""}
+            </p>
+          </div>
+        )}
       </div>
 
       {notice && (
@@ -348,8 +382,11 @@ function SheetBody({
       </div>
 
       <div className="border-t border-navy/10 px-6 py-5">
-        {connected && (
-          <ConfirmChips onPick={(text) => send(text)} className="mb-4" />
+        {connected && lines.length > 0 && lines[lines.length - 1].from === "orb" && (
+          <div className="mb-4">
+            <p className="eyebrow mb-2 text-ink-soft">Answer in one tap</p>
+            <ConfirmChips onPick={(text) => send(text)} />
+          </div>
         )}
 
         <form
@@ -374,15 +411,17 @@ function SheetBody({
         <div className="mt-4 flex items-center gap-2">
           {connected ? (
             <>
-              <Button variant="secondary" size="sm" onClick={() => conversation.endSession()}>
-                End
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => conversation.setMuted(!conversation.isMuted)}
-              >
-                {conversation.isMuted ? "Unmute" : "Mute"}
+              {spoken && (
+                <Button
+                  variant={conversation.isMuted ? "primary" : "secondary"}
+                  size="sm"
+                  onClick={() => conversation.setMuted(!conversation.isMuted)}
+                >
+                  {conversation.isMuted ? "Turn the microphone on" : "Turn the microphone off"}
+                </Button>
+              )}
+              <Button variant="ghost" size="sm" onClick={() => conversation.endSession()}>
+                End the conversation
               </Button>
             </>
           ) : (

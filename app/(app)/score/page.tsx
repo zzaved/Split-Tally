@@ -4,7 +4,6 @@ import { AmountDisplay } from "@/components/ink/AmountDisplay";
 import { Avatar, Card, SectionHeading } from "@/components/ink/Card";
 import { EmptyState } from "@/components/ink/EmptyState";
 import { ScoreDial } from "@/components/ink/ScoreDial";
-import { TallyMarks } from "@/components/ink/TallyMarks";
 import { formatDate, formatMoney } from "@/lib/format";
 import { getKnownProfiles, getLedgerRows, getMyProfile } from "@/lib/data";
 import { scoreEvents, scorePeak, scoreStatsFor } from "@/lib/ledger";
@@ -103,7 +102,7 @@ export default async function ScorePage() {
       {tips.length > 0 && (
         <section>
           <p className="eyebrow text-cobalt">How to move it</p>
-          <Card className="mt-4 px-6">
+          <Card className="mt-4 border-0 bg-cream-deep/50 px-6">
             <ul>
               {tips.map((tip, i) => (
                 <li
@@ -137,7 +136,7 @@ export default async function ScorePage() {
             />
           </Card>
         ) : (
-          <Card className="mt-4 px-6">
+          <Card className="mt-4 border-0 bg-cream-deep/50 px-6">
             <ul>
               {events.map((event, i) => {
                 const other = names.get(event.otherId);
@@ -175,13 +174,11 @@ export default async function ScorePage() {
                             }`}
                       </p>
                     </div>
-                    <TallyMarks
-                      count={event.kind === "settled" ? 1 : 0}
-                      max={1}
-                      size="sm"
-                      tone={late ? "vermilion" : "soft"}
-                      animate={false}
-                    />
+                    <span
+                      className={`eyebrow shrink-0 ${late ? "text-vermilion" : "text-ink-soft"}`}
+                    >
+                      {event.kind === "settled" ? "settled" : "open"}
+                    </span>
                   </li>
                 );
               })}

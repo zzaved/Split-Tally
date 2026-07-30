@@ -82,7 +82,7 @@ export default async function ListingPage(props: { params: Promise<{ id: string 
       />
 
       {/* ---- Why this price ------------------------------------------ */}
-      <Card className="p-6 md:p-8">
+      <Card className="border-0 bg-cream-deep/50 p-6 md:p-8">
         <p className="eyebrow text-ink-soft">Why this price</p>
 
         <div className="mt-5 flex flex-wrap items-center gap-4">
@@ -126,8 +126,8 @@ export default async function ListingPage(props: { params: Promise<{ id: string 
         <Card
           className={
             risk.band === "weak" || risk.band === "unproven"
-              ? "border-vermilion/25 p-6 md:p-8"
-              : "p-6 md:p-8"
+              ? "border-0 bg-vermilion/6 p-6 md:p-8"
+              : "border-0 bg-cream-deep/60 p-6 md:p-8"
           }
         >
           <p
@@ -147,7 +147,7 @@ export default async function ListingPage(props: { params: Promise<{ id: string 
       )}
 
       {/* ---- Buy ------------------------------------------------------ */}
-      <Card className="p-6 md:p-8">
+      <Card className="border-0 bg-cream-deep/50 p-6 md:p-8">
         {buyable ? (
           <>
             <p className="eyebrow text-ink-soft">Buy</p>

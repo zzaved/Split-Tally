@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getMyProfile } from "@/lib/data";
+import { AlreadySignedIn } from "../AlreadySignedIn";
 import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = { title: "Log in" };
@@ -13,6 +15,13 @@ export default async function LoginPage(props: {
   searchParams: Promise<{ next?: string; demo?: string }>;
 }) {
   const { next, demo } = await props.searchParams;
+
+  // A visitor who already has a session usually got here from the demo. Say so
+  // rather than bouncing them somewhere they did not ask to go.
+  const profile = await getMyProfile();
+  if (profile) {
+    return <AlreadySignedIn name={profile.name} email={profile.email} intent="login" />;
+  }
 
   return (
     <div>

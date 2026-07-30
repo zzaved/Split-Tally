@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getMyProfile } from "@/lib/data";
+import { AlreadySignedIn } from "../AlreadySignedIn";
 import { SignupForm } from "./SignupForm";
 
 export const metadata: Metadata = { title: "Create your ledger" };
@@ -8,6 +10,11 @@ export default async function SignupPage(props: {
   searchParams: Promise<{ invite?: string }>;
 }) {
   const { invite } = await props.searchParams;
+
+  const profile = await getMyProfile();
+  if (profile) {
+    return <AlreadySignedIn name={profile.name} email={profile.email} intent="signup" />;
+  }
 
   return (
     <div>

@@ -5,8 +5,8 @@ import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ink/Button";
 import { Field, FormMessage, Input, Select } from "@/components/ink/Field";
 import { SUPPORTED_CURRENCIES } from "@/lib/format";
-import { signOut } from "@/app/(auth)/actions";
 import { updateProfile, type ActionResult } from "./actions";
+export { SignOutButton } from "@/app/(auth)/SignOutButton";
 
 function Save() {
   const { pending } = useFormStatus();
@@ -62,12 +62,4 @@ export function ProfileForm({
   );
 }
 
-export function SignOutButton() {
-  return (
-    <form action={signOut}>
-      <Button type="submit" variant="secondary">
-        Sign out
-      </Button>
-    </form>
-  );
-}
+

@@ -257,10 +257,8 @@ export function ExpenseForm({
               <div
                 key={id}
                 className={cn(
-                  "rounded-well border px-3.5 py-3",
-                  note.band === "weak"
-                    ? "border-vermilion/30 bg-vermilion/5"
-                    : "border-navy/12 bg-cream",
+                  "rounded-well px-3.5 py-3",
+                  note.band === "weak" ? "bg-vermilion/8" : "bg-cream",
                 )}
               >
                 <p

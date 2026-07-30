@@ -23,7 +23,7 @@ export function ImprovingPanel({ state, score }: { state: ImprovingState; score:
 
   if (state.status === "active") {
     return (
-      <Card className="border-cobalt/30 p-6 md:p-8">
+      <Card className="border-0 bg-cobalt/6 p-6 md:p-8">
         <p className="eyebrow text-cobalt">Improving</p>
         <p className="mt-4 font-display text-28 leading-snug text-navy">
           You are on record as working this back up.
@@ -43,7 +43,7 @@ export function ImprovingPanel({ state, score }: { state: ImprovingState; score:
 
   if (state.status === "available") {
     return (
-      <Card className="p-6 md:p-8">
+      <Card className="border-0 bg-cream-deep/60 p-6 md:p-8">
         <p className="eyebrow text-cobalt">Available to you</p>
         <p className="mt-4 font-display text-28 leading-snug text-navy">
           You were reliable once. You can say you are getting back there.
@@ -90,7 +90,7 @@ export function ImprovingPanel({ state, score }: { state: ImprovingState; score:
 
   if (state.reason === "spent") {
     return (
-      <Card className="p-6 md:p-8">
+      <Card className="border-0 bg-cream-deep/60 p-6 md:p-8">
         <p className="eyebrow text-ink-soft">Already used</p>
         <p className="mt-4 text-14 text-ink-soft">
           You declared this on {formatDate(state.usedAt)}. It returns when your record reaches{" "}
@@ -103,7 +103,7 @@ export function ImprovingPanel({ state, score }: { state: ImprovingState; score:
 
   if (state.reason === "never-high") {
     return (
-      <Card className="p-6 md:p-8">
+      <Card className="border-0 bg-cream-deep/60 p-6 md:p-8">
         <p className="eyebrow text-ink-soft">Not available yet</p>
         <p className="mt-4 text-14 text-ink-soft">
           Saying you are improving only means something if you were once reliable, so it unlocks

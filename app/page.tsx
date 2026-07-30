@@ -8,15 +8,20 @@ import { Orb, OrbGlyph } from "@/components/ink/Orb";
 import { Reveal } from "@/components/ink/Reveal";
 import { TallyMarks } from "@/components/ink/TallyMarks";
 import { Wordmark } from "@/components/ink/Wordmark";
+import { getMyProfile } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Split Tally: finance without forms",
 };
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  // The header has to tell the truth about who is holding the session,
+  // otherwise "Log in" is a button that appears to do nothing.
+  const profile = await getMyProfile();
+
   return (
     <>
-      <LandingHeader />
+      <LandingHeader profile={profile} />
       <main id="main">
         <Hero />
         <LedgerBand />
@@ -33,19 +38,32 @@ export default function LandingPage() {
 
 /* ------------------------------------------------------------------ */
 
-function LandingHeader() {
+function LandingHeader({ profile }: { profile: { name: string } | null }) {
   return (
     <header className="sticky top-0 z-40 border-b border-navy/8 bg-cream/85 backdrop-blur-[2px]">
       <div className="shell flex h-16 items-center justify-between">
         <Wordmark />
         <nav className="flex items-center gap-1 sm:gap-2" aria-label="Account">
-          <ButtonLink href="/login" variant="ghost" size="sm">
-            Log in
-          </ButtonLink>
-          <ButtonLink href="/demo" variant="primary" size="sm">
-            <span className="sm:hidden">Demo</span>
-            <span className="hidden sm:inline">Explore the demo</span>
-          </ButtonLink>
+          {profile ? (
+            <>
+              <span className="hidden text-14 text-ink-soft sm:inline">{profile.name}</span>
+              <ButtonLink href="/dashboard" variant="primary" size="sm">
+                <span className="sm:hidden">Ledger</span>
+                <span className="hidden sm:inline">Go to your ledger</span>
+              </ButtonLink>
+              <Avatar name={profile.name} size={32} />
+            </>
+          ) : (
+            <>
+              <ButtonLink href="/login" variant="ghost" size="sm">
+                Log in
+              </ButtonLink>
+              <ButtonLink href="/demo" variant="primary" size="sm">
+                <span className="sm:hidden">Demo</span>
+                <span className="hidden sm:inline">Explore the demo</span>
+              </ButtonLink>
+            </>
+          )}
         </nav>
       </div>
     </header>

@@ -54,12 +54,10 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-  if (user && (pathname === "/login" || pathname === "/signup")) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/dashboard";
-    url.search = "";
-    return NextResponse.redirect(url);
-  }
+  // Deliberately no redirect for a signed-in visitor on /login or /signup.
+  // Bouncing them looks exactly like a broken button: you press "Create your
+  // ledger", land back on the dashboard, and nothing explains why. Those pages
+  // render a signed-in state instead, offering both ways out.
 
   return response;
 }
