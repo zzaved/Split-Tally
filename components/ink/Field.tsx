@@ -46,9 +46,21 @@ export function Textarea({ className, ...props }: ComponentProps<"textarea">) {
   return <textarea className={cn(CONTROL, "min-h-24 resize-y", className)} {...props} />;
 }
 
+/** A chevron drawn in the same ink language, so a select never reads as a text field. */
+const CHEVRON =
+  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'><path d='M3.5 6.2C5 7.6 6.6 9 8 10.2C9.4 9 11 7.6 12.5 6.2' stroke='%235A679E' stroke-width='1.5' stroke-linecap='round'/></svg>\")";
+
 export function Select({ className, children, ...props }: ComponentProps<"select">) {
   return (
-    <select className={cn(CONTROL, "appearance-none pr-9", className)} {...props}>
+    <select
+      className={cn(CONTROL, "cursor-pointer appearance-none bg-no-repeat pr-10", className)}
+      style={{
+        backgroundImage: CHEVRON,
+        backgroundPosition: "right 0.875rem center",
+        backgroundSize: "1rem 1rem",
+      }}
+      {...props}
+    >
       {children}
     </select>
   );
@@ -67,7 +79,7 @@ export function MoneyInput({
       </span>
       <input
         inputMode="decimal"
-        className={cn(CONTROL, "tabular pl-9 font-display text-20", className)}
+        className={cn(CONTROL, "tabular pl-11 font-display text-20", className)}
         {...props}
       />
     </div>
