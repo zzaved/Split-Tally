@@ -129,6 +129,16 @@ Both AI paths verified against the deployment rather than assumed:
   can claim it, only while the score is below 50, spent once, and returned only by climbing back to
   80 and falling again. The peak is replayed from the ledger rather than stored, so every reader
   gets the same answer. `/exchange` carries a legend documenting every state.
+- **Filling a form by talking.** The orb rings the field it is asking about with a hand-drawn loop,
+  says the question aloud, writes what it hears into the real input, reads it back, and moves on
+  once you confirm. Wired into onboarding, the expense form and group creation. Deliberately not
+  driven by the conversational agent: a known list of fields is better walked deterministically,
+  because then the order, the confirmation and the value that lands in each input are guaranteed
+  rather than hoped for, and it costs nothing per turn.
+- **Live captions** from the browser's own recogniser, so the words appear as they are said. The
+  agent transcribes separately and that version reaches the ledger. ElevenLabs Scribe (`useScribe`)
+  would be more accurate at the cost of a second microphone stream and a second bill for audio the
+  agent is already transcribing.
 - **The reason for speaking, with the real numbers.** ~150 words a minute spoken against ~36 typed
   on a phone (Karat et al. 1999 measured 19 wpm composing on a keyboard). Roughly four times, not
   the fifteen the claim usually gets inflated to.

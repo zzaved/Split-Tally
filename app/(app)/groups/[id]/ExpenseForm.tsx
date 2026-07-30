@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useMemo, useState } from "react";
+import { useActionState, useMemo, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ink/Button";
 import { Avatar } from "@/components/ink/Card";
@@ -11,6 +11,7 @@ import { CATEGORIES } from "@/lib/types";
 import type { Profile } from "@/lib/types";
 import type { RiskNote } from "@/lib/score";
 import { cn } from "@/lib/utils";
+import { GuidedFill, type FillStep } from "@/components/voice/GuidedFill";
 import { addExpenseForm, type ActionResult } from "../actions";
 
 const MODES: { id: SplitMode; label: string; hint: string }[] = [
@@ -49,6 +50,7 @@ export function ExpenseForm({
   risks: Record<string, RiskNote>;
 }) {
   const [state, action] = useActionState<ActionResult, FormData>(addExpenseForm, {});
+  const formRef = useRef<HTMLFormElement>(null);
 
   const [amount, setAmount] = useState("");
   const [mode, setMode] = useState<SplitMode>("equal");
@@ -99,6 +101,43 @@ export function ExpenseForm({
     return { remainder: 0, remainderLabel: "", blocked: false };
   }, [mode, participants, numericValues, total, symbol]);
 
+  /**
+   * Only the three things that actually need saying. The date defaults to
+   * today, the split defaults to equally between everyone, and asking about
+   * either out loud would make the quick path slower than the form.
+   */
+  const steps: FillStep[] = useMemo(
+    () => [
+      {
+        name: "description",
+        question: "What was it for?",
+        validate: (v) => (v.trim().length < 2 ? "I did not catch that." : null),
+      },
+      {
+        name: "amount",
+        question: `How much, in ${currency}?`,
+        parse: (heard) => {
+          const match = heard.replace(/,/g, ".").match(/\d+(?:\.\d{1,2})?/);
+          return match ? match[0] : "";
+        },
+        validate: (v) => (!v || Number(v) <= 0 ? "I need a number above zero." : null),
+      },
+      {
+        name: "paidBy",
+        question: "Who paid?",
+        parse: (heard) => {
+          const h = heard.toLowerCase();
+          if (/\b(me|i|myself)\b/.test(h)) {
+            return members.find((m) => m.id === meId)?.name ?? "";
+          }
+          const match = members.find((m) => h.includes(m.name.toLowerCase().split(/\s+/)[0]));
+          return match?.name ?? heard;
+        },
+      },
+    ],
+    [currency, members, meId],
+  );
+
   function toggle(id: string) {
     setParticipants((current) =>
       current.includes(id) ? current.filter((x) => x !== id) : [...current, id],
@@ -106,7 +145,7 @@ export function ExpenseForm({
   }
 
   return (
-    <form action={action} className="flex flex-col gap-6">
+    <form ref={formRef} action={action} className="flex flex-col gap-6">
       <input type="hidden" name="groupId" value={groupId} />
       <input type="hidden" name="mode" value={mode} />
       {participants.map((id) => (
@@ -277,8 +316,13 @@ export function ExpenseForm({
       {state.error && <FormMessage>{state.error}</FormMessage>}
       {state.ok && <FormMessage tone="notice">{state.ok}</FormMessage>}
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-3">
         <Submit />
+        <GuidedFill
+          steps={steps}
+          formRef={formRef}
+          intro="I will ask three things and write each one into the form. The date and the split stay as they are unless you change them."
+        />
         {blocked && (
           <span className="text-12 text-vermilion">The split has to add up before it saves.</span>
         )}

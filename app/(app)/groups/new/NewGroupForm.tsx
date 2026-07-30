@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useRef } from "react";
 import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ink/Button";
 import { Avatar } from "@/components/ink/Card";
@@ -9,6 +9,7 @@ import { Field, FormMessage, Input, Select } from "@/components/ink/Field";
 import { ButtonLink } from "@/components/ink/Button";
 import { SUPPORTED_CURRENCIES } from "@/lib/format";
 import type { Profile } from "@/lib/types";
+import { GuidedFill, type FillStep } from "@/components/voice/GuidedFill";
 import { createGroup, type ActionResult } from "../actions";
 
 function Submit() {
@@ -28,9 +29,31 @@ export function NewGroupForm({
   defaultCurrency: string;
 }) {
   const [state, action] = useActionState<ActionResult, FormData>(createGroup, {});
+  const formRef = useRef<HTMLFormElement>(null);
+
+  // Who is in it stays a set of checkboxes: reading a list of names back for
+  // confirmation is slower and less certain than ticking them.
+  const steps: FillStep[] = [
+    {
+      name: "name",
+      question: "What should the group be called?",
+      validate: (v) => (v.trim().length < 2 ? "I did not catch a name there." : null),
+    },
+    {
+      name: "currency",
+      question: "Which currency does this group spend in?",
+      parse: (heard) => {
+        const h = heard.toLowerCase();
+        if (h.includes("euro")) return "EUR";
+        if (h.includes("pound") || h.includes("sterling")) return "GBP";
+        if (h.includes("real") || h.includes("brazil")) return "BRL";
+        return "USD";
+      },
+    },
+  ];
 
   return (
-    <form action={action} className="flex flex-col gap-6">
+    <form ref={formRef} action={action} className="flex flex-col gap-6">
       <Field label="Name" htmlFor="name" hint="Where the costs come from: a flat, a trip, a table.">
         <Input id="name" name="name" placeholder="Barcelona Trip" required autoFocus />
       </Field>
@@ -85,8 +108,13 @@ export function NewGroupForm({
 
       {state.error && <FormMessage>{state.error}</FormMessage>}
 
-      <div>
+      <div className="flex flex-wrap items-center gap-3">
         <Submit />
+        <GuidedFill
+          steps={steps}
+          formRef={formRef}
+          intro="I will ask for the name and the currency, then you tick who is in it."
+        />
       </div>
     </form>
   );

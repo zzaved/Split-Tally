@@ -134,18 +134,30 @@ export function GuidedFill({
         | null;
       if (!el) return;
 
-      if (el instanceof HTMLSelectElement) {
-        const match = [...el.options].find(
-          (o) =>
-            o.value.toLowerCase() === value.toLowerCase() ||
-            o.text.toLowerCase().includes(value.toLowerCase()),
-        );
-        if (match) el.value = match.value;
-      } else {
-        el.value = value;
-      }
+      const next =
+        el instanceof HTMLSelectElement
+          ? ([...el.options].find(
+              (o) =>
+                o.value.toLowerCase() === value.toLowerCase() ||
+                o.text.toLowerCase().includes(value.toLowerCase()),
+            )?.value ?? el.value)
+          : value;
 
-      // React listens for input events, not for assignment.
+      // Assigning `el.value` on a controlled input is not enough: React caches
+      // the previous value on the node and treats the change as a no-op, so the
+      // field visibly fills and then snaps back on the next render. Going
+      // through the prototype's own setter updates that cache too.
+      const prototype =
+        el instanceof HTMLSelectElement
+          ? HTMLSelectElement.prototype
+          : el instanceof HTMLTextAreaElement
+            ? HTMLTextAreaElement.prototype
+            : HTMLInputElement.prototype;
+
+      const setter = Object.getOwnPropertyDescriptor(prototype, "value")?.set;
+      if (setter) setter.call(el, next);
+      else el.value = next;
+
       el.dispatchEvent(new Event("input", { bubbles: true }));
       el.dispatchEvent(new Event("change", { bubbles: true }));
     },
