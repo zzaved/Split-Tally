@@ -79,12 +79,14 @@ export function VoicePicker({ voices, current }: { voices: Voice[]; current: str
               >
                 <span
                   className={cn(
-                    "block size-[104px] rounded-full shadow-ink-sm transition-shadow duration-200 sm:size-[124px]",
+                    "voice-orb [--voice-orb-size:104px] sm:[--voice-orb-size:124px]",
                     active && "ring-2 ring-cobalt ring-offset-4 ring-offset-cream",
                     playing === voice.key && "animate-pulse",
                   )}
-                  style={{ background: voice.gradient }}
-                />
+                >
+                  <span className="voice-orb-aurora" style={{ background: voice.gradient }} />
+                  <span className="voice-orb-gloss" />
+                </span>
                 <span className="sr-only">
                   {voice.name} — {voice.description}
                 </span>

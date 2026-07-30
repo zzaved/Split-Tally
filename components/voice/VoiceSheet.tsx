@@ -191,7 +191,8 @@ function SheetBody({
 
         conversation.startSession({
           ...session,
-          connectionType: data.conversationToken ? "webrtc" : "webrtc",
+          // A minted token and a bare public agent id both open over WebRTC.
+          connectionType: "webrtc",
           textOnly: asText,
           overrides: {
             ...(voiceId ? { tts: { voiceId } } : {}),

@@ -10,6 +10,11 @@ export type Voice = {
   /** Distinct blue-family gradient, used for that voice's orb on the picker. */
   gradient: string;
   sample: string;
+  /**
+   * Kept to what is actually known about the voice. Claiming a timbre we have
+   * not heard would be decoration pretending to be information — tapping the
+   * orb plays the real thing, which is the honest way to choose.
+   */
   description: string;
 };
 
@@ -22,7 +27,7 @@ export const VOICES: Voice[] = [
     name: "Cobalt",
     gradient: "conic-gradient(from 200deg, #2547C9, #35C8E8, #3A1F9E, #2547C9)",
     sample: SAMPLE("Cobalt"),
-    description: "Even and unhurried.",
+    description: "A man\u2019s voice.",
   },
   {
     id: process.env.NEXT_PUBLIC_ELEVENLABS_VOICE_INDIGO ?? "",
@@ -30,7 +35,7 @@ export const VOICES: Voice[] = [
     name: "Indigo",
     gradient: "conic-gradient(from 40deg, #3A1F9E, #6E4BFF, #2547C9, #3A1F9E)",
     sample: SAMPLE("Indigo"),
-    description: "Low and deliberate.",
+    description: "A woman\u2019s voice.",
   },
   {
     id: process.env.NEXT_PUBLIC_ELEVENLABS_VOICE_ULTRAMARINE ?? "",
@@ -38,7 +43,7 @@ export const VOICES: Voice[] = [
     name: "Ultramarine",
     gradient: "conic-gradient(from 120deg, #1B2B6B, #2547C9, #7B5BFF, #1B2B6B)",
     sample: SAMPLE("Ultramarine"),
-    description: "Bright and quick.",
+    description: "A man\u2019s voice.",
   },
   {
     id: process.env.NEXT_PUBLIC_ELEVENLABS_VOICE_CERULEAN ?? "",
@@ -46,7 +51,7 @@ export const VOICES: Voice[] = [
     name: "Cerulean",
     gradient: "conic-gradient(from 300deg, #35C8E8, #2547C9, #3A1F9E, #35C8E8)",
     sample: SAMPLE("Cerulean"),
-    description: "Warm and close.",
+    description: "A woman\u2019s voice.",
   },
 ];
 
