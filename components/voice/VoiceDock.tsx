@@ -21,6 +21,13 @@ type VoiceContextValue = {
 const VoiceContext = createContext<VoiceContextValue | null>(null);
 
 /**
+ * The person the app is talking to, readable from anywhere inside the shell.
+ * Every form that fills itself by voice needs their chosen voice, and passing
+ * it down by hand is how forms end up silently using the wrong one.
+ */
+const VoiceUserContext = createContext<VoiceUser | null>(null);
+
+/**
  * One orb for the whole app.
  *
  * It used to be two: a docked button with its own sheet, and a second sheet
@@ -48,7 +55,7 @@ export function VoiceDock({
 
   return (
     <VoiceContext.Provider value={value}>
-      {children}
+      <VoiceUserContext.Provider value={user}>{children}</VoiceUserContext.Provider>
 
       {mode === null && (
         <button
@@ -71,6 +78,11 @@ export function VoiceDock({
       />
     </VoiceContext.Provider>
   );
+}
+
+/** Null outside the app shell, which is where onboarding runs. */
+export function useVoiceUser(): VoiceUser | null {
+  return useContext(VoiceUserContext);
 }
 
 export function useVoice(): VoiceContextValue {

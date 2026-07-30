@@ -302,7 +302,7 @@ function SheetBody({
         "flex flex-col bg-cream",
         fullscreen
           ? "h-full w-full"
-          : "h-[88dvh] w-full rounded-t-[24px] shadow-ink-lg sm:h-full sm:max-w-md sm:rounded-none sm:rounded-l-[24px]",
+          : "module-panel sm:module-panel--side h-[88dvh] w-full rounded-t-[24px] shadow-ink-lg sm:h-full sm:max-w-md sm:rounded-none sm:rounded-l-[24px]",
       )}
       role="dialog"
       aria-modal="true"
@@ -466,7 +466,7 @@ function SheetBody({
         type="button"
         aria-label="Close"
         onClick={onClose}
-        className="absolute inset-0 bg-navy/20 backdrop-blur-md"
+        className="module-scrim absolute inset-0 bg-navy/20 backdrop-blur-md"
       />
       <div className="relative w-full sm:h-full sm:w-auto">{panel}</div>
     </div>

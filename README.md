@@ -342,10 +342,17 @@ browser recogniser is the only transcriber and can hold a single session for
 the whole walk. Between fields it clears its caption rather than restarting,
 because stopping and starting is exactly what cycles the device.
 
-If the caption ever needs to be authoritative, `useScribe` from
-`@elevenlabs/react` streams real partials over its own socket. It is not used
-here because in the agent conversation it would be a second stream billing for
-audio the agent already transcribes.
+The guided filler uses ElevenLabs Scribe, which holds one socket and one
+microphone stream for the whole walk and decides end-of-utterance server-side,
+so nothing ever restarts to notice a pause. It needs `speech_to_text` on the
+API key and mints a single-use token per session through
+`/api/voice/scribe-token`, so the key never reaches the browser. Without that
+permission it falls back to the browser recogniser, which works but cycles the
+microphone.
+
+Scribe is affordable there precisely because no agent is running. In the agent
+conversation it would be a second stream billing for audio the agent already
+transcribes, which is why the sheet does not use it.
 
 ## Copy conventions
 

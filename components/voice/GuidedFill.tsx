@@ -7,8 +7,8 @@ import { Highlight } from "@/components/ink/Highlight";
 import { CloseIcon, MicIcon } from "@/components/ink/Icon";
 import { Orb } from "@/components/ink/Orb";
 import { cn } from "@/lib/utils";
-import { useDictation } from "./useDictation";
-import { VOICES } from "@/lib/voices";
+import { useLiveTranscript } from "./useLiveTranscript";
+import { useVoiceUser } from "./VoiceDock";
 
 export type FillStep = {
   /** The form control this step fills. */
@@ -45,6 +45,7 @@ export function GuidedFill({
 }: {
   steps: FillStep[];
   formRef: React.RefObject<HTMLFormElement | null>;
+  /** Only passed during onboarding, which runs outside the app shell. */
   voiceId?: string | null;
   /** Said once before the first question, so nobody is surprised. */
   intro: string;
@@ -58,12 +59,14 @@ export function GuidedFill({
   const [error, setError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const dictation = useDictation();
+  const dictation = useLiveTranscript();
   const step = steps[index];
 
-  // Somebody who skipped the voice picker, including the demo account, still
-  // gets spoken to: fall back to the first voice the deployment has configured.
-  const speakingVoice = voiceId || VOICES.find((v) => v.id)?.id || null;
+  // The voice this person actually chose. Reading it from the dock rather than
+  // from a prop is what stopped every form that forgot to pass it from quietly
+  // reverting to the first voice on the list.
+  const dockUser = useVoiceUser();
+  const speakingVoice = voiceId ?? dockUser?.voiceId ?? null;
 
   const speak = useCallback(
     async (text: string) => {
@@ -107,7 +110,7 @@ export function GuidedFill({
     dictation.clear();
     await speak(step.question);
     setPhase("listening");
-    dictation.start();
+    void dictation.start();
   }, [step, speak, dictation]);
 
   const begin = useCallback(async () => {
@@ -168,7 +171,7 @@ export function GuidedFill({
   );
 
   const capture = useCallback(() => {
-    const raw = dictation.interim.trim();
+    const raw = dictation.text.trim();
     if (!raw) return;
 
     const value = step?.parse ? step.parse(raw) : raw;
@@ -205,10 +208,10 @@ export function GuidedFill({
   // A pause of about a second and a half ends the answer, the way it would in
   // conversation. Nobody should have to press a button to stop talking.
   useEffect(() => {
-    if (phase !== "listening" || !dictation.interim) return;
+    if (phase !== "listening" || !dictation.text) return;
     const id = window.setTimeout(capture, 1500);
     return () => window.clearTimeout(id);
-  }, [phase, dictation.interim, capture]);
+  }, [phase, dictation.text, capture]);
 
   // Held in a ref because `stop` is rebuilt on every render: `useDictation`
   // returns a fresh object each time, so an effect keyed on `stop` would run
@@ -233,12 +236,12 @@ export function GuidedFill({
       {/* The prompt rides just under the field being filled, so the question
           and the answer are in the same place on screen. */}
       <div className="fixed inset-x-0 bottom-0 z-[70] flex justify-center px-4 pb-6">
-        <div className="flex w-full max-w-md flex-col gap-3 rounded-[20px] bg-cream p-5 shadow-ink-lg">
+        <div className="module-panel flex w-full max-w-md flex-col gap-3 rounded-[20px] bg-cream p-5 shadow-ink-lg">
           <div className="flex items-start gap-4">
             <Orb
               size={52}
               state={phase === "listening" ? "listening" : phase === "asking" ? "speaking" : "idle"}
-              intensity={phase === "listening" && dictation.interim ? 1 : 0}
+              intensity={phase === "listening" && dictation.text ? 1 : 0}
               decorative
             />
             <div className="min-w-0 flex-1">
@@ -264,11 +267,11 @@ export function GuidedFill({
             <p
               className={cn(
                 "min-h-6 text-14 italic",
-                dictation.interim ? "text-navy" : "text-ink-soft/70",
+                dictation.text ? "text-navy" : "text-ink-soft/70",
               )}
               aria-live="polite"
             >
-              {dictation.interim || (dictation.supported ? "Listening…" : "Type it in instead.")}
+              {dictation.text || (dictation.supported ? "Listening…" : "Type it in instead.")}
             </p>
           )}
 
