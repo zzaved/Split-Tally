@@ -78,6 +78,7 @@ export type Group = {
   currency: string;
   created_by: string;
   archived: boolean;
+  simplify_debts: boolean;
   created_at: string;
 };
 

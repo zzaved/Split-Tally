@@ -2,14 +2,11 @@
 
 import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
-import { AmountDisplay } from "@/components/ink/AmountDisplay";
 import { Button } from "@/components/ink/Button";
-import { Card } from "@/components/ink/Card";
 import { Field, FormMessage, MoneyInput, Select } from "@/components/ink/Field";
 import { currencySymbol, formatMoney } from "@/lib/format";
-import type { Transfer } from "@/lib/ledger";
 import type { Profile } from "@/lib/types";
-import { applySimplify, settleUp, type ActionResult } from "../actions";
+import { settleUp, type ActionResult } from "../actions";
 
 function Submit({ label, pendingLabel }: { label: string; pendingLabel: string }) {
   const { pending } = useFormStatus();
@@ -114,73 +111,5 @@ export function SettleForm({
         <Submit label="Record the payment" pendingLabel="Recording…" />
       </div>
     </form>
-  );
-}
-
-/**
- * Simplify. The before/after is written out in plain English, and applying it
- * records suggestions rather than settling anything (§5.5).
- */
-export function SimplifyPanel({
-  groupId,
-  currency,
-  transfers,
-  before,
-  names,
-}: {
-  groupId: string;
-  currency: string;
-  transfers: Transfer[];
-  before: number;
-  names: Map<string, string>;
-}) {
-  const [state, action] = useActionState<ActionResult, FormData>(applySimplify, {});
-
-  if (transfers.length === 0) {
-    return (
-      <Card className="p-6">
-        <p className="eyebrow text-ink-soft">Simplify</p>
-        <p className="mt-3 text-14 text-ink-soft">
-          Everyone in this group is square. Nothing to simplify.
-        </p>
-      </Card>
-    );
-  }
-
-  const saved = before - transfers.length;
-
-  return (
-    <Card className="p-6">
-      <p className="eyebrow text-ink-soft">Simplify</p>
-
-      <p className="mt-3 font-display text-20 leading-snug text-navy">
-        {saved > 0
-          ? `Instead of ${before} ${before === 1 ? "transfer" : "transfers"}, ${transfers.length}.`
-          : `${transfers.length} ${transfers.length === 1 ? "transfer" : "transfers"} clears this group.`}
-      </p>
-
-      <ul className="mt-4 flex flex-col gap-2">
-        {transfers.map((t, i) => (
-          <li key={i} className="flex items-baseline justify-between gap-3 text-14 text-navy">
-            <span>
-              {names.get(t.from) ?? "Someone"} pays {names.get(t.to) ?? "someone"}
-            </span>
-            <AmountDisplay value={t.amount} currency={currency} size="sm" tone="neutral" />
-          </li>
-        ))}
-      </ul>
-
-      <form action={action} className="mt-5 flex flex-col gap-3">
-        <input type="hidden" name="groupId" value={groupId} />
-        {state.error && <FormMessage>{state.error}</FormMessage>}
-        {state.ok && <FormMessage tone="notice">{state.ok}</FormMessage>}
-        <div>
-          <Submit label="Suggest this plan" pendingLabel="Saving…" />
-        </div>
-        <p className="text-12 text-ink-soft">
-          This only proposes the payments. Record each one above when it actually happens.
-        </p>
-      </form>
-    </Card>
   );
 }

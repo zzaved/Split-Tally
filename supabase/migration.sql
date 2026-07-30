@@ -58,6 +58,11 @@ create table if not exists public.groups (
   currency text not null default 'USD',
   created_by uuid not null references public.profiles (id) on delete restrict,
   archived boolean not null default false,
+  -- When on, the group shows the netted plan instead of the literal pairwise
+  -- debts: a cycle where each of three people owes the next cancels to nothing.
+  -- Off by default, because a balance that rearranges itself is not something
+  -- to opt anyone into without asking (BUILD.MD §5.5).
+  simplify_debts boolean not null default false,
   created_at timestamptz not null default now()
 );
 

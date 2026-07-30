@@ -91,6 +91,13 @@ favicon, reduced-motion handling, focus rings, and colour never carrying meaning
   instead of sending anyone hunting for a row.
 - **Ambient stroke.** Exactly one brush stroke at a time paints itself behind the app and fades,
   so the interface always has a hand moving in it without becoming noisy.
+- **Netted settling, as a group setting** (`groups.simplify_debts`). A ring of debts cancels: if
+  you owe Pedro 5, Pedro owes Júlia 5 and Júlia owes you 5, nobody owes anybody. It is a switch
+  rather than the default, because plenty of people would rather hand the money to the person they
+  actually borrowed it from, and a balance that quietly rearranges itself is not something to opt
+  anyone into. Flipping it lands in every member's feed. Verified on a three-way ring: literal
+  shows three transfers of $5, netted shows nobody owing anything.
+- **OG image** — cream, cobalt strokes, the jelly and the wordmark, generated at build time.
 
 ## Fixed along the way
 
@@ -109,9 +116,10 @@ favicon, reduced-motion handling, focus rings, and colour never carrying meaning
 ## Deliberately deferred
 
 - **Group rename and archive** have a server action (`renameGroup`) but no UI yet.
+- **Netting is decided by whoever created the group.** The `groups` update policy is creator-only,
+  so any other member gets a plain explanation rather than a switch that does nothing. Letting any
+  member flip it would mean a policy change, not a UI one.
 - **Account deletion** is described in settings rather than implemented.
-- **OG image** — metadata and Twitter card are set, but the cream-and-strokes `opengraph-image` is
-  not generated yet.
 - **Responsive sweep** has been done at 375 and 1440 on the landing, dashboard, friends, group and
   exchange. `/money` and `/import` have been built to the same rules but not yet photographed at
   both widths.

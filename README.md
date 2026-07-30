@@ -203,6 +203,16 @@ that is the row that lifts a debtor's obligation off the original creditor when 
 hands. For the same reason only `settle` counts toward the Tally Score: a debtor's score must not
 improve because somebody else sold their debt.
 
+### Two ways to answer "who pays whom"
+
+Every group carries a `simplify_debts` switch. Off, it lists the literal debts — each pair that
+owes something. On, the ring is untangled first with min-cash-flow netting, so three people each
+owing the next £5 shows as nobody owing anything at all.
+
+It is off by default on purpose. Netting can ask you to pay someone you never borrowed from, and a
+balance that quietly rearranges itself is not something to opt anyone into. Flipping it writes to
+every member's feed.
+
 ### The four service-role paths
 
 RLS is on for all fifteen tables. Four flows genuinely cannot be expressed as a policy, so they run

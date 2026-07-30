@@ -95,6 +95,77 @@ export async function renameGroup(_prev: ActionResult, formData: FormData): Prom
   return { ok: "Saved." };
 }
 
+/**
+ * Turns the netted view on or off for a group (BUILD.MD §5.5, extended).
+ *
+ * With it on, a ring of debts cancels: if you owe Pedro 5, Pedro owes Júlia 5
+ * and Júlia owes you 5, nobody owes anybody. With it off the group shows the
+ * literal pairwise debts, because plenty of people would rather hand the money
+ * to the person they actually borrowed it from.
+ *
+ * Any member can flip it, and the change lands in everyone's feed — a setting
+ * that quietly rearranges what people owe should never be silent.
+ */
+export async function toggleSimplifyMode(
+  _prev: ActionResult,
+  formData: FormData,
+): Promise<ActionResult> {
+  const groupId = String(formData.get("groupId") ?? "");
+  const enabled = String(formData.get("enabled") ?? "") === "true";
+
+  const { supabase, user } = await session();
+  if (!user) return { error: "Log in again." };
+
+  const members = await membersOf(supabase, groupId);
+  if (!members.some((m) => m.id === user.id)) {
+    return { error: "You are not in that group." };
+  }
+
+  const { data: group } = await supabase
+    .from("groups")
+    .select("id,name,created_by")
+    .eq("id", groupId)
+    .maybeSingle();
+  if (!group) return { error: "That group is not one of yours." };
+
+  // The groups policy only lets the creator update the row, so anyone else
+  // flipping it goes nowhere — say so plainly rather than failing silently.
+  if (group.created_by !== user.id) {
+    return { error: "Only whoever created the group can change how it settles." };
+  }
+
+  const { error } = await supabase
+    .from("groups")
+    .update({ simplify_debts: enabled })
+    .eq("id", groupId);
+
+  if (error) return { error: "That did not save. Try again." };
+
+  const { data: me } = await supabase
+    .from("profiles")
+    .select("name")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  await recordActivity(
+    supabase,
+    user.id,
+    realMembers(members).map((m) => ({
+      userId: m.id,
+      type: "simplify_applied" as const,
+      payload: { group: group.name, mode: enabled ? "on" : "off", by: me?.name },
+    })),
+  );
+
+  revalidatePath(`/groups/${groupId}`);
+  revalidatePath("/dashboard");
+  return {
+    ok: enabled
+      ? "Netted settling is on. Debts that go in a circle now cancel out."
+      : "Netted settling is off. Everyone pays the person they actually owe.",
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Expenses
 // ---------------------------------------------------------------------------
@@ -343,57 +414,6 @@ export async function settleUp(_prev: ActionResult, formData: FormData): Promise
   revalidatePath("/dashboard");
   revalidatePath("/friends");
   return { ok: `Recorded: ${from?.name ?? "they"} paid ${to?.name ?? "them"} ${amount}.` };
-}
-
-/**
- * Records the simplification plan without settling anything — §5.5 asks for
- * suggestions, not automatic payments. The plan lands in the feed and the
- * group page turns it into one-tap "record this payment" rows.
- */
-export async function applySimplify(
-  _prev: ActionResult,
-  formData: FormData,
-): Promise<ActionResult> {
-  const groupId = String(formData.get("groupId") ?? "");
-  const { supabase, user } = await session();
-  if (!user) return { error: "Log in again." };
-
-  const { data: group } = await supabase
-    .from("groups")
-    .select("id,name")
-    .eq("id", groupId)
-    .maybeSingle();
-  if (!group) return { error: "That group is not one of yours." };
-
-  const members = await membersOf(supabase, groupId);
-  const rows = await ledgerRowsForGroup(supabase, groupId);
-  const nets = groupNets(rows, groupId, members.map((m) => m.id));
-  const before = computePairBalances(rows, { groupId }).length;
-  const transfers = simplifyDebts(nets);
-
-  if (transfers.length === 0) return { ok: "Everyone is already square." };
-
-  const byId = new Map(members.map((m) => [m.id, m.name]));
-
-  await recordActivity(
-    supabase,
-    user.id,
-    realMembers(members).map((m) => ({
-      userId: m.id,
-      type: "simplify_applied" as const,
-      payload: {
-        group: group.name,
-        before,
-        after: transfers.length,
-        plan: transfers.map((t) => `${byId.get(t.from)} pays ${byId.get(t.to)} ${t.amount}`),
-      },
-    })),
-  );
-
-  revalidatePath(`/groups/${groupId}`);
-  return {
-    ok: `Suggested: ${transfers.length} ${transfers.length === 1 ? "transfer" : "transfers"} instead of ${before}. Nothing has been settled — record each payment when it happens.`,
-  };
 }
 
 // ---------------------------------------------------------------------------

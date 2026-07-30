@@ -9,10 +9,10 @@ import { TallyMarks } from "@/components/ink/TallyMarks";
 import { formatDate, formatMoney } from "@/lib/format";
 import {
   computePairBalances,
-  countDirectTransfers,
   groupNets,
   simplifyDebts,
   type LedgerRows,
+  type Transfer,
 } from "@/lib/ledger";
 import { coverVariantFor } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/server";
@@ -20,7 +20,8 @@ import { getMyProfile } from "@/lib/data";
 import type { Expense, ExpenseSplit, Group, Profile, Settlement } from "@/lib/types";
 import { DeleteExpense } from "./DeleteExpense";
 import { ExpenseForm } from "./ExpenseForm";
-import { SettleForm, SimplifyPanel } from "./SettleAndSimplify";
+import { SettleForm } from "./SettleAndSimplify";
+import { SettleMode } from "./SettleMode";
 
 export async function generateMetadata(props: {
   params: Promise<{ id: string }>;
@@ -91,12 +92,19 @@ export default async function GroupPage(props: { params: Promise<{ id: string }>
   };
 
   const nets = groupNets(rows, id, memberIds);
-  const pairs = computePairBalances(rows, { groupId: id });
-  const transfers = simplifyDebts(nets);
-  const before = countDirectTransfers(rows, id);
+
+  // Two answers to "who pays whom": the literal debts, and the same debts with
+  // any circle untangled. The group's own setting decides which one it lives by.
+  const direct: Transfer[] = computePairBalances(rows, { groupId: id }).map((p) => ({
+    from: p.debtor,
+    to: p.creditor,
+    amount: p.amount,
+  }));
+  const netted = simplifyDebts(nets);
+  const active = theGroup.simplify_debts ? netted : direct;
 
   const outstanding: Record<string, number> = {};
-  for (const p of pairs) outstanding[`${p.debtor}|${p.creditor}`] = p.amount;
+  for (const t of active) outstanding[`${t.from}|${t.to}`] = t.amount;
 
   const names = new Map(members.map((m) => [m.id, m.name]));
   const sharesByExpense = new Map<string, Map<string, number>>();
@@ -264,11 +272,13 @@ export default async function GroupPage(props: { params: Promise<{ id: string }>
             </div>
           </Card>
 
-          <SimplifyPanel
+          <SettleMode
             groupId={theGroup.id}
             currency={theGroup.currency}
-            transfers={transfers}
-            before={before}
+            enabled={theGroup.simplify_debts}
+            canToggle={theGroup.created_by === me.id}
+            direct={direct}
+            netted={netted}
             names={names}
           />
         </div>

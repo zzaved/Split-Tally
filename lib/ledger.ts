@@ -199,11 +199,6 @@ export function simplifyDebts(nets: Record<string, number>): Transfer[] {
   return transfers;
 }
 
-/** How many transfers the un-simplified ledger would need, for the "before". */
-export function countDirectTransfers(rows: LedgerRows, groupId: string): number {
-  return computePairBalances(rows, { groupId }).length;
-}
-
 // ---------------------------------------------------------------------------
 // Tally Score inputs
 // ---------------------------------------------------------------------------
