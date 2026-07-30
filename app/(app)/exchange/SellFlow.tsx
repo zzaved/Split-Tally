@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState, useTransition } from "react";
+import { useActionState, useMemo, useRef, useState, useTransition } from "react";
 import { useFormStatus } from "react-dom";
 import { AmountDisplay } from "@/components/ink/AmountDisplay";
 import { Button } from "@/components/ink/Button";
@@ -8,8 +8,10 @@ import { Avatar } from "@/components/ink/Card";
 import { EmptyState } from "@/components/ink/EmptyState";
 import { FormMessage } from "@/components/ink/Field";
 import { OrbGlyph } from "@/components/ink/Orb";
+import { GuidedFill, type FillStep } from "@/components/voice/GuidedFill";
 import { formatMoney, round2 } from "@/lib/format";
 import { MAX_DISCOUNT, MIN_DISCOUNT } from "@/lib/pricing";
+import { meansKeep, nudge, spokenNumber } from "@/lib/spoken";
 import { cn } from "@/lib/utils";
 import { createListing, priceReceivable, type ActionResult } from "./actions";
 
@@ -44,6 +46,8 @@ export function SellFlow({ receivables }: { receivables: Receivable[] }) {
   const [pricing, setPricing] = useState<Pricing | null>(null);
   const [discount, setDiscount] = useState(12);
   const [pending, startTransition] = useTransition();
+  const listRef = useRef<HTMLUListElement | null>(null);
+  const sliderRef = useRef<HTMLInputElement | null>(null);
 
   function choose(receivable: Receivable) {
     setPicked(receivable);
@@ -59,6 +63,80 @@ export function SellFlow({ receivables }: { receivables: Receivable[] }) {
     });
   }
 
+  const price = picked ? round2(picked.amount * (1 - discount / 100)) : 0;
+
+  /** Matches a spoken name against the tallies on offer, first names included. */
+  function findReceivable(heard: string): Receivable | null {
+    const h = heard.toLowerCase();
+    return (
+      receivables.find((r) => h.includes(r.debtorName.toLowerCase())) ??
+      receivables.find((r) => h.includes(r.debtorName.toLowerCase().split(/\s+/)[0])) ??
+      null
+    );
+  }
+
+  /**
+   * Two questions, and deliberately not a third.
+   *
+   * The walk stops before listing. Selling a tally moves real money and hands
+   * the debt to someone else, so the last press stays a press: the numbers are
+   * on screen by then and nobody should discover they sold something because a
+   * recogniser heard "yes" in a noisy room.
+   */
+  const guidedSteps: FillStep[] = useMemo(
+    () => [
+      {
+        name: "debtor",
+        question: "Whose tally do you want to sell?",
+        anchor: () => listRef.current,
+        parse: (heard) => findReceivable(heard)?.debtorId ?? "",
+        validate: (value) =>
+          value ? null : "I could not find that name among the tallies you are owed.",
+        describe: (value) =>
+          receivables.find((r) => r.debtorId === value)?.debtorName ?? value,
+        apply: (value) => {
+          const match = receivables.find((r) => r.debtorId === value);
+          if (match) choose(match);
+        },
+      },
+      {
+        name: "discount",
+        // Asked only once the price exists, so the number being adjusted is
+        // one you can already see.
+        ready: () => pricing !== null && !pending,
+        question: () =>
+          pricing
+            ? `I suggest ${pricing.discount_pct.toFixed(1)} percent off. Say keep it, or give me another number.`
+            : "What discount would you like?",
+        anchor: () => sliderRef.current,
+        parse: (heard) => {
+          if (meansKeep(heard)) return String(discount);
+          const spoken = spokenNumber(heard);
+          if (spoken !== null) return String(spoken);
+          // "a bit more" means a bigger discount, so a smaller payout.
+          const direction = nudge(heard);
+          return direction ? String(discount + direction * 2.5) : "";
+        },
+        validate: (value) => {
+          const n = Number(value);
+          if (!value || Number.isNaN(n)) return "Say a percentage, or say keep it.";
+          if (n < MIN_DISCOUNT || n > MAX_DISCOUNT) {
+            return `It has to be between ${MIN_DISCOUNT} and ${MAX_DISCOUNT} percent.`;
+          }
+          return null;
+        },
+        describe: (value) => `${Number(value).toFixed(1)}% off`,
+        apply: (value) => setDiscount(Number(value)),
+      },
+    ],
+    // `choose` and `findReceivable` are redefined every render by design: they
+    // close over state the walk needs to read as it changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [receivables, pricing, pending, discount],
+  );
+
+  // Below every hook: an early return above them would change how many run
+  // the moment somebody is owed their first tally.
   if (receivables.length === 0) {
     return (
       <EmptyState
@@ -68,14 +146,17 @@ export function SellFlow({ receivables }: { receivables: Receivable[] }) {
     );
   }
 
-  const price = picked ? round2(picked.amount * (1 - discount / 100)) : 0;
-
   return (
     <div className="flex flex-col gap-8">
+      <GuidedFill
+        steps={guidedSteps}
+        label="Sell one by talking"
+        intro="I can set this up. Two questions, then you check it and list it yourself."
+      />
       {/* Step 1 */}
       <section>
         <p className="eyebrow text-cobalt">Step one · pick a tally</p>
-        <ul className="mt-4 flex flex-col gap-2">
+        <ul ref={listRef} className="mt-4 flex flex-col gap-2">
           {receivables.map((r) => {
             const active = picked?.debtorId === r.debtorId && picked?.currency === r.currency;
             return (
@@ -145,6 +226,7 @@ export function SellFlow({ receivables }: { receivables: Receivable[] }) {
               <label className="mt-6 block">
                 <span className="eyebrow text-ink-soft">Discount · {discount.toFixed(1)}%</span>
                 <input
+                  ref={sliderRef}
                   type="range"
                   min={MIN_DISCOUNT}
                   max={MAX_DISCOUNT}

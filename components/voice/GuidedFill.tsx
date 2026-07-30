@@ -11,17 +11,38 @@ import { useLiveTranscript } from "./useLiveTranscript";
 import { useVoiceUser } from "./VoiceDock";
 
 export type FillStep = {
-  /** The form control this step fills. */
+  /** The form control this step fills, and the step's key. */
   name: string;
-  /** Spoken and shown above the field. */
-  question: string;
+  /** Spoken and shown above the field. A function when it depends on state. */
+  question: string | (() => string);
   /** Turns what was heard into what the field should hold. */
   parse?: (heard: string) => string;
   /** Optional check; return a message to ask again. */
   validate?: (value: string) => string | null;
+  /**
+   * Where the answer goes, for a step that is not a form control: a slider
+   * held in React state, or a choice that runs a function. Defaults to writing
+   * the form control named `name`.
+   */
+  apply?: (value: string) => void;
+  /** What the ring points at. Defaults to that same control. */
+  anchor?: () => HTMLElement | null;
+  /** How the confirmation reads, when the stored value is not what you'd say. */
+  describe?: (value: string) => string;
+  /**
+   * Held before asking, for a step that depends on something still arriving,
+   * such as a price the AI is still working out. Nobody should be asked to
+   * adjust a number that is not on screen yet.
+   */
+  ready?: () => boolean;
 };
 
-type Phase = "idle" | "asking" | "listening" | "confirming" | "done";
+type Phase = "idle" | "waiting" | "asking" | "listening" | "confirming" | "done";
+
+/** A question can depend on state that only exists once the walk is running. */
+function wording(question: FillStep["question"]): string {
+  return typeof question === "function" ? question() : question;
+}
 
 /**
  * Fills a real form by talking, one field at a time.
@@ -41,14 +62,18 @@ export function GuidedFill({
   formRef,
   voiceId,
   intro,
+  label,
   onFinish,
 }: {
   steps: FillStep[];
-  formRef: React.RefObject<HTMLFormElement | null>;
+  /** Omitted by flows whose steps all carry their own `apply`. */
+  formRef?: React.RefObject<HTMLFormElement | null>;
   /** Only passed during onboarding, which runs outside the app shell. */
   voiceId?: string | null;
   /** Said once before the first question, so nobody is surprised. */
   intro: string;
+  /** Overrides the button copy where "fill this in" is the wrong verb. */
+  label?: string;
   onFinish?: () => void;
 }) {
   const [active, setActive] = useState(false);
@@ -61,6 +86,16 @@ export function GuidedFill({
 
   const dictation = useLiveTranscript();
   const step = steps[index];
+
+  // Steps close over the state of the render that built them. A walk outlives
+  // several renders, so waiting on `ready` or writing through `apply` has to
+  // read the current versions or it would ask about a price that has since
+  // arrived and write into a setter nobody is listening to.
+  const stepsRef = useRef(steps);
+  useEffect(() => {
+    stepsRef.current = steps;
+  });
+  const current = useCallback(() => stepsRef.current[index], [index]);
 
   // The voice this person actually chose. Reading it from the dock rather than
   // from a prop is what stopped every form that forgot to pass it from quietly
@@ -87,9 +122,10 @@ export function GuidedFill({
 
   /** Points the ring at the current field and scrolls it into view. */
   const focusField = useCallback(() => {
-    const form = formRef.current;
-    if (!form || !step) return;
-    const el = form.elements.namedItem(step.name) as HTMLElement | null;
+    if (!step) return;
+    const el =
+      step.anchor?.() ??
+      ((formRef?.current?.elements.namedItem(step.name) ?? null) as HTMLElement | null);
     if (!el) return;
     setTarget(el);
     el.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -102,16 +138,36 @@ export function GuidedFill({
 
   const ask = useCallback(async () => {
     if (!step) return;
-    setPhase("asking");
     setHeard("");
     setError(null);
+
+    // Wait for whatever this step depends on, rather than asking about a
+    // number that is not on screen yet.
+    if (current()?.ready && !current()!.ready!()) {
+      setPhase("waiting");
+      await new Promise<void>((resolve) => {
+        const id = window.setInterval(() => {
+          if (current()?.ready?.() !== false) {
+            window.clearInterval(id);
+            resolve();
+          }
+        }, 200);
+        // Never trap the walk on something that is not coming.
+        window.setTimeout(() => {
+          window.clearInterval(id);
+          resolve();
+        }, 15000);
+      });
+    }
+
+    setPhase("asking");
     // Clear the caption rather than restarting the recogniser: one microphone
     // session covers the whole walk.
     dictation.clear();
-    await speak(step.question);
+    await speak(wording(current()?.question ?? step.question));
     setPhase("listening");
     void dictation.start();
-  }, [step, speak, dictation]);
+  }, [step, speak, dictation, current]);
 
   const begin = useCallback(async () => {
     setActive(true);
@@ -131,7 +187,13 @@ export function GuidedFill({
   /** Writes into the real input, the way a person typing would. */
   const write = useCallback(
     (value: string) => {
-      const form = formRef.current;
+      const live = current();
+      if (live?.apply) {
+        live.apply(value);
+        return;
+      }
+
+      const form = formRef?.current;
       if (!form || !step) return;
       const el = form.elements.namedItem(step.name) as
         | HTMLInputElement
@@ -167,7 +229,7 @@ export function GuidedFill({
       el.dispatchEvent(new Event("input", { bubbles: true }));
       el.dispatchEvent(new Event("change", { bubbles: true }));
     },
-    [formRef, step],
+    [formRef, step, current],
   );
 
   const capture = useCallback(() => {
@@ -226,7 +288,7 @@ export function GuidedFill({
     return (
       <Button type="button" variant="secondary" onClick={begin}>
         <MicIcon className="size-4" />
-        Fill this in by talking
+        {label ?? "Fill this in by talking"}
       </Button>
     );
   }
@@ -242,7 +304,13 @@ export function GuidedFill({
           <div className="flex items-start gap-4">
             <Orb
               size={52}
-              state={phase === "listening" ? "listening" : phase === "asking" ? "speaking" : "idle"}
+              state={
+                phase === "listening"
+                  ? "listening"
+                  : phase === "asking" || phase === "waiting"
+                    ? "speaking"
+                    : "idle"
+              }
               intensity={phase === "listening" && dictation.text ? 1 : 0}
               decorative
             />
@@ -251,7 +319,7 @@ export function GuidedFill({
                 Question {index + 1} of {steps.length}
               </p>
               <p className="mt-1.5 font-display text-20 leading-snug text-navy">
-                {step?.question}
+                {step ? wording(step.question) : ""}
               </p>
             </div>
             <button
@@ -264,6 +332,12 @@ export function GuidedFill({
           </div>
 
           {error && <p className="text-14 text-vermilion">{error}</p>}
+
+          {phase === "waiting" && (
+            <p className="text-14 text-ink-soft italic" aria-live="polite">
+              One moment, working that out…
+            </p>
+          )}
 
           {phase === "listening" && (
             <p
@@ -280,7 +354,7 @@ export function GuidedFill({
           {phase === "confirming" && (
             <div className="flex flex-col gap-3">
               <p className="text-14 text-navy">
-                I put down <span className="font-medium">{heard}</span>.
+                I put down <span className="font-medium">{step?.describe?.(heard) ?? heard}</span>.
               </p>
               <ConfirmChips
                 options={["Yes", "Say it again"]}
