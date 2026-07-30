@@ -350,6 +350,14 @@ API key and mints a single-use token per session through
 permission it falls back to the browser recogniser, which works but cycles the
 microphone.
 
+Two details are easy to get wrong and both fail quietly. `useScribe` only
+captures audio when it is given a `microphone` option; without one it waits to
+be fed audio by hand. And realtime has its own models, so `scribe_v2_realtime`
+is required: passing the batch `scribe_v1` gets the socket closed by the server
+in a message the SDK does not recognise, which means no error callback fires.
+Because of that second case, any close the app did not ask for now falls back
+to the browser rather than sitting there listening to nothing.
+
 Scribe is affordable there precisely because no agent is running. In the agent
 conversation it would be a second stream billing for audio the agent already
 transcribes, which is why the sheet does not use it.
