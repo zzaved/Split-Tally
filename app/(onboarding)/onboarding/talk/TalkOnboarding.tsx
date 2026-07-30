@@ -1,11 +1,12 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useRef, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ink/Button";
 import { Card } from "@/components/ink/Card";
 import { Field, FormMessage, Input, Select, Textarea } from "@/components/ink/Field";
 import { VoiceSheet } from "@/components/voice/VoiceSheet";
+import { GuidedFill, type FillStep } from "@/components/voice/GuidedFill";
 import { SUPPORTED_CURRENCIES } from "@/lib/format";
 import { completeManualOnboarding, type ActionResult } from "./actions";
 
@@ -23,6 +24,39 @@ function Save() {
  * writes exactly the same five fields the agent's tools write, so nobody is
  * penalised for not wanting to talk.
  */
+/** The five things onboarding needs, in the order the orb asks for them. */
+const STEPS: FillStep[] = [
+  {
+    name: "name",
+    question: "What should I call you?",
+    parse: (heard) => heard.replace(/^(my name is|i am|i'm|call me)\s+/i, "").trim(),
+    validate: (v) => (v.length < 2 ? "I did not catch a name there." : null),
+  },
+  {
+    name: "occupation",
+    question: "Are you a student, a professional, or something else?",
+    parse: (heard) => {
+      const h = heard.toLowerCase();
+      if (h.includes("student")) return "student";
+      if (h.includes("profession") || h.includes("work")) return "professional";
+      return "other";
+    },
+  },
+  {
+    name: "currency",
+    question: "Which currency do you usually spend in?",
+    parse: (heard) => {
+      const h = heard.toLowerCase();
+      if (h.includes("euro")) return "EUR";
+      if (h.includes("pound") || h.includes("sterling")) return "GBP";
+      if (h.includes("real") || h.includes("brazil")) return "BRL";
+      return "USD";
+    },
+  },
+  { name: "sharing", question: "Who do you usually share costs with?" },
+  { name: "goal", question: "What are you hoping to sort out?" },
+];
+
 export function TalkOnboarding({
   voiceId,
   currency,
@@ -32,19 +66,22 @@ export function TalkOnboarding({
 }) {
   const [manual, setManual] = useState(false);
   const [state, action] = useActionState<ActionResult, FormData>(completeManualOnboarding, {});
+  const formRef = useRef<HTMLFormElement>(null);
 
   if (manual) {
     return (
       <div className="mx-auto flex w-full max-w-lg flex-col gap-8">
         <div>
           <p className="eyebrow text-cobalt">Setting up</p>
-          <h1 className="mt-4 font-display text-40 font-medium text-navy">
-            Five short things.
-          </h1>
+          <h1 className="mt-4 font-display text-40 font-medium text-navy">Five short things.</h1>
+          <p className="mt-4 text-14 text-ink-soft">
+            Type them, or press the button at the bottom and the orb will ring each field, ask for
+            it out loud, and write down what you say.
+          </p>
         </div>
 
         <Card className="p-6 md:p-8">
-          <form action={action} className="flex flex-col gap-5">
+          <form ref={formRef} action={action} className="flex flex-col gap-5">
             <Field label="What should we call you" htmlFor="name">
               <Input id="name" name="name" required placeholder="Ana" />
             </Field>
@@ -87,9 +124,12 @@ export function TalkOnboarding({
 
             <div className="flex flex-wrap items-center gap-3">
               <Save />
-              <Button type="button" variant="ghost" onClick={() => setManual(false)}>
-                Talk instead
-              </Button>
+              <GuidedFill
+                steps={STEPS}
+                formRef={formRef}
+                voiceId={voiceId}
+                intro="Let's fill this in together. I will ask five short things and write each answer into the form as you go."
+              />
             </div>
           </form>
         </Card>
