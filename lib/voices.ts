@@ -9,6 +9,9 @@ export type Voice = {
   name: string;
   /** Distinct blue-family gradient, used for that voice's orb on the picker. */
   gradient: string;
+  /** The two light pools that wander inside that orb, in the voice's colours. */
+  poolA: string;
+  poolB: string;
   sample: string;
   /**
    * Kept to what is actually known about the voice. Claiming a timbre we have
@@ -26,6 +29,8 @@ export const VOICES: Voice[] = [
     key: "cobalt",
     name: "Cobalt",
     gradient: "conic-gradient(from 200deg, #2547C9, #35C8E8, #3A1F9E, #2547C9)",
+    poolA: "#35C8E8",
+    poolB: "#2547C9",
     sample: SAMPLE("Cobalt"),
     description: "A man\u2019s voice.",
   },
@@ -34,6 +39,8 @@ export const VOICES: Voice[] = [
     key: "indigo",
     name: "Indigo",
     gradient: "conic-gradient(from 40deg, #3A1F9E, #6E4BFF, #2547C9, #3A1F9E)",
+    poolA: "#6E4BFF",
+    poolB: "#3A1F9E",
     sample: SAMPLE("Indigo"),
     description: "A woman\u2019s voice.",
   },
@@ -42,6 +49,8 @@ export const VOICES: Voice[] = [
     key: "ultramarine",
     name: "Ultramarine",
     gradient: "conic-gradient(from 120deg, #1B2B6B, #2547C9, #7B5BFF, #1B2B6B)",
+    poolA: "#7B5BFF",
+    poolB: "#1B2B6B",
     sample: SAMPLE("Ultramarine"),
     description: "A man\u2019s voice.",
   },
@@ -50,6 +59,8 @@ export const VOICES: Voice[] = [
     key: "cerulean",
     name: "Cerulean",
     gradient: "conic-gradient(from 300deg, #35C8E8, #2547C9, #3A1F9E, #35C8E8)",
+    poolA: "#35C8E8",
+    poolB: "#3A1F9E",
     sample: SAMPLE("Cerulean"),
     description: "A woman\u2019s voice.",
   },

@@ -62,7 +62,7 @@ pricing model in `lib/pricing.ts`, and insights simply do not render.
 
 ### 3. ElevenLabs
 
-Create a Conversational AI agent, paste the system prompt below into it, and register the ten
+Create a Conversational AI agent, paste the system prompt below into it, and register the eleven
 client tools. Then set:
 
 ```
@@ -74,9 +74,17 @@ NEXT_PUBLIC_ELEVENLABS_VOICE_ULTRAMARINE=…
 NEXT_PUBLIC_ELEVENLABS_VOICE_CERULEAN=…
 ```
 
-In the agent's **Security** settings, enable **conversation overrides** for the TTS voice — that is
-how the user's chosen voice is applied per session. If overrides are off, the agent's default voice
-is used and nothing else changes.
+The agent needs **conversation overrides** enabled for the TTS voice and for text-only mode — that
+is how the chosen voice is applied per session and how the typed fallback works. If overrides are
+off, the agent's default voice is used and nothing else changes.
+
+The API key must carry `text_to_speech`, `ElevenAgents: write` (creating the agent and minting
+session credentials) and `Voices: read`. Nothing else.
+
+**Two transports, on purpose.** Speaking runs over WebRTC with a short-lived conversation token;
+typing runs over a WebSocket with a signed URL. Text over WebRTC connects and then sits on an audio
+transport it never uses, and the room drops — a typed conversation should not need a microphone or
+a media pipeline at all. `app/api/voice/token/route.ts` picks the transport from `?transport=text`.
 
 Without an agent id the orb still opens, says the assistant is not connected on this deployment,
 and points at the forms that do the same work.
@@ -127,7 +135,7 @@ buyer's side, since Ana cannot buy her own listing.
 >
 > CHECK-IN MODE (weekly tally): ask exactly three questions: cash or untracked spending this week
 > (log each with log_cash_spending); upcoming shared costs; anything to settle or sell. Close with a
-> two-sentence recap of their week.
+> two-sentence recap of their week, then call complete_checkin with that recap.
 >
 > CORRECTIONS: if the user says something already in the ledger is wrong, never make them go and
 > find it. Call fix_last_entry, tell them what you took out, and ask for the correct version in one
@@ -147,11 +155,12 @@ wired up in `components/voice/clientTools.ts`.
 | `complete_onboarding` | `occupation`, `currency`, `sharing_context`, `goal` | Finalise and redirect |
 | `add_friend` | `name`, `email?` | Creates a managed friend |
 | `create_group` | `name`, `member_names[]` | Group plus members, by name resolution |
-| `add_expense` | `group_name`, `description`, `amount`, `paid_by_name`, `split` | Writes the expense, returns a spoken summary |
+| `add_expense` | `group_name`, `description`, `amount`, `paid_by_name`, `split`, `split_amounts[]` | Writes the expense, returns a spoken summary |
 | `get_balances` | `group_name?` | One sentence of balances |
 | `mark_settled` | `from_name`, `to_name`, `amount`, `group_name?` | Records a payment |
 | `list_receivable` | `debtor_name`, `amount?` | Prices a tally and speaks the rationale |
 | `log_cash_spending` | `description`, `amount`, `category?` | Check-in mode → `personal_transactions` |
+| `complete_checkin` | `summary` | Stores the two-sentence recap that closes a weekly tally |
 | `fix_last_entry` | `what?` | Takes the last entry back out so it can be restated |
 
 ---

@@ -3,6 +3,7 @@
 import {
   addExpenseTool,
   addFriend,
+  completeCheckin,
   completeOnboarding,
   createGroup,
   fixLastEntry,
@@ -39,6 +40,7 @@ export function buildClientTools(onResult: (event: ToolEvent) => void) {
   return {
     save_profile_field: wrap("save_profile_field", saveProfileField),
     complete_onboarding: wrap("complete_onboarding", completeOnboarding),
+    complete_checkin: wrap("complete_checkin", completeCheckin),
     add_friend: wrap("add_friend", addFriend),
     create_group: wrap("create_group", createGroup),
     add_expense: wrap("add_expense", addExpenseTool),

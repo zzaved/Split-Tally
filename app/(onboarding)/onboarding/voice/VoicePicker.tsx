@@ -83,8 +83,16 @@ export function VoicePicker({ voices, current }: { voices: Voice[]; current: str
                     active && "ring-2 ring-cobalt ring-offset-4 ring-offset-cream",
                     playing === voice.key && "animate-pulse",
                   )}
+                  style={
+                    {
+                      "--voice-pool-a": voice.poolA,
+                      "--voice-pool-b": voice.poolB,
+                    } as React.CSSProperties
+                  }
                 >
                   <span className="voice-orb-aurora" style={{ background: voice.gradient }} />
+                  <span className="voice-orb-pool voice-orb-pool--1" />
+                  <span className="voice-orb-pool voice-orb-pool--2" />
                   <span className="voice-orb-gloss" />
                 </span>
                 <span className="sr-only">

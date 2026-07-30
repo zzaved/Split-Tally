@@ -263,6 +263,13 @@ export async function addExpenseTool(params: {
   paid_by_name?: string;
   /** "equal", or a map of name to amount. */
   split?: string | Record<string, number>;
+  /**
+   * Uneven splits. Kept separate from `split` because a parameter that is
+   * sometimes a word and sometimes a structure is awkward for an agent to fill
+   * in reliably. Accepts a list of {name, amount} — which is what the agent's
+   * schema can express — or a plain name-to-amount map from any other caller.
+   */
+  split_amounts?: Record<string, number> | { name?: string; amount?: number }[];
 }): Promise<string> {
   const { supabase, userId } = await context();
   if (!userId) return NO_SESSION;
@@ -289,12 +296,19 @@ export async function addExpenseTool(params: {
     paidBy = match.profile.id;
   }
 
-  const isMap = params.split && typeof params.split === "object";
+  const explicit = normaliseShares(
+    params.split_amounts ??
+      (params.split && typeof params.split === "object"
+        ? (params.split as Record<string, number>)
+        : undefined),
+  );
+
+  const isMap = Boolean(explicit && Object.keys(explicit).length > 0);
   const values: Record<string, number> = {};
   const participants: string[] = [];
 
-  if (isMap) {
-    for (const [rawName, amount] of Object.entries(params.split as Record<string, number>)) {
+  if (isMap && explicit) {
+    for (const [rawName, amount] of Object.entries(explicit)) {
       const match =
         normalizeName(rawName) === "me"
           ? ({ status: "one", profile: { id: userId } } as const)
@@ -323,6 +337,25 @@ export async function addExpenseTool(params: {
     paidBy === userId ? "you" : firstName(people.find((p) => p.id === paidBy)?.name ?? "they");
 
   return `Saved: ${params.description}, ${formatMoney(Number(params.amount), group.currency)}, ${payerName} paid, split in ${group.name}.`;
+}
+
+/** Folds either accepted shape of `split_amounts` into one name-to-amount map. */
+function normaliseShares(
+  input: Record<string, number> | { name?: string; amount?: number }[] | undefined,
+): Record<string, number> | undefined {
+  if (!input) return undefined;
+
+  if (Array.isArray(input)) {
+    const out: Record<string, number> = {};
+    for (const entry of input) {
+      const name = String(entry?.name ?? "").trim();
+      const amount = Number(entry?.amount);
+      if (name && Number.isFinite(amount)) out[name] = amount;
+    }
+    return Object.keys(out).length ? out : undefined;
+  }
+
+  return Object.keys(input).length ? input : undefined;
 }
 
 export async function getBalances(params: { group_name?: string }): Promise<string> {
@@ -479,6 +512,30 @@ async function dedupHash(userId: string, date: string, amount: number, descripti
 }
 
 /**
+ * Closes the weekly tally (BUILD.MD §5.6). The agent's two-sentence recap is
+ * the thing worth keeping, so it is stored verbatim and shown back in the
+ * check-in history on /money.
+ */
+export async function completeCheckin(params: { summary: string }): Promise<string> {
+  const { supabase, userId } = await context();
+  if (!userId) return NO_SESSION;
+
+  const summary = String(params.summary ?? "").trim();
+  if (!summary) return "Give me a sentence or two about the week and I will file it.";
+
+  const { error } = await supabase.from("checkins").insert({ user_id: userId, summary });
+  if (error) return "That recap did not save, but everything you told me is already in.";
+
+  await recordActivity(supabase, userId, [
+    { userId, type: "checkin_done", payload: { summary } },
+  ]);
+
+  revalidatePath("/dashboard");
+  revalidatePath("/money");
+  return "Filed. That is your week tallied.";
+}
+
+/**
  * Fixing what is already in the ledger, out loud. Correcting a mistake is
  * exactly the moment people abandon a spreadsheet, so the assistant takes the
  * entry back out and invites the user to restate it in one sentence rather
@@ -617,5 +674,3 @@ async function suggestPrice(input: {
   const { priceFromStats } = await import("@/lib/pricing");
   return priceFromStats(input);
 }
-
-export type { Profile };

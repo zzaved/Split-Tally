@@ -214,7 +214,7 @@
     );
     filter: blur(calc(var(--orb-size) * 0.1));
     opacity: 0.8;
-    animation: orb-spin 20s linear infinite;
+    animation: orb-sweep 20s ease-in-out infinite;
   }
 
   .orb-aurora--2 {
@@ -227,7 +227,7 @@
     filter: blur(calc(var(--orb-size) * 0.06));
     mix-blend-mode: screen;
     opacity: 0.95;
-    animation: orb-spin-rev 15s linear infinite;
+    animation: orb-drift-a 15s ease-in-out infinite;
   }
 
   .orb-aurora--3 {
@@ -240,7 +240,7 @@
     filter: blur(calc(var(--orb-size) * 0.07));
     mix-blend-mode: screen;
     opacity: 0.9;
-    animation: orb-spin 26s linear infinite;
+    animation: orb-drift-b 21s ease-in-out infinite;
   }
 
   .orb-aurora--4 {
@@ -248,7 +248,7 @@
     filter: blur(calc(var(--orb-size) * 0.05));
     mix-blend-mode: screen;
     opacity: 0.85;
-    animation: orb-spin-rev 34s linear infinite;
+    animation: orb-drift-c 27s ease-in-out infinite;
   }
 
   .orb-gloss {
@@ -275,10 +275,14 @@
   }
 
   .orb[data-state="thinking"] .orb-aurora--1 {
-    animation-duration: 4s;
+    animation-duration: 5s;
   }
 
   .orb[data-state="thinking"] .orb-aurora--2 {
+    animation-duration: 4s;
+  }
+
+  .orb[data-state="thinking"] .orb-aurora--3 {
     animation-duration: 6s;
   }
 
@@ -331,7 +335,41 @@
     filter: blur(calc(var(--voice-orb-size) * 0.1));
     opacity: 0.85;
     transform-origin: 50% 50%;
-    animation: orb-spin 22s linear infinite;
+    animation: orb-sweep 22s ease-in-out infinite;
+  }
+
+  /* Two light pools in the voice's own colours, wandering at different rates
+     so the halo inside the sphere reads as an aura rather than a spinning
+     wheel. Colours arrive as custom properties from lib/voices.ts. */
+  .voice-orb-pool {
+    position: absolute;
+    inset: calc(var(--voice-orb-size) * -0.25);
+    mix-blend-mode: screen;
+    transform-origin: 50% 50%;
+  }
+
+  .voice-orb-pool--1 {
+    background: radial-gradient(
+      circle at 34% 30%,
+      var(--voice-pool-a) 0%,
+      color-mix(in srgb, var(--voice-pool-a) 28%, transparent) 20%,
+      transparent 46%
+    );
+    filter: blur(calc(var(--voice-orb-size) * 0.07));
+    opacity: 0.9;
+    animation: orb-drift-a 13s ease-in-out infinite;
+  }
+
+  .voice-orb-pool--2 {
+    background: radial-gradient(
+      circle at 68% 70%,
+      var(--voice-pool-b) 0%,
+      color-mix(in srgb, var(--voice-pool-b) 24%, transparent) 22%,
+      transparent 48%
+    );
+    filter: blur(calc(var(--voice-orb-size) * 0.08));
+    opacity: 0.85;
+    animation: orb-drift-b 19s ease-in-out infinite;
   }
 
   .voice-orb-gloss {
@@ -436,7 +474,8 @@
     }
 
     .orb-aurora,
-    .voice-orb-aurora {
+    .voice-orb-aurora,
+    .voice-orb-pool {
       animation: none;
     }
 
@@ -484,6 +523,57 @@
 @keyframes orb-spin-rev {
   to {
     transform: rotate(-360deg);
+  }
+}
+
+/* An aurora does not orbit; it wanders and swells. Each of these folds a slow
+   rotation together with a drift and a change of size, at periods that do not
+   divide into each other, so the light never repeats the same arrangement. */
+@keyframes orb-sweep {
+  0% {
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    transform: rotate(180deg) scale(1.09);
+  }
+  100% {
+    transform: rotate(360deg) scale(1);
+  }
+}
+
+@keyframes orb-drift-a {
+  0%,
+  100% {
+    transform: rotate(0deg) translate(0, 0) scale(1);
+  }
+  33% {
+    transform: rotate(118deg) translate(7%, -5%) scale(1.14);
+  }
+  66% {
+    transform: rotate(242deg) translate(-6%, 6%) scale(0.92);
+  }
+}
+
+@keyframes orb-drift-b {
+  0%,
+  100% {
+    transform: rotate(0deg) translate(0, 0) scale(1.06);
+  }
+  40% {
+    transform: rotate(-140deg) translate(-8%, -7%) scale(0.88);
+  }
+  75% {
+    transform: rotate(-260deg) translate(5%, 8%) scale(1.12);
+  }
+}
+
+@keyframes orb-drift-c {
+  0%,
+  100% {
+    transform: rotate(0deg) translate(0, 0) scale(0.98);
+  }
+  50% {
+    transform: rotate(200deg) translate(-4%, -9%) scale(1.16);
   }
 }
 

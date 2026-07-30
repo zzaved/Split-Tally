@@ -8,6 +8,7 @@ import { ButtonLink } from "@/components/ink/Button";
 import { Card, SectionHeading } from "@/components/ink/Card";
 import { EmptyState } from "@/components/ink/EmptyState";
 import { TallyMarks } from "@/components/ink/TallyMarks";
+import { StartCheckin } from "./StartCheckin";
 import { daysBetween } from "@/lib/format";
 import {
   getActivity,
@@ -78,7 +79,7 @@ export default async function DashboardPage() {
         </div>
 
         {checkinDue ? (
-          <WeeklyTallyCard days={daysSinceCheckin} />
+          <WeeklyTallyCard days={daysSinceCheckin} voiceId={profile.voice_id} />
         ) : (
           <LastCheckinCard summary={lastCheckin?.summary ?? null} days={daysSinceCheckin ?? 0} />
         )}
@@ -168,7 +169,7 @@ export default async function DashboardPage() {
 
 /* ------------------------------------------------------------------ */
 
-function WeeklyTallyCard({ days }: { days: number | null }) {
+function WeeklyTallyCard({ days, voiceId }: { days: number | null; voiceId: string | null }) {
   return (
     <Card className="relative flex h-fit flex-col overflow-hidden p-8 md:sticky md:top-24">
       <BrushStroke
@@ -189,7 +190,7 @@ function WeeklyTallyCard({ days }: { days: number | null }) {
       </div>
 
       <div className="relative mt-8 flex items-center gap-4">
-        <ButtonLink href="/money?checkin=1">Start the tally</ButtonLink>
+        <StartCheckin voiceId={voiceId} />
         <TallyMarks count={3} max={3} size="md" tone="soft" />
       </div>
     </Card>

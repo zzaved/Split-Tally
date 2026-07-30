@@ -96,7 +96,14 @@ function SheetBody({
   const conversation = useConversation({
     clientTools: buildClientTools(onToolResult),
     onMessage: ({ message, source }) => {
-      setLines((current) => [...current, { from: source === "user" ? "you" : "orb", text: message }]);
+      setLines((current) => {
+        const from = source === "user" ? ("you" as const) : ("orb" as const);
+        const last = current[current.length - 1];
+        // A typed message is added locally on send; if the SDK ever starts
+        // echoing it too, do not show it twice.
+        if (last && last.from === from && last.text === message) return current;
+        return [...current, { from, text: message }];
+      });
 
       if (source === "user") {
         // Hold the recognised sentence briefly so you can check it went in
@@ -157,11 +164,16 @@ function SheetBody({
       setNotice(null);
 
       try {
-        const response = await fetch("/api/voice/token", { cache: "no-store" });
+        const response = await fetch(
+          asText ? "/api/voice/token?transport=text" : "/api/voice/token",
+          { cache: "no-store" },
+        );
         const data = (await response.json()) as {
           mode?: string;
+          transport?: "webrtc" | "websocket";
           agentId?: string;
           conversationToken?: string;
+          signedUrl?: string;
           error?: string;
         };
 
@@ -185,14 +197,16 @@ function SheetBody({
           }
         }
 
-        const session = data.conversationToken
-          ? { conversationToken: data.conversationToken }
-          : { agentId: data.agentId! };
+        // Typed conversations run over a WebSocket and never touch the audio
+        // pipeline; spoken ones run over WebRTC.
+        const session = data.signedUrl
+          ? ({ signedUrl: data.signedUrl, connectionType: "websocket" } as const)
+          : data.conversationToken
+            ? ({ conversationToken: data.conversationToken, connectionType: "webrtc" } as const)
+            : ({ agentId: data.agentId!, connectionType: "webrtc" } as const);
 
         conversation.startSession({
           ...session,
-          // A minted token and a bare public agent id both open over WebRTC.
-          connectionType: "webrtc",
           textOnly: asText,
           overrides: {
             ...(voiceId ? { tts: { voiceId } } : {}),
@@ -216,6 +230,9 @@ function SheetBody({
     setDraft("");
 
     if (connected) {
+      // The SDK does not echo typed messages back through onMessage, so the
+      // line is added here — otherwise you press send and nothing appears.
+      setLines((current) => [...current, { from: "you", text: value }]);
       conversation.sendUserMessage(value);
     } else {
       setLines((current) => [

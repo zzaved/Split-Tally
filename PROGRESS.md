@@ -37,15 +37,28 @@ that blocks a split which does not add up. Settling with the outstanding amount 
 Min-cash-flow simplification stated in plain English; applying it records suggestions rather than
 settling anything.
 
-## Stage 4 — Voice ✅ (needs keys to speak)
+## Stage 4 — Voice ✅ (live)
 
 `VoiceSheet` with the orb, live captions, italic "on its way to the assistant" line, ConfirmChips
 and a persistent text input; `DockedOrb` on every authenticated page; the voice picker and the
-spoken onboarding with its manual fallback. Ten client tools wired to server actions, all funnelling
+spoken onboarding with its manual fallback. Eleven client tools wired to server actions, all funnelling
 into the same validation the forms use.
 
-Without an agent id the sheet opens and says so calmly, and every path it covers is reachable by
-form. **Add `NEXT_PUBLIC_ELEVENLABS_AGENT_ID` and `ELEVENLABS_API_KEY` to hear it.**
+The agent is created and wired. Verified end to end against the real ledger:
+
+> **you** — What am I owed right now?
+> **orb** — Paulo owes you €50, and Sofia owes you $848. You owe Marina $35.
+
+> **you** — I paid 62 euros for lunch with Paulo in Barcelona Trip, split it equally.
+> **orb** — You paid 62 euros for lunch with Paulo in the Barcelona Trip group, split equally. Is that right?
+> **you** — Yes.
+> **orb** — Got it. I've added 62 euros for lunch in the Barcelona Trip group, split equally.
+
+The written row came back `created_via='voice'` with four split rows summing to exactly 62.00, and
+was then removed so the seeded balances stay as documented.
+
+Without an agent id the sheet still opens, says so calmly, and every path it covers stays reachable
+by form.
 
 ## Stage 5 — Statement import and money ✅ (needs an Anthropic key to read images)
 
@@ -81,6 +94,13 @@ favicon, reduced-motion handling, focus rings, and colour never carrying meaning
 
 ## Fixed along the way
 
+- Text mode ran over WebRTC, which connects and then drops the room because nothing ever uses the
+  audio transport. Typing now runs over a WebSocket with a signed URL and needs no microphone.
+- A typed message only appeared in the transcript if the SDK echoed it back, which it does not — so
+  you pressed send and nothing happened. The line is added locally now.
+- `app/(app)/voice/actions.ts` ended with `export type { Profile }`. A `"use server"` file may only
+  export async functions, and the transform turned it into a runtime re-export that threw
+  `ReferenceError: Profile is not defined` on every tool call.
 - `tailwind-merge` read the numeric type scale (`text-12`) as a colour and was dropping
   `text-cream` from primary buttons, leaving navy-on-cobalt. The scale is now declared to it.
 - `scoreStatsFor` counted `exchange_transfer` as a settled debt, so a debtor's Tally Score improved
@@ -88,10 +108,6 @@ favicon, reduced-motion handling, focus rings, and colour never carrying meaning
 
 ## Deliberately deferred
 
-- **Weekly Tally check-in mode is reachable but not yet its own flow.** The dashboard card and the
-  `checkin` mode exist in `VoiceSheet`; the card currently routes to `/money`. Wiring it to open
-  the sheet in check-in mode directly is a small change in
-  `app/(app)/dashboard/page.tsx`.
 - **Group rename and archive** have a server action (`renameGroup`) but no UI yet.
 - **Account deletion** is described in settings rather than implemented.
 - **OG image** — metadata and Twitter card are set, but the cream-and-strokes `opengraph-image` is
