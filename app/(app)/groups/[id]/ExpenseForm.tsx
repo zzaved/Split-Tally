@@ -10,6 +10,7 @@ import { resolveSplit, type SplitMode } from "@/lib/ledger";
 import { CATEGORIES } from "@/lib/types";
 import type { Profile } from "@/lib/types";
 import type { RiskNote } from "@/lib/score";
+import { spokenNumber } from "@/lib/spoken";
 import { cn } from "@/lib/utils";
 import { GuidedFill, type FillStep } from "@/components/voice/GuidedFill";
 import { addExpenseForm, type ActionResult } from "../actions";
@@ -117,8 +118,8 @@ export function ExpenseForm({
         name: "amount",
         question: `How much, in ${currency}?`,
         parse: (heard) => {
-          const match = heard.replace(/,/g, ".").match(/\d+(?:\.\d{1,2})?/);
-          return match ? match[0] : "";
+          const spoken = spokenNumber(heard);
+          return spoken === null ? "" : String(spoken);
         },
         validate: (v) => (!v || Number(v) <= 0 ? "I need a number above zero." : null),
       },
