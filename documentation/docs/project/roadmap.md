@@ -117,7 +117,9 @@ the place where it matters.
   [Setup and deployment](../using-it/setup-and-deployment), each has an explicit ownership check
   written in code before the call, and each exists because the flow genuinely cannot be expressed as a
   policy. Everything else goes through the user's own client.
-- **Test data is still on the demo account.** The QA pass left three managed contacts and four test
-  groups behind. Groups can now be put away through the interface; the contacts cannot be removed
-  yet, which is why removing a friend is on the list above.
+- **Removing a friend is not possible through the interface.** The QA pass left three managed
+  contacts and four test groups behind, and only the groups could be cleared through a screen. The
+  contacts had to be deleted in the database, which is not a thing a person using the app can do,
+  and is why removing a friend is on the list above. The demo account is back to its seeded state:
+  four groups, and Paulo and Sofia as the two managed contacts.
 - **Voice is English.** The agent mirrors the language in text and speaks English.
