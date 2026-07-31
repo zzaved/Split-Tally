@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-16 -8 232 256" fill="none" role="img" aria-label="Split Tally"><rect x="-16" y="-8" width="232" height="256" rx="48" fill="#f4f0e5"/>
+  <g stroke="#2547c9" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-width="12">
+    <path d="M28 104C24 46 74 16 100 16C126 16 176 46 172 104"/>
+    <path d="M28 104C48 118 60 92 82 106C104 120 116 92 138 106C158 118 166 96 172 104"/>
+    <path d="M58 110C50 140 64 168 54 206" stroke-width="10"/>
+    <path d="M79 113C71 145 85 173 75 211" stroke-width="10"/>
+    <path d="M100 114C92 147 106 175 96 214" stroke-width="10"/>
+    <path d="M121 113C113 145 127 173 117 210" stroke-width="10"/>
+    <path d="M44 200C73 181 104 158 137 127" stroke-width="10"/>
+  </g>
+</svg>

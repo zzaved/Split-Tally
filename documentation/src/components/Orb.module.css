@@ -1,0 +1,116 @@
+.shell {
+  width: var(--orb-size);
+  height: var(--orb-size);
+  position: relative;
+  flex: none;
+}
+
+.body {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  overflow: hidden;
+  /* WebKit does not clip blended children to a rounded box on its own, so the
+     mask and the compositing hint are both load bearing on mobile Safari. */
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 99%, transparent 100%);
+  mask-image: radial-gradient(circle at 50% 50%, #000 99%, transparent 100%);
+  transform: translateZ(0);
+  background: #1a2a63;
+  box-shadow: 0 18px 50px rgba(27, 43, 107, 0.28);
+}
+
+.aurora {
+  position: absolute;
+  inset: calc(var(--orb-size) * -0.25);
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.a1 {
+  background: conic-gradient(
+    from 210deg,
+    #2547c9 0deg,
+    #35c8e8 68deg,
+    #6e4bff 152deg,
+    #3a1f9e 234deg,
+    #2547c9 360deg
+  );
+  filter: blur(calc(var(--orb-size) * 0.1));
+  opacity: 0.8;
+  animation: sweep 20s ease-in-out infinite;
+}
+
+.a2 {
+  background: radial-gradient(
+    circle at 34% 30%,
+    #35c8e8 0%,
+    rgba(53, 200, 232, 0.28) 20%,
+    transparent 44%
+  );
+  filter: blur(calc(var(--orb-size) * 0.06));
+  mix-blend-mode: screen;
+  opacity: 0.95;
+  animation: driftA 15s ease-in-out infinite;
+}
+
+.a3 {
+  background: radial-gradient(
+    circle at 70% 70%,
+    #7b5bff 0%,
+    rgba(123, 91, 255, 0.22) 22%,
+    transparent 46%
+  );
+  filter: blur(calc(var(--orb-size) * 0.07));
+  mix-blend-mode: screen;
+  opacity: 0.9;
+  animation: driftB 21s ease-in-out infinite;
+}
+
+.a4 {
+  background: radial-gradient(circle at 64% 22%, #2547c9 0%, transparent 38%);
+  filter: blur(calc(var(--orb-size) * 0.05));
+  mix-blend-mode: screen;
+  opacity: 0.85;
+  animation: driftC 27s ease-in-out infinite;
+}
+
+.gloss {
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background:
+    radial-gradient(circle at 34% 22%, rgba(255, 255, 255, 0.4) 0%, transparent 46%),
+    radial-gradient(circle at 50% 118%, rgba(255, 255, 255, 0.14) 0%, transparent 40%);
+}
+
+@keyframes sweep {
+  0% { transform: rotate(0deg) scale(1.05); }
+  50% { transform: rotate(180deg) scale(1.14); }
+  100% { transform: rotate(360deg) scale(1.05); }
+}
+
+@keyframes driftA {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(9%, -7%) scale(1.12); }
+  66% { transform: translate(-6%, 8%) scale(0.94); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes driftB {
+  0% { transform: translate(0, 0) scale(1.04); }
+  40% { transform: translate(-10%, -5%) scale(0.92); }
+  75% { transform: translate(7%, 9%) scale(1.15); }
+  100% { transform: translate(0, 0) scale(1.04); }
+}
+
+@keyframes driftC {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-8%, 10%) scale(1.18); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora {
+    animation-duration: 90s;
+  }
+}

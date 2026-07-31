@@ -1,0 +1,139 @@
+/**
+ * Ink on Cream, carried over from the product.
+ *
+ * The tokens below are the same values the application uses in
+ * `app/globals.css`. Documentation that looks nothing like the thing it
+ * documents is its own small dishonesty, so this site is painted from the same
+ * palette rather than left on the default theme.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --st-cream: #f4f0e5;
+  --st-cream-deep: #ebe5d6;
+  --st-cobalt: #2547c9;
+  --st-navy: #1b2b6b;
+  --st-ink-soft: #5a679e;
+  --st-vermilion: #c0391b;
+
+  --ifm-color-primary: #2547c9;
+  --ifm-color-primary-dark: #2140b5;
+  --ifm-color-primary-darker: #1f3caa;
+  --ifm-color-primary-darkest: #1a318c;
+  --ifm-color-primary-light: #3a58d3;
+  --ifm-color-primary-lighter: #4763d6;
+  --ifm-color-primary-lightest: #6a81de;
+
+  --ifm-background-color: #f4f0e5;
+  --ifm-background-surface-color: #ebe5d6;
+  --ifm-font-color-base: #1b2b6b;
+  --ifm-heading-color: #1b2b6b;
+
+  --ifm-font-family-base: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --ifm-heading-font-family: 'Cormorant Garamond', Georgia, serif;
+  --ifm-heading-font-weight: 500;
+
+  --ifm-code-font-size: 92%;
+  --docusaurus-highlighted-code-line-bg: rgba(37, 71, 201, 0.1);
+}
+
+[data-theme='dark'] {
+  --ifm-color-primary: #7f9bff;
+  --ifm-color-primary-dark: #5d80ff;
+  --ifm-color-primary-darker: #4c72ff;
+  --ifm-color-primary-darkest: #1a4bff;
+  --ifm-color-primary-light: #a1b6ff;
+  --ifm-color-primary-lighter: #b2c4ff;
+  --ifm-color-primary-lightest: #e5eaff;
+
+  --ifm-background-color: #131a35;
+  --ifm-background-surface-color: #1b2445;
+  --ifm-font-color-base: #e8ecfb;
+  --ifm-heading-color: #f2f4ff;
+  --docusaurus-highlighted-code-line-bg: rgba(127, 155, 255, 0.16);
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: -0.01em;
+}
+
+.markdown h1:first-child {
+  font-size: 2.8rem;
+}
+
+/**
+ * Every numbered figure, flowchart and table is wrapped in this so the caption,
+ * the artwork and any source line centre together. Captions sit above the
+ * thing they name, which is how a reader finds them when scanning.
+ */
+.st-figure {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.st-figure img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--st-navy) 12%, transparent);
+  max-width: 100%;
+}
+
+[data-theme='dark'] .st-figure img {
+  border-color: rgba(232, 236, 251, 0.16);
+}
+
+.st-figure table {
+  margin-left: auto;
+  margin-right: auto;
+  display: table;
+}
+
+.st-figure p {
+  text-align: center;
+}
+
+.st-figure p strong {
+  color: var(--st-ink-soft);
+  font-weight: 500;
+}
+
+[data-theme='dark'] .st-figure p strong {
+  color: #a9b6e6;
+}
+
+.st-figure .docusaurus-mermaid-container,
+.st-figure .mermaid {
+  display: flex;
+  justify-content: center;
+}
+
+.docusaurus-mermaid-container {
+  display: flex;
+  justify-content: center;
+}
+
+/* Tables read as ledgers rather than as grids. */
+.markdown table th {
+  font-family: var(--ifm-font-family-base);
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--st-ink-soft);
+  font-weight: 500;
+}
+
+[data-theme='dark'] .markdown table th {
+  color: #a9b6e6;
+}
+
+/* Wide content scrolls inside its own box; the page never scrolls sideways. */
+.markdown table {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+}

@@ -1,0 +1,97 @@
+# The agents that built it
+
+Split Tally puts an agent in front of the user. It was also **built by a fleet of them**.
+
+That distinction matters for a competition about AI-native development. It is easy to add a chat
+box to a product and call it AI-native. What follows is the other half: the agents that did the
+work, what each one was given, and what each one came back with. Every agent below is a real
+Claude Code subagent that ran during this build, and the findings are the ones recorded in
+[what testing found](../project/quality.md).
+
+One of them is a permanent part of the repository. The rest were spawned for a task and reported
+back.
+
+## The one that stayed
+
+<AgentCard
+  name="qa-tester"
+  role="Committed to the repository"
+  model="Defined in .claude/agents/qa-tester.md"
+  built={<>Written as an agent definition file with its own frontmatter: a name, a description that decides when it gets picked, a restricted tool list, and a system prompt that sets its method. It drives a real browser with Playwright, tests at 1440x900 and at 375x812, and is explicitly forbidden from editing application code, committing, or touching the database except through the interface.</>}
+  did={<>Defines what counts as a finding, and the definition is the interesting part. Four classes: <strong>broken</strong>, <strong>wrong</strong>, <strong>stressful</strong> and <strong>cramped</strong>. The third is the one that matters for this product: anything that makes a person hesitate, wait without being told they are waiting, or feel they might have broken something.</>}
+  found={<>Its standing rule is that a claim without a number, a message or a screenshot is a guess and must be labelled as one. That rule is why the reports below are usable.</>}
+/>
+
+## The four that ran the pass
+
+Each was given a slice of the [QA map](https://github.com/zzaved/Split-Tally/blob/main/QA.md),
+told to follow the tester definition, and run in parallel against one development server. They
+wrote and executed their own Playwright scripts.
+
+<AgentCard
+  name="Entering and leaving, shell and layout"
+  role="Sections A and B"
+  model="95 checks, 77 passed"
+  built={<>Given the auth and layout sections, real Supabase signup accounts to create, and an instruction to push hard on sign out, because an earlier bug had silently returned every sign out to the demo user.</>}
+  did={<>Signed up, onboarded, signed out, signed back in, opened two tabs, went back in history, and swept every route at both viewports collecting console errors and measuring body overflow.</>}
+  found={<>The worst finding of the whole pass, and one no single-tab test would reach: signing out in one tab left every other open tab fully rendered and clickable, showing the previous person's name and balances. It also measured three tap targets under 40px and found the Exchange overflowing 116px on a phone.</>}
+/>
+
+<AgentCard
+  name="The ledger and the score"
+  role="Sections C and D"
+  model="17 checks, 13 passed"
+  built={<>Given the money sections and told to read <code>lib/ledger.ts</code> and <code>lib/score.ts</code> so it could check the screens against what the formulas actually say rather than against its own intuition.</>}
+  did={<>Rebuilt the entire seeded ledger by hand from <code>supabase/seed.sql</code>, scoped it to what the row level security policies actually return for that user, and compared every figure on screen as an exact string.</>}
+  found={<>A crash: typing an amount in an exact split and then unchecking somebody threw straight through React's state reducer and took the form with it. It also caught its own error first, flagging a balance mismatch that turned out to be correct once row level security scoping was accounted for, and said so.</>}
+/>
+
+<AgentCard
+  name="The exchange and the guided walk"
+  role="Sections E and F"
+  model="20 checks, 10 passed with hard evidence"
+  built={<>Given the marketplace and the voice-driven form filling, plus an instruction to instrument <code>getUserMedia</code> before navigating and to watch the real transcription websocket.</>}
+  did={<>Measured the microphone lifecycle rather than judging it: one acquisition and one socket for an entire guided walk, on two different flows, confirmed twice each.</>}
+  found={<>That the sell walk gave up waiting for the AI price after fifteen seconds and then signed off with "That is everything, have a look and save it" while the screen still showed nothing to save.</>}
+/>
+
+<AgentCard
+  name="Stress and edges"
+  role="Section I"
+  model="16 checks, 10 passed"
+  built={<>Given the abuse cases: double presses, denied permissions, reduced motion, keyboard-only navigation, and a latency sweep of every route.</>}
+  did={<>Triple-pressed every submit button in the application and checked the database effect through the interface, then denied the microphone and watched what the app said about it.</>}
+  found={<>Two blockers. Double-pressing "List it" created duplicate listings, which turned out to be a deeper hole than a double submit: the same debt could be sold twice over. And refusing the microphone dropped a person into a text conversation with no explanation at all.</>}
+/>
+
+## The three that wrote this site
+
+<AgentCard
+  name="Documentation fleet"
+  role="Three agents, one shared brief"
+  model="Split by section, not by file count"
+  built={<>Given a binding conventions document, a figure register with reserved number ranges so no two writers could collide on <em>Figure 3</em>, and a rule that every claim must be verified against the code before it is written.</>}
+  did={<>One wrote the framing documents, one the technical section, one the usage and project section. They read the repository rather than the specification wherever the two could disagree, and reported anything that contradicted it.</>}
+/>
+
+<AgentCard
+  name="Script and animation direction"
+  role="Creative"
+  model="Reads the real CSS, not a description of it"
+  built={<>Given the competition's judging weights, the product specification, and the actual stylesheet, then told to write the demo video beat by beat and to specify the animations from the real colour tokens and the real orb construction rather than inventing a look.</>}
+  did={<>Produced the narrated script with a scene under every line, and a brief precise enough for a design tool to generate the animations to match the product's own hand.</>}
+/>
+
+## Why this is in the documentation and not in a footnote
+
+The judging weights AI Integration at 30 percent, and the question behind that number is whether AI
+is the core of how the thing was made or a feature on top of it. The honest answer for this project
+is visible in two places: the interface, where an agent holds thirteen tools that write the real
+ledger, and here, where a fleet of agents mapped the surface, drove the browsers, found the
+blockers, and wrote the pages you are reading.
+
+The failures are part of the argument. One agent filed a blocker that was wrong, because a
+cosmetic display bug made withdrawn listings look active and it retried four times before
+concluding the feature was broken. That is recorded in full in
+[what testing found](../project/quality.md), because a QA record that hides its own mistakes is
+not worth reading.
