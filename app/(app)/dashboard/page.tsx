@@ -147,7 +147,7 @@ export default async function DashboardPage() {
             />
           </Card>
         ) : (
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {activeGroups.map((group) => {
               const memberIds = memberships
                 .filter((m) => m.group_id === group.id)

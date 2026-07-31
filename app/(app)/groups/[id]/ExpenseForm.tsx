@@ -153,7 +153,7 @@ export function ExpenseForm({
         <input key={id} type="hidden" name="participants" value={id} />
       ))}
 
-      <div className="grid gap-5 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
         <Field label="What was it" htmlFor="description" className="sm:col-span-2">
           <Input id="description" name="description" placeholder="Dinner at Can Pep" required />
         </Field>

@@ -101,7 +101,7 @@ export default async function ExchangePage() {
                 />
               </Card>
             ) : (
-              <div className="mt-6 grid gap-5 xl:grid-cols-2">
+              <div className="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-2">
                 {open.map((listing) => (
                   <ListingCard
                     key={listing.id}
@@ -120,7 +120,7 @@ export default async function ExchangePage() {
           {mine.length > 0 && (
             <section>
               <SectionHeading eyebrow="Yours" title="My listings" />
-              <div className="mt-6 grid gap-5 xl:grid-cols-2">
+              <div className="mt-6 grid grid-cols-1 gap-5 xl:grid-cols-2">
                 {mine.map((listing) => (
                   <div key={listing.id} className="flex flex-col gap-3">
                     <ListingCard

@@ -121,7 +121,10 @@ export function ListingCard({
   );
 
   const shell = cn(
-    "relative flex flex-col rounded-card border border-navy/10 bg-cream-deep/60 p-6 shadow-ink-sm",
+    // `min-w-0` because a grid item defaults to `min-width: auto` and will not
+    // shrink below its own content. One long debtor name was enough to widen
+    // the card, the grid and the whole page past the screen.
+    "relative flex min-w-0 flex-col rounded-card border border-navy/10 bg-cream-deep/60 p-6 shadow-ink-sm",
     listing.status === "withdrawn" && "opacity-60",
   );
 
