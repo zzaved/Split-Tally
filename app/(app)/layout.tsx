@@ -50,7 +50,10 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
           voiceId: profile.voice_id,
         }}
       >
-        <main id="main" className="shell w-full flex-1 pt-8 pb-32 md:pb-24">
+        {/* The orb is fixed 96px up and is 64px tall, so it owns the bottom
+            160px of the screen. The padding was 128, which left the last line
+            of a scrolled-to-the-end page sitting underneath it. */}
+        <main id="main" className="shell w-full flex-1 pt-8 pb-44 md:pb-28">
           {children}
         </main>
       </VoiceDock>
