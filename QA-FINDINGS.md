@@ -192,7 +192,68 @@ asks again without losing the earlier ones; the discount clamp holds at 2 and
 
 ## I, stress and edges
 
-Filled in from the fourth tester's report.
+16 checks plus a latency sweep, 10 passed.
+
+**[blocker] Double-pressing "List it" created duplicate listings.**
+Worse than a double-submit: the check compared each listing to the full
+balance on its own and never looked at what was already on the market, so the
+same fifty euros could be listed as many times as you liked and two buyers
+would each have been promised it.
+→ What is already open counts against what is left to sell. Three synchronous
+presses now produce exactly one listing, measured.
+
+**[blocker] Refusing the microphone dropped you into a text chat with no
+explanation.** The notice that says so was written inside the not-yet-connected
+branch, and the text fallback connects, so the branch had stopped rendering by
+the time there was anything to show. The mic button simply vanished.
+
+**[major] The guided panel had the same silence in a worse form**, sitting on
+"Listening…" indefinitely with nothing to hear.
+→ A refusal is now its own state. There is nothing to fall back to when both
+engines want the same device.
+
+**[minor] No route announced a slow navigation.** No loading state existed
+anywhere, so a slow page left the previous one frozen with the tab spinner as
+the only clue.
+
+Passed: triple-pressing create-group, record-expense and settle each produced
+exactly one row; every control on the dashboard reachable by keyboard with a
+visible focus ring; the colour scheme holds under a dark OS theme.
+
+### One finding that was not a finding
+
+The fourth tester reported, as a blocker, that sellers could not withdraw their
+own listings: five listings on screen, zero controls, reproduced three times.
+
+It was real as an observation and wrong as a diagnosis. All five were already
+withdrawn, so the absence of a control was correct. They read as open because
+of the display bug the third tester filed as *minor*: a withdrawn listing said
+"Listed today". The withdrawals had worked, the screen denied it, and the
+tester retried and concluded the feature was broken.
+
+Worth recording, because it is the clearest evidence in this pass that a
+cosmetic bug is not cosmetic. It cost one agent four attempts and produced a
+false blocker in a report.
+
+### Latency
+
+Measured under five concurrent sessions, so read it as an upper bound. The one
+figure that held up on re-check: `/score` stayed near ten seconds on desktop
+even warm. Worth root-causing on a quiet server before drawing conclusions
+about any other route.
+
+---
+
+## Left behind
+
+Test data on the demo account that the app could not remove at the time:
+managed contacts `QaBravo`, `QaCharlie` and `zz-QA4-Shared-Friend-…`, and four
+test groups. The three duplicate listings are withdrawn. Groups can now be put
+away through the interface; friends still cannot be removed, which is the next
+gap of this kind.
+
+Nine `qa1+…@example.com` accounts were created in Supabase auth by the signup
+checks.
 
 ---
 
