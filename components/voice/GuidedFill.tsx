@@ -145,19 +145,35 @@ export function GuidedFill({
     // number that is not on screen yet.
     if (current()?.ready && !current()!.ready!()) {
       setPhase("waiting");
-      await new Promise<void>((resolve) => {
+      const arrived = await new Promise<boolean>((resolve) => {
         const id = window.setInterval(() => {
           if (current()?.ready?.() !== false) {
             window.clearInterval(id);
-            resolve();
+            resolve(true);
           }
         }, 200);
-        // Never trap the walk on something that is not coming.
         window.setTimeout(() => {
           window.clearInterval(id);
-          resolve();
-        }, 15000);
+          resolve(false);
+        }, 20000);
       });
+
+      // If it never arrived, say so and stand down.
+      //
+      // This used to carry on and ask the question anyway, with the fallback
+      // wording, and then finish with "That is everything, have a look and
+      // save it" while the screen was still reading "Reading Paulo's
+      // record…" with no price and nothing to save. Claiming to be done is
+      // worse than admitting the wait.
+      if (!arrived) {
+        dictation.stop();
+        audioRef.current?.pause();
+        setTarget(null);
+        setActive(false);
+        setPhase("idle");
+        await speak("That is taking longer than it should. I will leave it on screen for you.");
+        return;
+      }
     }
 
     setPhase("asking");

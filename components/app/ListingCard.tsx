@@ -3,6 +3,7 @@ import { AmountDisplay } from "@/components/ink/AmountDisplay";
 import { Avatar } from "@/components/ink/Card";
 import { OrbGlyph } from "@/components/ink/Orb";
 import { TallyMarks } from "@/components/ink/TallyMarks";
+import { cn } from "@/lib/utils";
 import { daysBetween, formatMoney } from "@/lib/format";
 import { BAND_LABEL, scoreBand, scoreClusters, type ScoreInput } from "@/lib/score";
 import type { Listing, Profile } from "@/lib/types";
@@ -104,18 +105,25 @@ export function ListingCard({
       <div className="mt-5 flex items-center justify-between text-12 text-ink-soft">
         <span>
           {seller ? `Sold by ${seller.name}` : "Listed"} ·{" "}
+          {/* A withdrawn listing used to read "Listed today" with no controls,
+              so it was indistinguishable from a live one you simply could not
+              act on. */}
           {listing.status === "sold"
             ? "Sold"
-            : openDays === 0
-              ? "Listed today"
-              : `Open for ${openDays} ${openDays === 1 ? "day" : "days"}`}
+            : listing.status === "withdrawn"
+              ? "Taken down"
+              : openDays === 0
+                ? "Listed today"
+                : `Open for ${openDays} ${openDays === 1 ? "day" : "days"}`}
         </span>
       </div>
     </>
   );
 
-  const shell =
-    "relative flex flex-col rounded-card border border-navy/10 bg-cream-deep/60 p-6 shadow-ink-sm";
+  const shell = cn(
+    "relative flex flex-col rounded-card border border-navy/10 bg-cream-deep/60 p-6 shadow-ink-sm",
+    listing.status === "withdrawn" && "opacity-60",
+  );
 
   if (!href) return <div className={shell}>{body}</div>;
 

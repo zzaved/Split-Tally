@@ -78,6 +78,11 @@ export function useLiveTranscript() {
       return;
     }
 
+    // One socket covers the whole walk, so every question after the first was
+    // minting a fresh single-use token and throwing it away when `connect`
+    // no-opped. A round trip and a token per question, for nothing.
+    if (scribe.isConnected) return;
+
     try {
       const response = await fetch("/api/voice/scribe-token", { cache: "no-store" });
       if (!response.ok) {
