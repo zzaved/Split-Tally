@@ -146,8 +146,35 @@ export async function createListing(
     (b) => b.personId === debtorId && b.currency === currency && b.amount > 0,
   );
 
-  if (!owed || faceValue > owed.amount + 0.01) {
+  if (!owed) {
     return { error: "You cannot list more than that person actually owes you." };
+  }
+
+  // What is already on the market counts against what is left to sell.
+  //
+  // Without this the check compared each listing to the full balance on its
+  // own, so the same fifty euros could be listed twice over: a double press on
+  // "List it" produced two live listings, and doing it deliberately produced
+  // as many as you liked. Two buyers would each have been promised the same
+  // debt.
+  const { data: alreadyOpen } = await supabase
+    .from("listings")
+    .select("face_value")
+    .eq("seller_id", userId)
+    .eq("debtor_id", debtorId)
+    .eq("currency", currency)
+    .eq("status", "open");
+
+  const listed = (alreadyOpen ?? []).reduce((sum, l) => sum + Number(l.face_value), 0);
+  const available = round2(owed.amount - listed);
+
+  if (faceValue > available + 0.01) {
+    return {
+      error:
+        listed > 0
+          ? "You have already listed that tally. Withdraw the listing first if you want to change it."
+          : "You cannot list more than that person actually owes you.",
+    };
   }
 
   const discountPct = ((faceValue - askingPrice) / faceValue) * 100;
