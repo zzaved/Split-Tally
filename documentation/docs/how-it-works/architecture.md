@@ -75,7 +75,7 @@ goes through `lib/anthropic.ts`, which is marked `import "server-only"`.
 
 <div className="st-figure">
 
-**Figure 17: The authenticated shell at 1440px, with the dashboard and the docked orb**
+**Figure 9: The authenticated shell at 1440px, with the dashboard and the docked orb**
 
 ![The dashboard at desktop width, showing balances, groups and the orb resting bottom right](/img/screens/dashboard-1440.png)
 
@@ -298,7 +298,7 @@ bucket never holds a full resolution photograph of somebody's bank statement.
 
 <div className="st-figure">
 
-**Figure 18: Choosing a statement screenshot, before anything is uploaded**
+**Figure 10: Choosing a statement screenshot, before anything is uploaded**
 
 ![The import screen with the choose and photograph options](/img/screens/import-choose.png)
 
@@ -361,7 +361,7 @@ all still runs, it just has fewer ways in.
 
 <div className="st-figure">
 
-**Figure 19: The orb saying plainly that the assistant is not connected on this deployment**
+**Figure 11: The orb saying plainly that the assistant is not connected on this deployment**
 
 ![The voice sheet showing the not-configured notice and pointing at the forms](/img/screens/voice-not-configured.png)
 
@@ -398,7 +398,7 @@ ledger stays in the currency each tally was made in.
 
 <div className="st-figure">
 
-**Figure 20: The same shell at 375px, with the five bottom tabs and the orb clear of them**
+**Figure 12: The same shell at 375px, with the five bottom tabs and the orb clear of them**
 
 ![The dashboard at phone width with hand drawn bottom tab glyphs](/img/screens/shell-375.png)
 

@@ -18,7 +18,7 @@ Live app: **https://split-tally-seven.vercel.app**. Repository:
 
 | Criterion | Weight | The evidence, in one line | Where to verify |
 |---|---|---|---|
-| AI Integration | 30% | Eight AI touchpoints. Thirteen client tools on a live ElevenLabs agent write to the ledger through the same server actions the forms use; four Anthropic routes on `claude-sonnet-4-6` read statements, categorise, price listings and write insights. | `components/voice/clientTools.ts`, `app/(app)/voice/actions.ts`, `app/api/parse-statement/`, `app/api/categorize/`, `app/api/price-listing/`, `app/api/insights/` |
+| AI Integration | 30% | Eleven AI touchpoints, enumerated one by one in Table 9. Thirteen client tools on a live ElevenLabs agent write to the ledger through the same server actions the forms use; four Anthropic routes on `claude-sonnet-4-6` read statements, categorise, price listings and write insights. | `components/voice/clientTools.ts`, `app/(app)/voice/actions.ts`, `app/api/parse-statement/`, `app/api/categorize/`, `app/api/price-listing/`, `app/api/insights/` |
 | Innovation and UX | 30% | Signup takes an email and a password; everything else is spoken. Receivables are priced and sold to other users. The identity is hand-drawn SVG with no dark mode, no glassmorphism and no gradient outside the orb. | `app/(auth)/signup/SignupForm.tsx`, `app/(app)/exchange/`, `components/ink/` |
 | Speed and Quality | 20% | 17 routes, 114 TypeScript files, 15,319 lines, built in 61 commits inside one working day. `tsc --noEmit` exits clean. A 61-check QA pass produced 21 findings; the 4 blockers and 9 majors are fixed. | `PROGRESS.md`, `QA.md`, `QA-FINDINGS.md`, `git log` |
 | Feasibility | 20% | Ten runtime dependencies, all generally available: Next.js 16, React 19, Supabase, ElevenLabs, Anthropic. One thing is simulated, and it is labelled on screen. | `package.json`, `app/(app)/exchange/ListingActions.tsx` |
@@ -54,7 +54,7 @@ the fix are in `QA-FINDINGS.md`.
 
 <div className="st-figure">
 
-**Table 5: the eight AI touchpoints, with model, transport and what each writes**
+**Table 5: the AI touchpoints, grouped by what they do**
 
 | Touchpoint | Service and model | Transport | Writes to |
 |---|---|---|---|
@@ -62,7 +62,7 @@ the fix are in `QA-FINDINGS.md`.
 | The same agent, typed | ElevenLabs Conversational AI agent | WebSocket, signed URL (`?transport=text`) | The same tools, the same actions |
 | Voice picker samples | ElevenLabs text to speech | Server proxy, audio bytes only | `profiles.voice_id` |
 | Guided form fill | ElevenLabs Scribe, `scribe_v2_realtime` | WebSocket, single-use token from `/api/voice/scribe-token` | The real form inputs, which then submit normally |
-| Statement reading | Anthropic `claude-sonnet-4-6`, vision | Server route, signed Storage URL | `statement_uploads`, then `personal_transactions` on confirmation |
+| Statement reading | Anthropic `claude-sonnet-4-6`, vision | Server route. The image is signed for sixty seconds, fetched server side, and sent to Anthropic as base64 bytes, so the model never receives a URL into the bucket | `statement_uploads`, then `personal_transactions` on confirmation |
 | Categorisation | Anthropic `claude-sonnet-4-6` | Server route, one batch call | `personal_transactions.category` |
 | Listing price | Anthropic `claude-sonnet-4-6` | Server route | `listings.ai_suggested_price`, `listings.ai_rationale` |
 | Monthly insights | Anthropic `claude-sonnet-4-6` | Server route | Nothing. Read only, rendered as a pull quote labelled "Read by AI" |

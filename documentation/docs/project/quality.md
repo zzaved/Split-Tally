@@ -33,7 +33,7 @@ count as failures at all:
 
 <div className="st-figure">
 
-**Figure 47: `QA.md`, the map, nine groups written so nothing falls between them**
+**Figure 43: `QA.md`, the map, nine groups written so nothing falls between them**
 
 ![The QA map document showing lettered sections A through I, each a table of numbered checks: entering and leaving, shell and layout, the ledger, score, exchange, guided fill, the conversation, trying to break the conversation, and stress and edges](/img/screens/qa-map.png)
 
@@ -111,28 +111,12 @@ viewports. This is the worst class of bug in an app that holds money: it looks l
 still yours.
 → The app now listens for the sign-out event Supabase already broadcasts to every tab.
 
-<div className="st-figure">
-
-**Figure 48: the blocker, a second tab still showing the previous account's balances after signing out in the first**
-
-![Two browser windows side by side, the left one on the logged out landing page, the right one still rendering the dashboard with the previous account's name, avatar and balances, its navigation clicks doing nothing](/img/screens/qa-signout-desync.png)
-
-</div>
-
 **Double-pressing "List it" created duplicate listings.** This was worse than a double submit. The
 check compared each listing to the full outstanding balance on its own and never looked at what was
 already on the market, so the same fifty euros could be listed as many times as you liked and two
 buyers would each have been promised it.
 → What is already open now counts against what is left to sell. Three synchronous presses produce
 exactly one listing, measured.
-
-<div className="st-figure">
-
-**Figure 49: the blocker, one fifty euro receivable listed three times, each listing promising the same money**
-
-![The Exchange "My listings" section showing three identical listings for Paulo's fifty euro tally, created by three rapid presses of the List it button, each with the same face value and asking price](/img/screens/qa-duplicate-listings.png)
-
-</div>
 
 **Refusing the microphone dropped you into a text chat with no explanation.** The notice that says so
 was written inside the not-yet-connected branch, and the text fallback connects, so the branch had
@@ -158,25 +142,9 @@ finished.
 → The value was being read inside the state updater. React can replay a queued updater during a later
 render, and by then `currentTarget` is null. It is read before the updater now.
 
-<div className="st-figure">
-
-**Figure 50: the major, unchecking a participant after typing an amount taking the whole form down**
-
-![A browser console showing "Cannot read properties of null" thrown through a React state updater, with the expense form behind it collapsed and the participant amount field missing](/img/screens/qa-expense-form-crash.png)
-
-</div>
-
 **`/exchange` overflowed 116px at 375px.** `truncate` does nothing inside a flex item that will not
 shrink, so a long debtor name widened the listing card and carried the asking price off the screen.
 → `min-w-0` on the block that truncates, and the bottom row wraps.
-
-<div className="st-figure">
-
-**Figure 51: the major, a long debtor name pushing the asking price 116 pixels off a 375px screen**
-
-![The Exchange at 375 pixels wide with a listing card wider than the viewport, the debtor's full name pushing the asking price and the AI fair price chip beyond the right edge, the page scrolling horizontally](/img/screens/qa-exchange-overflow-375.png)
-
-</div>
 
 **Display amounts were pinned at 56 and 72 pixels.** Enough for a four figure total to push the body
 sideways on a phone.
@@ -375,7 +343,7 @@ Friends still cannot be removed, which is the next gap of this kind and is on th
 
 <div className="st-figure">
 
-**Figure 52: the Exchange at 375px after the fix, the listing card holding its width and the price on screen**
+**Figure 44: the Exchange at 375px after the fix, the listing card holding its width and the price on screen**
 
 ![The Exchange at 375 pixels wide after the fix, each listing card fitting the viewport with the debtor's name truncating, the AI fair price chip wrapping onto its own line, and no horizontal scroll on the page](/img/screens/qa-exchange-fixed-375.png)
 

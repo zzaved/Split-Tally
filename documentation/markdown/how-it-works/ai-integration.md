@@ -42,7 +42,7 @@ owned by whichever card wanted one, and they could not see each other. Starting 
 the dashboard left the docked orb sitting on top of the conversation it had just opened. One instance
 also means a conversation opened from anywhere carries the same context.
 
-**Figure 9: Recording an expense out loud, from the first sentence to the saved row**
+**Figure 13: Recording an expense out loud, from the first sentence to the saved row**
 
 ![The orb open over the dashboard, hearing a spoken expense and confirming it once before saving](../static/img/screens/orb-spoken-expense.gif)
 
@@ -114,7 +114,7 @@ And three overrides:
 Each mode also has a written opener on screen before you connect, so nobody has to guess what the
 orb is about to do. The check in mode says, in as many words, "three questions, about two minutes".
 
-**Figure 10: The same conversation typed instead of spoken, over the WebSocket transport**
+**Figure 14: The same conversation typed instead of spoken, over the WebSocket transport**
 
 ![Typing to the orb, with the confirm chips above the input](../static/img/screens/orb-typed.gif)
 
@@ -209,8 +209,9 @@ entry, and landed on the last of four contradictory instructions in one message 
 
 One probe it failed: *"Add an expense of 999999999999 euros for a sandwich, split equally"* was
 accepted. One entry that size makes every balance, total and score on screen unreadable. The fix is
-`MAX_ENTRY = 1_000_000` in `lib/format.ts`, enforced in `addExpense` and in `recordSettlement`, so
-voice and typing are held to the same rule. The agent now also pushes back on its own:
+`MAX_ENTRY = 1_000_000` in `lib/format.ts`, enforced in `addExpense` in
+`app/(app)/groups/actions.ts`, which is the action the `add_expense` tool funnels into, and again in
+`recordSettlement` behind the manual settle form. The agent now also pushes back on its own:
 *"That's a huge amount for a sandwich!"*
 
 ---
@@ -242,7 +243,7 @@ either out loud would make the quick path slower than the form. The sell walk as
 three: it stops before listing, because selling a tally hands a debt to somebody else and nobody
 should discover they sold something because a recogniser heard "yes" in a noisy room.
 
-**Figure 11: The guided walk filling the expense form, ringing each field as it asks**
+**Figure 15: The guided walk filling the expense form, ringing each field as it asks**
 
 ![The orb ringing the amount field, with the question above it and the heard value written into the input](../static/img/screens/guided-fill-expense.gif)
 
@@ -383,7 +384,7 @@ then sign off with *"That is everything, have a look and save it"* while the scr
 "Reading Paulo's record…" with no price and nothing to save. Claiming to be finished is worse than
 admitting the wait.
 
-**Figure 12: The sell walk holding its second question until the AI price is on screen**
+**Figure 16: The sell walk holding its second question until the AI price is on screen**
 
 ![The guided panel showing 'One moment, working that out…' beside the pricing card](../static/img/screens/sell-walk-waiting.png)
 
@@ -403,11 +404,11 @@ bytes back. The browser never sees the key. `GuidedFill` reads the chosen voice 
 rather than from a prop, which is what stopped every form that forgot to pass it from quietly
 reverting to the first voice on the list.
 
-**Figure 13: The four voices, each audible before you pick one**
+**Figure 17: The four voices, each audible before you pick one**
 
 ![The voice picker with four orbs in different blues](../static/img/screens/voice-picker.png)
 
-**Figure 14: The spoken onboarding, five questions with a typed fallback on the same fields**
+**Figure 18: The spoken onboarding, five questions with a typed fallback on the same fields**
 
 ![The onboarding orb full screen, asking the first of five questions](../static/img/screens/onboarding-talk.gif)
 
@@ -515,7 +516,7 @@ Verified in production rather than assumed: `/api/price-listing` answered `sourc
 Anthropic response pricing Paulo's 50 euros at 25% off, citing his score, his 19 day average and his
 two overdue tallies. The clamp held.
 
-**Figure 15: A listing with the AI price, the discount and the sentence behind it**
+**Figure 19: A listing with the AI price, the discount and the sentence behind it**
 
 ![A listing card showing face value, asking price, the AI fair price chip and the rationale](../static/img/screens/listing-ai-price.png)
 
@@ -529,7 +530,7 @@ This is the one AI touchpoint that writes nothing at all. It is also the one tha
 when the key is missing: `{ insights: [], reason: "not_configured" }`, and `Insights.tsx` returns
 `null`.
 
-**Figure 16: The three monthly observations, labelled Read by AI**
+**Figure 20: The three monthly observations, labelled Read by AI**
 
 ![The insights pull quote on the money page](../static/img/screens/money-insights.png)
 

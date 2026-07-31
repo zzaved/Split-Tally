@@ -2,10 +2,6 @@
 
 Split Tally was designed, built, tested and documented by one person.
 
-**Figure 55: Pablo Azevedo**
-
-![Pablo Azevedo](../static/img/team/pablo.png)
-
 ## Pablo Azevedo
 
 - GitHub: [zzaved](https://github.com/zzaved)
@@ -18,10 +14,6 @@ tools, the four Anthropic routes, the Exchange, the QA pass in
 [`QA.md`](https://github.com/zzaved/Split-Tally/blob/main/QA.md) and
 [`QA-FINDINGS.md`](https://github.com/zzaved/Split-Tally/blob/main/QA-FINDINGS.md), and this
 documentation site.
-
-**Figure 56: the repository's contributor list, one author**
-
-![The contributors view of the Split Tally repository on GitHub, showing a single contributor, zzaved, with every commit attributed to that account](../static/img/screens/repo-contributors.png)
 
 ## The submission
 

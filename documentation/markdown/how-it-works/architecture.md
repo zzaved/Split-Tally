@@ -65,7 +65,7 @@ directly, but it never holds the ElevenLabs key: it holds a short lived session 
 `app/api/voice/token/route.ts`. Second, no browser code ever calls Anthropic. Every Anthropic call
 goes through `lib/anthropic.ts`, which is marked `import "server-only"`.
 
-**Figure 17: The authenticated shell at 1440px, with the dashboard and the docked orb**
+**Figure 9: The authenticated shell at 1440px, with the dashboard and the docked orb**
 
 ![The dashboard at desktop width, showing balances, groups and the orb resting bottom right](../static/img/screens/dashboard-1440.png)
 
@@ -268,7 +268,7 @@ Before any of that, the browser has already shrunk the file. `app/(app)/import/I
 draws the image to a canvas at a maximum edge of 1600 pixels and uploads the compressed blob, so the
 bucket never holds a full resolution photograph of somebody's bank statement.
 
-**Figure 18: Choosing a statement screenshot, before anything is uploaded**
+**Figure 10: Choosing a statement screenshot, before anything is uploaded**
 
 ![The import screen with the choose and photograph options](../static/img/screens/import-choose.png)
 
@@ -323,7 +323,7 @@ That is what makes the deployment checklist in
 [Setup and Deployment](../using-it/setup-and-deployment.md) honest: a deployment with no AI keys at
 all still runs, it just has fewer ways in.
 
-**Figure 19: The orb saying plainly that the assistant is not connected on this deployment**
+**Figure 11: The orb saying plainly that the assistant is not connected on this deployment**
 
 ![The voice sheet showing the not-configured notice and pointing at the forms](../static/img/screens/voice-not-configured.png)
 
@@ -356,7 +356,7 @@ Frankfurter is unreachable the function returns the target currency total on its
 currency listed as unconverted, and the dashboard says so. A converted total is a convenience. The
 ledger stays in the currency each tally was made in.
 
-**Figure 20: The same shell at 375px, with the five bottom tabs and the orb clear of them**
+**Figure 12: The same shell at 375px, with the five bottom tabs and the orb clear of them**
 
 ![The dashboard at phone width with hand drawn bottom tab glyphs](../static/img/screens/shell-375.png)
 

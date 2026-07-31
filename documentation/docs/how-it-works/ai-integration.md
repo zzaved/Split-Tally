@@ -52,7 +52,7 @@ also means a conversation opened from anywhere carries the same context.
 
 <div className="st-figure">
 
-**Figure 9: Recording an expense out loud, from the first sentence to the saved row**
+**Figure 13: Recording an expense out loud, from the first sentence to the saved row**
 
 ![The orb open over the dashboard, hearing a spoken expense and confirming it once before saving](/img/screens/orb-spoken-expense.gif)
 
@@ -132,7 +132,7 @@ orb is about to do. The check in mode says, in as many words, "three questions, 
 
 <div className="st-figure">
 
-**Figure 10: The same conversation typed instead of spoken, over the WebSocket transport**
+**Figure 14: The same conversation typed instead of spoken, over the WebSocket transport**
 
 ![Typing to the orb, with the confirm chips above the input](/img/screens/orb-typed.gif)
 
@@ -269,7 +269,7 @@ should discover they sold something because a recogniser heard "yes" in a noisy 
 
 <div className="st-figure">
 
-**Figure 11: The guided walk filling the expense form, ringing each field as it asks**
+**Figure 15: The guided walk filling the expense form, ringing each field as it asks**
 
 ![The orb ringing the amount field, with the question above it and the heard value written into the input](/img/screens/guided-fill-expense.gif)
 
@@ -418,7 +418,7 @@ admitting the wait.
 
 <div className="st-figure">
 
-**Figure 12: The sell walk holding its second question until the AI price is on screen**
+**Figure 16: The sell walk holding its second question until the AI price is on screen**
 
 ![The guided panel showing 'One moment, working that out…' beside the pricing card](/img/screens/sell-walk-waiting.png)
 
@@ -442,7 +442,7 @@ reverting to the first voice on the list.
 
 <div className="st-figure">
 
-**Figure 13: The four voices, each audible before you pick one**
+**Figure 17: The four voices, each audible before you pick one**
 
 ![The voice picker with four orbs in different blues](/img/screens/voice-picker.png)
 
@@ -450,7 +450,7 @@ reverting to the first voice on the list.
 
 <div className="st-figure">
 
-**Figure 14: The spoken onboarding, five questions with a typed fallback on the same fields**
+**Figure 18: The spoken onboarding, five questions with a typed fallback on the same fields**
 
 ![The onboarding orb full screen, asking the first of five questions](/img/screens/onboarding-talk.gif)
 
@@ -570,7 +570,7 @@ two overdue tallies. The clamp held.
 
 <div className="st-figure">
 
-**Figure 15: A listing with the AI price, the discount and the sentence behind it**
+**Figure 19: A listing with the AI price, the discount and the sentence behind it**
 
 ![A listing card showing face value, asking price, the AI fair price chip and the rationale](/img/screens/listing-ai-price.png)
 
@@ -588,7 +588,7 @@ when the key is missing: `{ insights: [], reason: "not_configured" }`, and `Insi
 
 <div className="st-figure">
 
-**Figure 16: The three monthly observations, labelled Read by AI**
+**Figure 20: The three monthly observations, labelled Read by AI**
 
 ![The insights pull quote on the money page](/img/screens/money-insights.png)
 

@@ -63,13 +63,9 @@ Then, in **Authentication → Sign In / Providers → Email**, turn **Confirm em
 that, a new signup gets no session and cannot reach the spoken onboarding. The app says so in the
 signup form rather than failing silently, and the demo login works either way.
 
-**Figure 35: the Supabase SQL editor after `migration.sql`, fifteen tables with row level security enabled on every one**
-
-![The Supabase table editor listing the fifteen Split Tally tables, each row showing RLS enabled, with profiles, friendships, groups, expenses, expense_splits, settlements, listings and claims among them](../static/img/screens/supabase-tables.png)
-
 ## 2. Environment variables
 
-Every variable, and exactly where each one comes from.
+Table 15 is every variable, and exactly where each one comes from.
 
 **Table 15: every environment variable and where to get it**
 
@@ -107,7 +103,8 @@ user's own client and is filtered by policy.
 ### What still works without each key
 
 Nothing about this app fails with a blank screen. Each missing key degrades in its own documented
-way, and the interface says which one is missing rather than pretending.
+way, and the interface says which one is missing rather than pretending. Table 16 is the whole of
+it.
 
 **Table 16: degradation, key by key**
 
@@ -176,7 +173,7 @@ Create a Conversational AI agent and paste this in as its system prompt:
 
 ### The client tools
 
-Register all thirteen on the agent. **The names must match exactly.** They are the strings the
+Register all thirteen from Table 17 on the agent. **The names must match exactly.** They are the strings the
 browser looks for in `components/voice/clientTools.ts`, and a name that does not match is a tool the
 agent will believe it does not have. Every one of them is implemented as a server action in
 `app/(app)/voice/actions.ts` and returns a single sentence for the agent to speak, never a blob of
@@ -199,10 +196,6 @@ data, because the screen already shows the detail.
 | `log_cash_spending` | `description`, `amount`, `category?` | Check-in mode, writes `personal_transactions` |
 | `complete_checkin` | `summary` | Stores the two sentence recap that closes a weekly tally |
 | `fix_last_entry` | `what?` | Takes the last entry back out so it can be restated |
-
-**Figure 36: the thirteen client tools registered on the ElevenLabs agent, names matching `clientTools.ts` exactly**
-
-![The ElevenLabs agent configuration screen listing thirteen client tools by name, from save_profile_field through fix_last_entry, each with its parameters](../static/img/screens/elevenlabs-tools.png)
 
 ### Overrides and permissions
 
@@ -235,6 +228,8 @@ and no error callback fires. Any close the app did not ask for now falls back to
 than sitting there listening to nothing.
 
 ## 5. Demo credentials
+
+Four accounts come out of the seed, listed in Table 18.
 
 **Table 18: seeded accounts on the live deployment**
 
@@ -273,10 +268,6 @@ Three things are easy to get wrong, and all three were hit while shipping this:
 
 Then in Supabase, set **Authentication → URL Configuration → Site URL** to the same domain, so
 confirmation and recovery links point at the deployment rather than at localhost.
-
-**Figure 37: the Vercel project's environment variables, the whole of `.env` pasted in before the first visit**
-
-![The Vercel environment variables screen listing the Supabase URL and keys, the Anthropic key, the ElevenLabs key and agent id, the four voice ids, the site URL and the demo credentials, each marked for production](../static/img/screens/vercel-env.png)
 
 ## 7. Deploying this documentation site
 
@@ -366,8 +357,3 @@ from, or every internal link and every image breaks with a 404: `url` is the ori
 directory, for example `/img/screens/dashboard.png`, and Docusaurus prefixes `baseUrl` at build time.
 Getting `baseUrl` wrong is the single most common way a Pages deployment of a Docusaurus site builds
 green and serves blank.
-
-**Figure 38: the documentation workflow, building `documentation/` and publishing the artifact to GitHub Pages**
-
-![A GitHub Actions run summary for the deploy-docs workflow, the build job installing dependencies and running the Docusaurus build, the deploy job succeeding, and the published Pages URL printed in the job output](../static/img/screens/github-pages-deploy.png)
-

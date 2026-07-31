@@ -20,7 +20,7 @@ happens.
 
 ## Reading this page
 
-Table 13 is the whole page in one grid: eleven flows, what the model does in each, and what is
+Table 13 is the whole page in one grid: every flow, what the model does in it, and what is
 deterministic. If you only read one thing here, read this.
 
 **Table 13: every flow, and which half of it is AI**
@@ -221,7 +221,7 @@ input at the bottom of the same sheet feeds the same conversation. Nothing else 
 
 **Figure 27: an expense recorded by talking, from the spoken sentence to the row in the ledger**
 
-![The voice sheet open over a group page, the orb swelling as the user speaks, the assistant's confirmation line written underneath, Yes and Fix that chips, and the new expense appearing in the list behind with a small orb glyph beside it](../static/img/screens/voice-expense.gif)
+![The voice sheet open over a group page, the orb swelling as the user speaks, the assistant's confirmation line written underneath, Yes and Fix that chips, and the new expense appearing in the list behind with a small orb glyph beside it](../static/img/screens/orb-spoken-expense.gif)
 
 Flowchart 15 is the same journey with the boundary between the model and the ledger drawn on it.
 
@@ -263,7 +263,7 @@ both write through the same server action.
 
 On a group page, the form asks for what it was, the amount, the date (already today), who paid
 (already you), and a category (optional, and left as *Not sorted yet* if you do not care). Then the
-split, in four modes.
+split, in the four modes of Table 14.
 
 **Table 14: the four split modes, and what each one enforces**
 
@@ -338,7 +338,7 @@ admits the wait and stands down rather than claiming to be finished.
 
 **Figure 29: the guided walk, the hand-drawn ring following the field it is asking about**
 
-![The expense form with a wobbly cobalt ring drawn around the amount field, a panel at the bottom of the screen showing "Question 2 of 3", the question "How much, in EUR?" and the words being transcribed live underneath](../static/img/screens/guided-fill.gif)
+![The expense form with a wobbly cobalt ring drawn around the amount field, a panel at the bottom of the screen showing "Question 2 of 3", the question "How much, in EUR?" and the words being transcribed live underneath](../static/img/screens/guided-fill-expense.gif)
 
 Flowchart 16 is the loop. Every box in it is deterministic except the transcription itself.
 
@@ -529,7 +529,7 @@ given earlier.
 
 **Figure 33: pricing a tally, the model's rationale and the discount clamped between 2% and 35%**
 
-![The sell flow, step two, showing an "AI fair price" chip with a small orb glyph, the model's one sentence rationale in quotation marks, the face value beside what the seller would receive, and a discount slider labelled at both ends](../static/img/screens/exchange-sell.png)
+![The sell flow, step two, showing an "AI fair price" chip with a small orb glyph, the model's one sentence rationale in quotation marks, the face value beside what the seller would receive, and a discount slider labelled at both ends](../static/img/screens/sell-flow-ai-price.png)
 
 ## Buying a receivable
 
@@ -580,7 +580,7 @@ on the live deployment, sign in as Marina or Kenji.
 
 **Figure 34: the demo settlement confirmation, stating plainly which part is simulated and which part is real**
 
-![A listing detail page with a confirmation panel headed "Demo settlement: no real money moves", explaining that the buyer pays 46 euros now, that Paulo will then owe them 50 instead of the seller, and that the payment is simulated while the ledger movement is real](../static/img/screens/exchange-buy.png)
+![A listing detail page with a confirmation panel headed "Demo settlement: no real money moves", explaining that the buyer pays 46 euros now, that Paulo will then owe them 50 instead of the seller, and that the payment is simulated while the ledger movement is real](../static/img/screens/demo-settlement.png)
 
 Flowchart 17 is the sale and the purchase as one path, with the five writes at the end.
 

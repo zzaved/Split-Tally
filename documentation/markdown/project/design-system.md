@@ -14,7 +14,7 @@ It lives in two places and nowhere else: `app/globals.css` for the tokens and th
 
 ## The palette
 
-Six colours. Six, for the entire product.
+Six colours. Six, for the entire product, and Table 19 is all of them.
 
 **Table 19: the colour tokens, read from `app/globals.css`**
 
@@ -43,7 +43,7 @@ looking like it was pasted on.
 Colour is never the only signal. "Owed to you" is cobalt *and* says "is owed"; "you owe" is vermilion
 *and* says "owes". A screenshot of this app in greyscale loses nothing but prettiness.
 
-**Figure 39: the palette, six colours and the three that belong only to the orb**
+**Figure 35: the palette, six colours and the three that belong only to the orb**
 
 ![Nine colour swatches painted as brush strokes on a cream ground, labelled cream, cream deep, cobalt, navy, ink soft and vermilion, with the three orb gradient colours set apart below them, each with its hex value in letter-spaced capitals](../static/img/brand/palette.png)
 
@@ -60,6 +60,8 @@ the headline.
 labels are everywhere: eyebrows above sections, navigation, the caption under a tally mark, the
 status line under the orb. They are what stops a page of serif numbers from feeling like a wedding
 invitation.
+
+Table 20 is the scale, and where each step actually lands.
 
 **Table 20: the type scale, and where each step is actually used**
 
@@ -86,7 +88,7 @@ four figure total already ran off a 375px screen and took the whole body into ho
 lower bound keeps the number emphatic; the upper bound is the size it always was. That fix came out
 of the QA pass and is documented in [Quality](./quality).
 
-**Figure 40: the type scale, Cormorant Garamond for money and Inter for everything that labels it**
+**Figure 36: the type scale, Cormorant Garamond for money and Inter for everything that labels it**
 
 ![A type specimen on cream, the number 1,248.00 set large in Cormorant Garamond above a descending scale of sizes, with letter-spaced uppercase Inter labels beside each step naming where it is used](../static/img/brand/type-scale.png)
 
@@ -113,7 +115,7 @@ second cycle: one mark at a time paints itself somewhere behind the page, holds,
 placement can take over. Never two at once. The interface always has a hand moving in it and never
 becomes noisy.
 
-**Figure 41: the six brush strokes painting themselves in, each two or three offset paths under a turbulence filter**
+**Figure 37: the six brush strokes painting themselves in, each two or three offset paths under a turbulence filter**
 
 ![Six cobalt brush strokes on cream drawing themselves in one after another, a long wave, a short underline swash, a corner arc, a loose enclosure, a diagonal slash and a wide double wave, their edges ragged rather than geometric](../static/img/brand/brush-strokes.gif)
 
@@ -137,7 +139,7 @@ Beyond five groups it stops drawing and prints a remainder, because twenty-six m
 being legible and starts being a texture. Marks that are counted but not yet reached are drawn as
 ghosts at 0.16 opacity, so a budget shows its cap as well as its consumption.
 
-**Figure 42: tally marks doing five jobs, from a counter to a budget to a Tally Score**
+**Figure 38: tally marks doing five jobs, from a counter to a budget to a Tally Score**
 
 ![Rows of hand-drawn tally marks, four uprights and a diagonal fifth in each group, shown counting expenses, filling a budget toward a faint ghosted cap, turning vermilion where it is exceeded, and clustered into a Tally Score](../static/img/brand/tally-marks.png)
 
@@ -188,7 +190,7 @@ thing onto its own layer so the blend resolves against the sphere rather than ag
 created: voice expenses, statement rows, AI prices. A judge has to be able to see the AI, so the AI
 is labelled everywhere it touched something.
 
-**Figure 43: the orb in its four states, idle, listening with the voice driving its scale, thinking, and speaking**
+**Figure 39: the orb in its four states, idle, listening with the voice driving its scale, thinking, and speaking**
 
 ![An aurora sphere in blues and violet cycling through four behaviours: breathing slowly when idle, swelling with expanding rings while listening, churning faster while thinking, and pulsing while speaking](../static/img/brand/orb-states.gif)
 
@@ -205,7 +207,7 @@ never syncs up.
 It appears in the landing hero, in empty states, on the 404, and as a glyph beside the wordmark and
 in the favicon.
 
-**Figure 44: the Tally Jelly, whose five tentacles are a tally mark that swims**
+**Figure 40: the Tally Jelly, whose five tentacles are a tally mark that swims**
 
 ![A cobalt line-drawn jellyfish on cream, its bell made of two curved strokes and a wavy hem, with four wavy vertical tentacles and a fifth crossing them diagonally, drifting gently](../static/img/brand/tally-jelly.png)
 
@@ -226,7 +228,7 @@ deciding whether to lend, and the dial refuses to present an absence of informat
 The band name lives under the ring rather than inside it, because at any size worth using it does not
 fit in the middle without colliding with the stroke.
 
-**Figure 45: the score dial across three bands, the ring's colour coming from the record rather than from the number**
+**Figure 41: the score dial across three bands, the ring's colour coming from the record rather than from the number**
 
 ![Three open ring dials side by side on cream, one reading 91 in cobalt labelled "Settles fast", one reading 50 in ink soft labelled "No record yet", one reading 48 in vermilion labelled "Slow payer"](../static/img/brand/score-dial.png)
 
@@ -248,14 +250,14 @@ change. The QA pass measured it tracking its target to within a thousandth of a 
 The wobble is seeded by the step index, so consecutive fields are not ringed identically. Two
 questions in a row look like two circles somebody drew, not one circle that moved.
 
-**Figure 46: the hand-drawn ring, a loop with an overshoot rather than a box, following the field being filled**
+**Figure 42: the hand-drawn ring, a loop with an overshoot rather than a box, following the field being filled**
 
 ![A cobalt ring drawn by hand around a form input, its sides not quite parallel, its corners rounded unevenly and its end overshooting where it closes, redrawn around the next field as the walk moves on](../static/img/brand/highlight-ring.gif)
 
 ## Motion
 
 Motion in this product is either a stroke being drawn, a thing arriving, or the orb being alive.
-Nothing decorates.
+Nothing decorates. Table 21 is every animation in the system, beside what reduced motion does to it.
 
 **Table 21: every animation in the system, and what reduced motion does to it**
 

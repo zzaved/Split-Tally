@@ -53,7 +53,7 @@ Colour is never the only signal. "Owed to you" is cobalt *and* says "is owed"; "
 
 <div className="st-figure">
 
-**Figure 39: the palette, six colours and the three that belong only to the orb**
+**Figure 35: the palette, six colours and the three that belong only to the orb**
 
 ![Nine colour swatches painted as brush strokes on a cream ground, labelled cream, cream deep, cobalt, navy, ink soft and vermilion, with the three orb gradient colours set apart below them, each with its hex value in letter-spaced capitals](/img/brand/palette.png)
 
@@ -106,7 +106,7 @@ of the QA pass and is documented in [Quality](./quality).
 
 <div className="st-figure">
 
-**Figure 40: the type scale, Cormorant Garamond for money and Inter for everything that labels it**
+**Figure 36: the type scale, Cormorant Garamond for money and Inter for everything that labels it**
 
 ![A type specimen on cream, the number 1,248.00 set large in Cormorant Garamond above a descending scale of sizes, with letter-spaced uppercase Inter labels beside each step naming where it is used](/img/brand/type-scale.png)
 
@@ -137,7 +137,7 @@ becomes noisy.
 
 <div className="st-figure">
 
-**Figure 41: the six brush strokes painting themselves in, each two or three offset paths under a turbulence filter**
+**Figure 37: the six brush strokes painting themselves in, each two or three offset paths under a turbulence filter**
 
 ![Six cobalt brush strokes on cream drawing themselves in one after another, a long wave, a short underline swash, a corner arc, a loose enclosure, a diagonal slash and a wide double wave, their edges ragged rather than geometric](/img/brand/brush-strokes.gif)
 
@@ -165,7 +165,7 @@ ghosts at 0.16 opacity, so a budget shows its cap as well as its consumption.
 
 <div className="st-figure">
 
-**Figure 42: tally marks doing five jobs, from a counter to a budget to a Tally Score**
+**Figure 38: tally marks doing five jobs, from a counter to a budget to a Tally Score**
 
 ![Rows of hand-drawn tally marks, four uprights and a diagonal fifth in each group, shown counting expenses, filling a budget toward a faint ghosted cap, turning vermilion where it is exceeded, and clustered into a Tally Score](/img/brand/tally-marks.png)
 
@@ -220,7 +220,7 @@ is labelled everywhere it touched something.
 
 <div className="st-figure">
 
-**Figure 43: the orb in its four states, idle, listening with the voice driving its scale, thinking, and speaking**
+**Figure 39: the orb in its four states, idle, listening with the voice driving its scale, thinking, and speaking**
 
 ![An aurora sphere in blues and violet cycling through four behaviours: breathing slowly when idle, swelling with expanding rings while listening, churning faster while thinking, and pulsing while speaking](/img/brand/orb-states.gif)
 
@@ -241,7 +241,7 @@ in the favicon.
 
 <div className="st-figure">
 
-**Figure 44: the Tally Jelly, whose five tentacles are a tally mark that swims**
+**Figure 40: the Tally Jelly, whose five tentacles are a tally mark that swims**
 
 ![A cobalt line-drawn jellyfish on cream, its bell made of two curved strokes and a wavy hem, with four wavy vertical tentacles and a fifth crossing them diagonally, drifting gently](/img/brand/tally-jelly.png)
 
@@ -266,7 +266,7 @@ fit in the middle without colliding with the stroke.
 
 <div className="st-figure">
 
-**Figure 45: the score dial across three bands, the ring's colour coming from the record rather than from the number**
+**Figure 41: the score dial across three bands, the ring's colour coming from the record rather than from the number**
 
 ![Three open ring dials side by side on cream, one reading 91 in cobalt labelled "Settles fast", one reading 50 in ink soft labelled "No record yet", one reading 48 in vermilion labelled "Slow payer"](/img/brand/score-dial.png)
 
@@ -292,7 +292,7 @@ questions in a row look like two circles somebody drew, not one circle that move
 
 <div className="st-figure">
 
-**Figure 46: the hand-drawn ring, a loop with an overshoot rather than a box, following the field being filled**
+**Figure 42: the hand-drawn ring, a loop with an overshoot rather than a box, following the field being filled**
 
 ![A cobalt ring drawn by hand around a form input, its sides not quite parallel, its corners rounded unevenly and its end overshooting where it closes, redrawn around the next field as the walk moves on](/img/brand/highlight-ring.gif)
 

@@ -15,6 +15,8 @@ more, and it is cheaper to write honestly than to write around.
 
 ## Deliberately not built
 
+Table 24 is the list, with the reason beside each item and what closing it would actually take.
+
 **Table 24: what is not built yet, and the reason in each case**
 
 | Not built | Why not | What it would take |
@@ -29,11 +31,11 @@ more, and it is cheaper to write honestly than to write around.
 | **Email or push notifications** | The `activity` table drives an in-app feed only. A notification system is a product of its own | A delivery layer and a preferences model |
 | **Group deletion** | Archiving exists; deleting does not, and that is deliberate. The expenses inside a group still count toward everybody's balances and scores, so removing it would quietly rewrite other people's ledgers | Nothing. This one is not planned |
 
-**Figure 53: what a group's creator can change, and the sentence everyone else gets instead of a control that does nothing**
+**Figure 45: what a group's creator can change, and the sentence everyone else gets instead of a control that does nothing**
 
 ![A group page sidebar showing the "This group" card with rename and put-away controls, and beneath it the "Who pays whom" card where a non-creator sees the current mode stated in words with the line "Only whoever created the group can change this"](../static/img/screens/group-settings.png)
 
-**Figure 54: the settings danger zone, saying plainly that account deletion is not wired up in this build**
+**Figure 46: the settings danger zone, saying plainly that account deletion is not wired up in this build**
 
 ![The settings page with a card outlined in vermilion headed "Danger zone", its text reading that deleting an account is not wired up in this build and that everything lives in the reader's own Supabase project](../static/img/screens/settings.png)
 

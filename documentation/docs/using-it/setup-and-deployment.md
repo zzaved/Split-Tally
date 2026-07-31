@@ -67,14 +67,6 @@ Then, in **Authentication → Sign In / Providers → Email**, turn **Confirm em
 that, a new signup gets no session and cannot reach the spoken onboarding. The app says so in the
 signup form rather than failing silently, and the demo login works either way.
 
-<div className="st-figure">
-
-**Figure 35: the Supabase SQL editor after `migration.sql`, fifteen tables with row level security enabled on every one**
-
-![The Supabase table editor listing the fifteen Split Tally tables, each row showing RLS enabled, with profiles, friendships, groups, expenses, expense_splits, settlements, listings and claims among them](/img/screens/supabase-tables.png)
-
-</div>
-
 ## 2. Environment variables
 
 Table 15 is every variable, and exactly where each one comes from.
@@ -221,14 +213,6 @@ data, because the screen already shows the detail.
 
 </div>
 
-<div className="st-figure">
-
-**Figure 36: the thirteen client tools registered on the ElevenLabs agent, names matching `clientTools.ts` exactly**
-
-![The ElevenLabs agent configuration screen listing thirteen client tools by name, from save_profile_field through fix_last_entry, each with its parameters](/img/screens/elevenlabs-tools.png)
-
-</div>
-
 ### Overrides and permissions
 
 Enable **conversation overrides** in the agent's security settings, for the TTS voice and for
@@ -304,14 +288,6 @@ Three things are easy to get wrong, and all three were hit while shipping this:
 
 Then in Supabase, set **Authentication → URL Configuration → Site URL** to the same domain, so
 confirmation and recovery links point at the deployment rather than at localhost.
-
-<div className="st-figure">
-
-**Figure 37: the Vercel project's environment variables, the whole of `.env` pasted in before the first visit**
-
-![The Vercel environment variables screen listing the Supabase URL and keys, the Anthropic key, the ElevenLabs key and agent id, the four voice ids, the site URL and the demo credentials, each marked for production](/img/screens/vercel-env.png)
-
-</div>
 
 ## 7. Deploying this documentation site
 
@@ -401,11 +377,3 @@ from, or every internal link and every image breaks with a 404: `url` is the ori
 directory, for example `/img/screens/dashboard.png`, and Docusaurus prefixes `baseUrl` at build time.
 Getting `baseUrl` wrong is the single most common way a Pages deployment of a Docusaurus site builds
 green and serves blank.
-
-<div className="st-figure">
-
-**Figure 38: the documentation workflow, building `documentation/` and publishing the artifact to GitHub Pages**
-
-![A GitHub Actions run summary for the deploy-docs workflow, the build job installing dependencies and running the Docusaurus build, the deploy job succeeding, and the published Pages URL printed in the job output](/img/screens/github-pages-deploy.png)
-
-</div>
