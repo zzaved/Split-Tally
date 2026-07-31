@@ -119,7 +119,7 @@ export function VoicePicker({ voices, current }: { voices: Voice[]; current: str
       {error && <FormMessage>{error}</FormMessage>}
 
       <div className="flex flex-wrap items-center gap-3">
-        <Button size="lg" onClick={confirm} disabled={pending || !picked}>
+        <Button size="lg" onClick={confirm} pending={pending} disabled={!picked}>
           {pending ? "Saving…" : "Use this voice"}
         </Button>
         <Button variant="ghost" size="lg" onClick={() => router.push("/onboarding/talk")}>

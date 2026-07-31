@@ -13,7 +13,7 @@ import { completeManualOnboarding, type ActionResult } from "./actions";
 function Save() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" size="lg" disabled={pending}>
+    <Button type="submit" size="lg" pending={pending}>
       {pending ? "Saving…" : "Finish setting up"}
     </Button>
   );

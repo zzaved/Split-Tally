@@ -7,7 +7,7 @@ import { signOut } from "./actions";
 function Inner({ label }: { label: string }) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" variant="secondary" size="lg" disabled={pending}>
+    <Button type="submit" variant="secondary" size="lg" pending={pending}>
       {pending ? "Signing out…" : label}
     </Button>
   );

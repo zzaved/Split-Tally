@@ -7,7 +7,7 @@ import { signInDemo } from "./actions";
 function Inner({ label, variant, size }: { label: string; variant?: "primary" | "secondary"; size?: "sm" | "lg" }) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" variant={variant} size={size} disabled={pending}>
+    <Button type="submit" variant={variant} size={size} pending={pending}>
       {pending ? "Opening…" : label}
     </Button>
   );

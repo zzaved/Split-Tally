@@ -9,7 +9,7 @@ import { signUp, type AuthResult } from "../actions";
 function Submit() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" size="lg" className="w-full" disabled={pending}>
+    <Button type="submit" size="lg" className="w-full" pending={pending}>
       {pending ? "Creating…" : "Create my ledger"}
     </Button>
   );

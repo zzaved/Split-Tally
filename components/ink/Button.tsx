@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { ComponentProps, ReactNode } from "react";
+import { SpinnerIcon } from "@/components/ink/Icon";
 import { cn } from "@/lib/utils";
 
 type Variant = "primary" | "secondary" | "ghost" | "danger";
@@ -33,15 +34,30 @@ type Common = {
   children: ReactNode;
 };
 
+/**
+ * A label that changes to "Creating…" says the press registered. It does not
+ * say anything is still happening, and a signup that takes several seconds
+ * behind a motionless word reads as a button that swallowed the click. The
+ * spinner is the part that keeps saying it.
+ */
+
 export function Button({
   variant = "primary",
   size = "md",
   className,
   children,
+  pending = false,
+  disabled,
   ...props
-}: Common & ComponentProps<"button">) {
+}: Common & { pending?: boolean } & ComponentProps<"button">) {
   return (
-    <button className={cn(BASE, VARIANT[variant], SIZE[size], className)} {...props}>
+    <button
+      className={cn(BASE, VARIANT[variant], SIZE[size], className)}
+      disabled={disabled || pending}
+      aria-busy={pending || undefined}
+      {...props}
+    >
+      {pending && <SpinnerIcon className="size-4" />}
       {children}
     </button>
   );
