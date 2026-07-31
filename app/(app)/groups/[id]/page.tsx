@@ -23,6 +23,7 @@ import type { Expense, ExpenseSplit, Group, Profile, Settlement } from "@/lib/ty
 import { DeleteExpense } from "./DeleteExpense";
 import { ExpenseForm } from "./ExpenseForm";
 import { SettleForm } from "./SettleAndSimplify";
+import { GroupSettings } from "./GroupSettings";
 import { SettleMode } from "./SettleMode";
 
 export async function generateMetadata(props: {
@@ -291,6 +292,13 @@ export default async function GroupPage(props: { params: Promise<{ id: string }>
               />
             </div>
           </Card>
+
+          <GroupSettings
+            groupId={theGroup.id}
+            name={theGroup.name}
+            archived={theGroup.archived}
+            canEdit={theGroup.created_by === me.id}
+          />
 
           <SettleMode
             groupId={theGroup.id}
