@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BottomTabs, TopNav } from "@/components/app/Nav";
+import { SessionWatch } from "@/components/app/SessionWatch";
 import { VoiceDock } from "@/components/voice/VoiceDock";
 import { AmbientStroke } from "@/components/ink/AmbientStroke";
 import { Avatar } from "@/components/ink/Card";
@@ -14,6 +15,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex min-h-dvh flex-col">
+      <SessionWatch />
       <AmbientStroke />
       <a
         href="#main"
