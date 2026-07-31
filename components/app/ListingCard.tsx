@@ -40,7 +40,10 @@ export function ListingCard({
             name instead. A floor forces the wrap on a narrow card. */}
         <div className="flex min-w-[10rem] flex-1 items-center gap-3">
           <Avatar name={debtor?.name ?? "?"} size={40} managed={debtor?.is_managed} />
-          <div>
+          {/* `truncate` does nothing inside a flex item that will not shrink:
+              the default min-width is auto, so a long name widened this block
+              past the card and took the price column off the screen with it. */}
+          <div className="min-w-0">
             <p className="truncate text-14 font-medium text-navy">
               {debtor?.name ?? "Someone"} owes this tally
             </p>
@@ -74,7 +77,7 @@ export function ListingCard({
         )}
       </div>
 
-      <div className="mt-6 flex items-end justify-between border-t border-navy/10 pt-5">
+      <div className="mt-6 flex flex-wrap items-end justify-between gap-x-4 gap-y-3 border-t border-navy/10 pt-5">
         <div>
           <p className="eyebrow whitespace-nowrap text-ink-soft">Face value</p>
           <p className="tabular mt-1 font-display text-28 text-ink-soft line-through decoration-vermilion/45">

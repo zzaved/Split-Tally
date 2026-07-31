@@ -125,6 +125,22 @@
 }
 
 /* Page rhythm: max width 1100px */
+/**
+ * Money at display size, scaled to the screen it is on.
+ *
+ * These were fixed at 56 and 72 pixels, which is right on a laptop and wrong
+ * on a phone: a four figure total already ran off a 375px screen and took the
+ * body into horizontal scroll. The lower bound keeps it emphatic, the upper
+ * bound is the size it always was.
+ */
+@utility amount-xl {
+  font-size: clamp(1.875rem, 9vw, 3.5rem);
+}
+
+@utility amount-hero {
+  font-size: clamp(2.25rem, 11vw, 4.5rem);
+}
+
 @utility shell {
   width: 100%;
   max-width: 1100px;

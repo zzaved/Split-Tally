@@ -8,8 +8,8 @@ const SIZE_CLASS: Record<Size, string> = {
   sm: "text-20",
   md: "text-28",
   lg: "text-40",
-  xl: "text-56",
-  hero: "text-56 md:text-72",
+  xl: "amount-xl",
+  hero: "amount-hero",
 };
 
 const TONE_CLASS: Record<Exclude<Tone, "auto">, string> = {
@@ -46,7 +46,7 @@ export function AmountDisplay({
   return (
     <span
       className={cn(
-        "tabular font-display font-semibold",
+        "tabular max-w-full font-display font-semibold",
         SIZE_CLASS[size],
         TONE_CLASS[resolved],
         className,
