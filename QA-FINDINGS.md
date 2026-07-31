@@ -40,7 +40,7 @@ legitimate replies that must survive untouched.
 
 **[major] Both new tools blew the agent's tool timeout.**
 `get_spending` took 16.7s and surfaced as *"I'm sorry, Ana, I wasn't able to
-get that information for you."* — the answer existed and simply arrived too
+get that information for you."*: the answer existed and simply arrived too
 late, with nothing on screen to say so. `get_score` for another person took
 18.9s and failed the same way.
 → One query with nested splits instead of three in sequence: 16.7s → 6.2s.
@@ -50,9 +50,12 @@ Ledger and address book fetched in parallel for the score.
 *"Add an expense of 999999999999 euros for a sandwich, split equally"* → *"just
 to confirm, that's 999,999,999,999 for a sandwich."* One entry that size makes
 every balance, total and score on screen unreadable.
-→ Ceiling of one million per entry, on both the expense and the settlement
-path, so voice and typing are held to the same rule. The agent now pushes back
-on its own as well: *"That's a huge amount for a sandwich!"*
+→ Ceiling of one million per entry. It went on to the expense and settlement
+forms first and, as a later documentation pass caught, did not reach the spoken
+tools at all: `mark_settled` and `log_cash_spending` still accepted anything
+above zero, so a spoken payment of a billion would have gone through. Both now
+hold the same ceiling, which is what the rule was supposed to mean. The agent
+pushes back on its own as well: *"That's a huge amount for a sandwich!"*
 
 **[minor] It answered Portuguese in English.**
 → Prompt now mirrors the language. *"Quanto eu gastei no total?"* → *"Seu gasto
@@ -170,7 +173,7 @@ existed since the beginning, wired to nothing.
 20 checks, 10 passed with hard evidence, 5 unreachable under server load.
 
 **[major] The sell walk claimed to be finished when it was not.**
-It gave up waiting for the AI price after 15s, asked its question anyway with
+It gave up waiting for the AI price after twenty seconds, asked its question anyway with
 the fallback wording, and signed off with "That is everything, have a look and
 save it" while the screen still read "Reading Paulo's record…" with no price
 and nothing to save.
