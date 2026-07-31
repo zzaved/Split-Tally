@@ -7,6 +7,7 @@ import { Jellyfish } from "@/components/ink/Jellyfish";
 import { Orb, OrbGlyph } from "@/components/ink/Orb";
 import { Reveal } from "@/components/ink/Reveal";
 import { TallyMarks } from "@/components/ink/TallyMarks";
+import { DocsLink } from "@/components/app/DocsLink";
 import { Wordmark } from "@/components/ink/Wordmark";
 import { getMyProfile } from "@/lib/data";
 import { DemoButton } from "./(auth)/DemoButton";
@@ -45,6 +46,8 @@ function LandingHeader({ profile }: { profile: { name: string } | null }) {
       <div className="shell flex h-16 items-center justify-between">
         <Wordmark />
         <nav className="flex items-center gap-1 sm:gap-2" aria-label="Account">
+          <DocsLink />
+
           {profile ? (
             <>
               <span className="hidden text-14 text-ink-soft sm:inline">{profile.name}</span>

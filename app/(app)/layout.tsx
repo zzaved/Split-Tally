@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { BottomTabs, TopNav } from "@/components/app/Nav";
+import { DocsLink } from "@/components/app/DocsLink";
 import { SessionWatch } from "@/components/app/SessionWatch";
 import { VoiceDock } from "@/components/voice/VoiceDock";
 import { AmbientStroke } from "@/components/ink/AmbientStroke";
@@ -31,14 +32,18 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
             <TopNav />
           </div>
 
-          <Link
-            href="/settings"
-            className="flex items-center gap-2.5 rounded-full py-1 pr-1 pl-3 transition-colors duration-150 hover:bg-navy/5"
-          >
-            <span className="hidden text-14 text-ink-soft sm:inline">{profile.name}</span>
-            <Avatar name={profile.name} size={32} />
-            <span className="sr-only">Settings</span>
-          </Link>
+          <div className="flex items-center gap-1">
+            <DocsLink />
+
+            <Link
+              href="/settings"
+              className="flex items-center gap-2.5 rounded-full py-1 pr-1 pl-3 transition-colors duration-150 hover:bg-navy/5"
+            >
+              <span className="hidden text-14 text-ink-soft sm:inline">{profile.name}</span>
+              <Avatar name={profile.name} size={32} />
+              <span className="sr-only">Settings</span>
+            </Link>
+          </div>
         </div>
       </header>
 

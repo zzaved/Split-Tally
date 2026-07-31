@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { DOCS_URL } from "@/components/app/DocsLink";
 import { Card, SectionHeading } from "@/components/ink/Card";
 import { getMyProfile } from "@/lib/data";
 import { voiceById, VOICES } from "@/lib/voices";
@@ -43,6 +44,23 @@ export default async function SettingsPage() {
         >
           Change the voice
         </Link>
+      </Card>
+
+      {/* The header link is hidden on a phone, and this is where somebody
+          looks for it there. */}
+      <Card className="p-6 md:p-8">
+        <p className="eyebrow text-ink-soft">How this was built</p>
+        <p className="mt-4 text-14 text-ink-soft">
+          Every flow, the AI behind it, the maths behind the Tally Score, and what testing found.
+        </p>
+        <a
+          href={DOCS_URL}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-3.5 inline-flex py-2.5 text-14 text-cobalt underline underline-offset-4"
+        >
+          Read the documentation
+        </a>
       </Card>
 
       <Card className="p-6 md:p-8">
