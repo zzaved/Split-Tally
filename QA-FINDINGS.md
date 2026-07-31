@@ -100,6 +100,106 @@ trust, and the timing of it briefly made two working tools look broken.
 
 ---
 
-## A, B, C, D, E, F, I
+## A and B, entering and leaving, shell and layout
 
-Filled in from the tester agents' reports.
+95 checks, 77 passed.
+
+**[blocker] Signing out in one tab left every other tab signed in.**
+The previous person's name, avatar and balances stayed on screen and stayed
+clickable; a nav click did nothing at all, because the server correctly refused
+while the page never found out. Reproduced 4 times across both viewports.
+→ The app now listens for the sign-out Supabase already broadcasts to every tab.
+
+**[major] `/exchange` overflowed 116px at 375px.**
+`truncate` does nothing inside a flex item that will not shrink, so a long
+debtor name widened the listing card and carried the asking price off screen.
+→ `min-w-0` on the block that truncates; the bottom row wraps.
+
+**[major] Display amounts were pinned at 56 and 72 pixels.**
+Enough for a four figure total to push the body sideways on a phone.
+→ Fluid between 36 and 72 pixels.
+
+**[minor] Three tap targets under 40px at 375px:** the header wordmark at 26px,
+"Change the voice" at 22px, every small button at 32px.
+→ Padding grows the target, a negative margin leaves the layout alone.
+
+**[minor] Waits were announced once and then went quiet.** Signup measured
+between 3s and 25s behind a motionless "Creating…".
+→ Every button waiting on a server action spins and marks itself busy.
+
+Passed: signup through onboarding to dashboard; sign out leaves nothing
+personal rendered; back button after sign out does not resurrect the ledger;
+demo then sign out then signup reaches the form rather than bouncing into the
+demo; protected routes redirect rather than error; wrong credentials say what
+to do; the orb never covers a control and hides while the sheet is open; no
+console errors on any route.
+
+Two leads investigated and dismissed: the repeated navigation on
+`/onboarding/talk` is Turbopack revalidation in dev, there is no client
+navigation on that route at all; the `/money` timeouts were the shared server,
+not the route.
+
+## C and D, the ledger and the score
+
+17 checks, 13 passed.
+
+**[major] The expense form crashed when you changed your mind.**
+Type an amount in an exact or shares split, uncheck somebody, and it threw
+"Cannot read properties of null" through React's state reducer and took the
+form with it. The participant's amount field never came back, so the split
+could not be finished.
+→ The value was read inside the state updater. React can replay a queued
+updater during a later render, and by then `currentTarget` is null.
+
+**[minor] The orb sat on the closing line of the score page** at 375px.
+→ The orb owns the bottom 160px; the page reserved 128.
+
+Passed, and worth stating how: the ledger was rebuilt by hand from `seed.sql`,
+scoped to what Ana's own RLS view returns, and compared as exact strings.
+Every figure matched to the cent across dashboard, friends and two group pages
+at both viewports, including the live ECB conversion for the day. The score
+arithmetic was reproduced independently and matched, as did the eligibility
+copy for "I am improving".
+
+**Gap this exposed:** there was no way to rename, archive or delete a group
+through any screen, so a group made by mistake stayed forever. The action had
+existed since the beginning, wired to nothing.
+
+## E and F, the exchange and guided fill
+
+20 checks, 10 passed with hard evidence, 5 unreachable under server load.
+
+**[major] The sell walk claimed to be finished when it was not.**
+It gave up waiting for the AI price after 15s, asked its question anyway with
+the fallback wording, and signed off with "That is everything, have a look and
+save it" while the screen still read "Reading Paulo's record…" with no price
+and nothing to save.
+→ It now says the wait went long and stands down.
+
+**[minor] A withdrawn listing read "Listed today"** with no controls,
+indistinguishable from a live one you could not act on.
+
+**[polish] A fresh Scribe token was minted and discarded for every question
+after the first**, because one socket already covered the whole walk.
+
+Confirmed by independent instrumentation, which is the measurement that
+mattered most in this pass: **one microphone acquisition and one socket for an
+entire walk**, on both the expense and the sell flows, twice each. Also
+confirmed: values written by voice survive an unrelated React re-render; the
+ring tracks its field to within a thousandth of a pixel; an unparseable answer
+asks again without losing the earlier ones; the discount clamp holds at 2 and
+35 from both directions.
+
+## I, stress and edges
+
+Filled in from the fourth tester's report.
+
+---
+
+## A note on the numbers
+
+Four browser agents shared one dev server for this pass. Page loads ranged from
+2 seconds to nearly 8 minutes, and the app was unreachable for two long
+stretches. Every behavioural finding above was reproduced at least twice and
+stands on its own. Every timing figure should be read as an upper bound taken
+under load, not as a measurement of the app.
