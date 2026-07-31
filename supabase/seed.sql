@@ -1,5 +1,5 @@
 -- ============================================================================
--- SPLIT TALLY — demo seed (BUILD.MD §9)
+-- SPLIT TALLY: demo seed (BUILD.MD §9)
 --
 -- Ana is demo@splittally.app. Marina, Kenji and Júlia are real accounts;
 -- Paulo and Sofia are managed friends Ana created. Password for every seeded
@@ -156,7 +156,7 @@ insert into public.group_members (group_id, user_id, joined_at) values
   ('c0000000-0000-4000-8000-000000000004', 'b0000000-0000-4000-8000-000000000001', '2026-07-18 08:00:00+00');
 
 -- ---------------------------------------------------------------------------
--- 4. Barcelona Trip — 10 expenses, EUR, four members, all split equally except
+-- 4. Barcelona Trip: 10 expenses, EUR, four members, all split equally except
 --    the flights, which were booked as one block and split by equal shares.
 -- ---------------------------------------------------------------------------
 insert into public.expenses (id, group_id, description, amount, currency, category, paid_by, created_by, created_via, expense_date, created_at) values
@@ -179,7 +179,7 @@ join public.group_members m on m.group_id = e.group_id
 where e.group_id = 'c0000000-0000-4000-8000-000000000001';
 
 -- ---------------------------------------------------------------------------
--- 5. Apartment 4B — Ana holds the lease and fronts everything; Marina settles
+-- 5. Apartment 4B: Ana holds the lease and fronts everything; Marina settles
 --    line by line within days, Sofia has only just moved in.
 -- ---------------------------------------------------------------------------
 insert into public.expenses (id, group_id, description, amount, currency, category, paid_by, created_by, created_via, expense_date, created_at) values
@@ -218,7 +218,7 @@ where e.id in (
 );
 
 -- ---------------------------------------------------------------------------
--- 6. Lisbon Weekend (archived) — Ana fronted the whole weekend. This is the
+-- 6. Lisbon Weekend (archived): Ana fronted the whole weekend. This is the
 --    history that gives Marina, Kenji and Paulo their repayment averages.
 -- ---------------------------------------------------------------------------
 insert into public.expenses (id, group_id, description, amount, currency, category, paid_by, created_by, created_via, expense_date, created_at) values
@@ -234,7 +234,7 @@ join public.group_members m on m.group_id = e.group_id
 where e.group_id = 'c0000000-0000-4000-8000-000000000003';
 
 -- ---------------------------------------------------------------------------
--- 7. Kayak Day — recent and unsettled, which is what backs the open listings
+-- 7. Kayak Day: recent and unsettled, which is what backs the open listings
 --    on the Exchange.
 -- ---------------------------------------------------------------------------
 insert into public.expenses (id, group_id, description, amount, currency, category, paid_by, created_by, created_via, expense_date, created_at) values
@@ -288,30 +288,30 @@ insert into public.settlements (group_id, from_user, to_user, amount, currency, 
   ('c0000000-0000-4000-8000-000000000003', 'b0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000001', 56.00,  'EUR', 'settle', '2026-05-06 10:00:00+00');
 
 -- ---------------------------------------------------------------------------
--- 9. The Exchange — seven open listings across three sellers, plus one sold so
+-- 9. The Exchange: seven open listings across three sellers, plus one sold so
 --    the history and the claims ledger have something in them. Every listing
 --    is backed by a real outstanding balance from the groups above.
 -- ---------------------------------------------------------------------------
 insert into public.listings (id, seller_id, debtor_id, group_id, currency, face_value, asking_price, ai_suggested_price, ai_rationale, status, created_at) values
   ('e0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000002', 'b0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000004', 'EUR', 40.00, 32.00, 32.00,
-   'Paulo settles in about 21 days and has two tallies open past a month — a 20% discount is fair.', 'open', '2026-07-22 09:00:00+00'),
+   'Paulo settles in about 21 days and has two tallies open past a month: a 20% discount is fair.', 'open', '2026-07-22 09:00:00+00'),
   ('e0000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000002', 'a0000000-0000-4000-8000-000000000003', 'c0000000-0000-4000-8000-000000000001', 'EUR', 56.00, 53.75, 53.75,
    'Kenji has settled seven tallies in about 13 days each, so 4% is enough of a discount.', 'open', '2026-07-24 09:00:00+00'),
   ('e0000000-0000-4000-8000-000000000003', 'a0000000-0000-4000-8000-000000000002', 'b0000000-0000-4000-8000-000000000002', 'c0000000-0000-4000-8000-000000000002', 'USD', 35.00, 30.00, 30.00,
    'Sofia has no repayment history yet, so 14% covers the unknown.', 'open', '2026-07-25 09:00:00+00'),
   ('e0000000-0000-4000-8000-000000000004', 'a0000000-0000-4000-8000-000000000002', 'b0000000-0000-4000-8000-000000000002', 'c0000000-0000-4000-8000-000000000004', 'EUR', 32.00, 28.00, 28.00,
-   'Sofia joined three weeks ago with nothing settled yet — 12.5% reflects that.', 'open', '2026-07-25 10:00:00+00'),
+   'Sofia joined three weeks ago with nothing settled yet: 12.5% reflects that.', 'open', '2026-07-25 10:00:00+00'),
   ('e0000000-0000-4000-8000-000000000005', 'a0000000-0000-4000-8000-000000000003', 'b0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000004', 'EUR', 24.00, 19.00, 19.00,
    'Two of Paulo''s tallies have been open more than a month, so this one prices at 21% off.', 'open', '2026-07-23 09:00:00+00'),
   ('e0000000-0000-4000-8000-000000000006', 'a0000000-0000-4000-8000-000000000003', 'b0000000-0000-4000-8000-000000000002', 'c0000000-0000-4000-8000-000000000004', 'EUR', 16.00, 14.00, 14.00,
-   'A small tally against a new member — 12.5% is the going rate here.', 'open', '2026-07-26 09:00:00+00'),
+   'A small tally against a new member: 12.5% is the going rate here.', 'open', '2026-07-26 09:00:00+00'),
   ('e0000000-0000-4000-8000-000000000007', 'a0000000-0000-4000-8000-000000000001', 'b0000000-0000-4000-8000-000000000002', 'c0000000-0000-4000-8000-000000000002', 'USD', 200.00, 178.00, 178.00,
-   'Sofia has not settled anything yet, but the tally is only three weeks old — 11% off.', 'open', '2026-07-27 09:00:00+00');
+   'Sofia has not settled anything yet, but the tally is only three weeks old: 11% off.', 'open', '2026-07-27 09:00:00+00');
 
 -- Sold: Sofia sold Paulo's 8 from the kayak day to Kenji.
 insert into public.listings (id, seller_id, debtor_id, group_id, currency, face_value, asking_price, ai_suggested_price, ai_rationale, status, buyer_id, created_at, sold_at) values
   ('e0000000-0000-4000-8000-000000000008', 'b0000000-0000-4000-8000-000000000002', 'b0000000-0000-4000-8000-000000000001', 'c0000000-0000-4000-8000-000000000004', 'EUR', 8.00, 7.00, 7.00,
-   'Paulo is slow but the amount is small — 12.5% clears it today.', 'sold', 'a0000000-0000-4000-8000-000000000003',
+   'Paulo is slow but the amount is small: 12.5% clears it today.', 'sold', 'a0000000-0000-4000-8000-000000000003',
    '2026-07-19 09:00:00+00', '2026-07-20 16:30:00+00');
 
 -- The purchase: Kenji paid Sofia 7, and Paulo's 8 moved onto Kenji's book.
@@ -324,7 +324,7 @@ insert into public.claims (listing_id, debtor_id, holder_id, group_id, currency,
    'c0000000-0000-4000-8000-000000000004', 'EUR', 8.00, true, '2026-07-20 16:30:00+00');
 
 -- ---------------------------------------------------------------------------
--- 10. Ana's personal finances — one parsed statement, twelve transactions,
+-- 10. Ana's personal finances: one parsed statement, twelve transactions,
 --     two budgets with Food & Drink slightly over, and a past check-in.
 -- ---------------------------------------------------------------------------
 insert into public.statement_uploads (id, user_id, storage_path, parsed_at, created_at)
@@ -343,7 +343,7 @@ select
   'f0000000-0000-4000-8000-000000000001'::uuid,
   '2026-07-28 19:04:00+00'::timestamptz
 from (values
-  ('2026-07-02', 'Salary — Nadara Studio', 3200.00, 'in',  'Income'),
+  ('2026-07-02', 'Salary: Nadara Studio', 3200.00, 'in',  'Income'),
   ('2026-07-03', 'Mercadona',               86.40,  'out', 'Groceries'),
   ('2026-07-05', 'Bar Nou',                 96.00,  'out', 'Food & Drink'),
   ('2026-07-08', 'Metro card top-up',       20.00,  'out', 'Transport'),
@@ -368,7 +368,7 @@ insert into public.checkins (user_id, summary, created_at) values
    '2026-07-22 20:15:00+00');
 
 -- ---------------------------------------------------------------------------
--- 11. Activity — Ana's feed, covering every type the app can emit.
+-- 11. Activity: Ana's feed, covering every type the app can emit.
 -- ---------------------------------------------------------------------------
 insert into public.activity (user_id, actor_id, type, payload, created_at) values
   ('a0000000-0000-4000-8000-000000000001', 'a0000000-0000-4000-8000-000000000001', 'expense_added',

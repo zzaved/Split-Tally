@@ -13,7 +13,11 @@ import { createClient } from "@/lib/supabase/server";
 const PROMPT =
   "You price a small personal IOU for resale between friends. Given the debtor's repayment stats, " +
   "propose a fair discounted price. Discount must be between 2% and 35%. " +
-  'ONLY JSON: {"suggested_price":number,"discount_pct":number,"rationale":"one plain sentence citing the stats"}.';
+  'ONLY JSON: {"suggested_price":number,"discount_pct":number,"rationale":"one plain sentence citing the stats"}. ' +
+  // The model reaches for an em dash unprompted, and the product does not use
+  // one anywhere. A rationale is shown on a card beside hand-drawn strokes, so
+  // a stray typographic tic from the model is visible as a seam.
+  'Never use an em dash or an en dash in the rationale. Use a comma or a colon.';
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -96,7 +100,7 @@ Tallies open past a month: ${input.overdueCount}`,
         price: priceFromDiscount(faceValue, discountPct),
         rationale:
           typeof parsed.rationale === "string" && parsed.rationale.trim()
-            ? parsed.rationale.trim()
+            ? withoutDashes(parsed.rationale.trim())
             : localPricing(input).rationale,
         source: "ai",
       }),
@@ -113,4 +117,17 @@ function toResponse(pricing: Pricing) {
     rationale: pricing.rationale,
     source: pricing.source,
   };
+}
+
+/**
+ * The house style has no dashes in it, and asking the model nicely is not the
+ * same as enforcing it. A rationale is rendered beside hand-drawn strokes, so
+ * one stray em dash reads as a seam between what was written and what was
+ * generated.
+ */
+function withoutDashes(text: string): string {
+  return text
+    .replace(/\s+[—–]\s+/g, ": ")
+    .replace(/[—–]/g, ", ")
+    .replace(/:\s+(and|but|so|or|then)\b/g, ", $1");
 }
