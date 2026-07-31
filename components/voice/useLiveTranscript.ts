@@ -20,9 +20,29 @@ import { useDictation } from "./useDictation";
  * Falls back to the browser recogniser when the key lacks `speech_to_text`,
  * so the flow still works, just less smoothly.
  */
+/** A refusal, as opposed to anything else that can go wrong with a socket. */
+function isRefusal(error: unknown): boolean {
+  const name = (error as { name?: string })?.name ?? "";
+  const message = String((error as { message?: string })?.message ?? "");
+  return (
+    name === "NotAllowedError" ||
+    name === "SecurityError" ||
+    /permission|not[- ]allowed|denied/i.test(message)
+  );
+}
+
 export function useLiveTranscript() {
   const [token, setToken] = useState<string | null>(null);
   const [fallback, setFallback] = useState(false);
+  /**
+   * The microphone was refused, by the browser or by the system.
+   *
+   * Worth its own state rather than folding into the fallback, because there
+   * is nothing to fall back to: both engines need the same device. Without it
+   * the panel sat on "Listening…" forever, which is the most patient way an
+   * interface can waste somebody's time.
+   */
+  const [denied, setDenied] = useState(false);
   const [committed, setCommitted] = useState("");
   const wanted = useRef(false);
 
@@ -98,7 +118,11 @@ export function useLiveTranscript() {
       }
       setToken(data.token);
       await scribe.connect({ token: data.token });
-    } catch {
+    } catch (error) {
+      if (isRefusal(error)) {
+        setDenied(true);
+        return;
+      }
       setFallback(true);
       browser.start();
     }
@@ -106,6 +130,7 @@ export function useLiveTranscript() {
 
   const stop = useCallback(() => {
     wanted.current = false;
+    setDenied(false);
     setCommitted("");
     if (fallback) browser.stop();
     else scribe.disconnect();
@@ -134,6 +159,8 @@ export function useLiveTranscript() {
     start,
     stop,
     clear,
+    /** True when there is no microphone to be had, so say so and move on. */
+    denied,
     /** True while a real stream is open, either engine. */
     live: fallback ? browser.running : scribe.isConnected,
     /** Which engine ended up being used, for the copy to be honest about it. */

@@ -367,12 +367,19 @@ export function GuidedFill({
           {phase === "listening" && (
             <p
               className={cn(
-                "min-h-6 text-14 italic",
-                dictation.text ? "text-navy" : "text-ink-soft/70",
+                "min-h-6 text-14",
+                dictation.denied
+                  ? "text-navy"
+                  : dictation.text
+                    ? "text-navy italic"
+                    : "text-ink-soft/70 italic",
               )}
               aria-live="polite"
             >
-              {dictation.text || (dictation.supported ? "Listening…" : "Type it in instead.")}
+              {dictation.denied
+                ? "I cannot reach your microphone. Type into the form behind this and I will stay out of the way."
+                : dictation.text ||
+                  (dictation.supported ? "Listening…" : "Type it in instead.")}
             </p>
           )}
 

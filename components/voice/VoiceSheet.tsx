@@ -402,11 +402,22 @@ function SheetBody({
           <div className="flex flex-col gap-3 pb-6">
             <p className="font-display text-28 leading-snug text-navy">{opener.title}</p>
             <p className="text-14 text-ink-soft">{opener.detail}</p>
-            {notice && <p className="mt-2 text-14 text-navy">{notice}</p>}
           </div>
         )}
 
         {starting && <p className="pb-6 text-14 text-ink-soft">Connecting…</p>}
+
+        {/* Outside the not-yet-connected branch, because the notice that
+            matters most is the one about the microphone, and refusing the
+            microphone drops you into a working text conversation. It used to
+            be written into a branch that had already stopped rendering, so
+            the microphone button simply vanished and nobody was ever told
+            why. */}
+        {notice && (
+          <p className="mb-4 rounded-card bg-navy/4 px-4 py-3 text-14 text-navy" role="status">
+            {notice}
+          </p>
+        )}
 
         {lines.length > 0 && (
           <ul className="flex flex-col gap-3 pb-4">
