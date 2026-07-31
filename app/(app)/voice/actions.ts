@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { recordActivity } from "@/lib/activity";
-import { round2, formatMoney, toDateInput } from "@/lib/format";
+import { MAX_ENTRY, round2, formatMoney, toDateInput } from "@/lib/format";
 import { balancesFor, computePairBalances, scoreStatsFor, type LedgerRows } from "@/lib/ledger";
 import { disambiguationQuestion, resolvePerson } from "@/lib/resolve";
 import { describeScore, improvementTips, scoreBand, tallyScore } from "@/lib/score";
@@ -432,6 +432,10 @@ export async function markSettled(params: {
 
   const amount = round2(Number(params.amount));
   if (!Number.isFinite(amount) || amount <= 0) return "How much was it?";
+  // The same ceiling the typed forms hold to. A spoken path that skips a rule
+  // the form enforces is a hole, and this one was open: the guard went on to
+  // the expense and settlement forms and never reached the tools.
+  if (amount > MAX_ENTRY) return "That is larger than one payment can hold, say it again?";
 
   const { error } = await supabase.from("settlements").insert({
     group_id: group.id,
@@ -477,6 +481,7 @@ export async function logCashSpending(params: {
   const amount = round2(Number(params.amount));
   if (!description) return "What was the cash for?";
   if (!Number.isFinite(amount) || amount <= 0) return "How much was it?";
+  if (amount > MAX_ENTRY) return "That is larger than one entry can hold, say it again?";
 
   const { data: profile } = await supabase
     .from("profiles")
