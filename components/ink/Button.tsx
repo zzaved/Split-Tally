@@ -20,7 +20,8 @@ const VARIANT: Record<Variant, string> = {
 };
 
 const SIZE: Record<Size, string> = {
-  sm: "h-8 px-4 text-12 tracking-[0.06em]",
+  // 40px rather than 32: a secondary action is still a thumb target.
+  sm: "h-10 px-4 text-12 tracking-[0.06em]",
   md: "h-11 px-6 text-14",
   lg: "h-13 px-8 text-16",
 };

@@ -35,7 +35,13 @@ export function Wordmark({
   if (!href) return inner;
 
   return (
-    <Link href={href} className="inline-flex rounded-sm" aria-label="Split Tally, home">
+    // The padding grows the target to a thumb; the matching negative
+    // margin keeps the header laid out exactly as before.
+    <Link
+      href={href}
+      className="-my-2.5 inline-flex rounded-sm py-2.5"
+      aria-label="Split Tally, home"
+    >
       {inner}
     </Link>
   );

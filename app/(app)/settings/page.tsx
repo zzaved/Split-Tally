@@ -39,7 +39,7 @@ export default async function SettingsPage() {
         </p>
         <Link
           href="/onboarding/voice"
-          className="mt-5 inline-flex text-14 text-cobalt underline underline-offset-4"
+          className="mt-3.5 inline-flex py-2.5 text-14 text-cobalt underline underline-offset-4"
         >
           Change the voice
         </Link>
