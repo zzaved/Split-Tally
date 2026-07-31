@@ -268,6 +268,12 @@ export function GuidedFill({
     void speak("Is that right?");
   }, [dictation, step, write, speak]);
 
+  // Always the current one. See the note in `next`.
+  const askRef = useRef(ask);
+  useEffect(() => {
+    askRef.current = ask;
+  });
+
   const next = useCallback(async () => {
     if (index + 1 >= steps.length) {
       setPhase("done");
@@ -279,9 +285,12 @@ export function GuidedFill({
       return;
     }
     setIndex((i) => i + 1);
-    // The effect repoints the ring; ask once it has.
-    window.setTimeout(() => void ask(), 250);
-  }, [index, steps.length, dictation, speak, onFinish, ask]);
+    // Through a ref, because this fires after the index has moved and the
+    // `ask` captured here belongs to the render before it. Calling that one
+    // showed the next question on screen while speaking the previous one out
+    // loud, which is invisible to anything that only reads the panel.
+    window.setTimeout(() => void askRef.current(), 250);
+  }, [index, steps.length, dictation, speak, onFinish]);
 
   // A pause of about a second and a half ends the answer, the way it would in
   // conversation. Nobody should have to press a button to stop talking.
