@@ -155,3 +155,35 @@
   opacity: 0.78;
   margin: 0;
 }
+
+.videoWrap {
+  padding: 0 1.5rem 3rem;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+
+.videoEyebrow {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ifm-color-primary);
+  margin: 0 0 1rem;
+}
+
+/* Sixteen by nine, held by the padding trick so it scales on a phone. */
+.video {
+  position: relative;
+  padding-bottom: 56.25%;
+  height: 0;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid color-mix(in srgb, var(--ifm-font-color-base) 12%, transparent);
+}
+
+.video iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}

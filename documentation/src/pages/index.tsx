@@ -90,6 +90,18 @@ export default function Home(): React.ReactElement {
         </div>
       </header>
 
+      <section className={styles.videoWrap}>
+        <p className={styles.videoEyebrow}>The demo, in two minutes forty five</p>
+        <div className={styles.video}>
+          <iframe
+            src="https://www.youtube.com/embed/8QPGWYpUmVY"
+            title="Split Tally: finance without forms"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          />
+        </div>
+      </section>
+
       <main className={styles.main}>
         <div className={styles.grid}>
           {ROUTES.map((route) => (

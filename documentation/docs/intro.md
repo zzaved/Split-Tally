@@ -36,7 +36,11 @@ real money moves" on the screen where it happens. The ledger movement behind tha
 
 ## Watch the demo
 
-{/* Demo video embed: paste the YouTube id here once the recording is uploaded. */}
+<div style={{position:'relative',paddingBottom:'56.25%',height:0,overflow:'hidden',maxWidth:'820px',margin:'0 auto',borderRadius:'10px'}}>
+  <iframe style={{position:'absolute',top:0,left:0,width:'100%',height:'100%',border:0}} src="https://www.youtube.com/embed/8QPGWYpUmVY" title="Split Tally: finance without forms" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen></iframe>
+</div>
+
+<div style={{textAlign:'center',opacity:0.75,marginTop:'0.9rem',fontSize:'0.9rem'}}>Two minutes and forty five seconds. Every screen in it is the running app.</div>
 
 ## Try it yourself
 

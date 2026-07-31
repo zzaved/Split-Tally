@@ -77,6 +77,11 @@ const config: Config = {
           label: 'Documentation',
         },
         {
+          href: 'https://youtu.be/8QPGWYpUmVY',
+          label: 'Demo video',
+          position: 'right',
+        },
+        {
           href: 'https://split-tally-seven.vercel.app',
           label: 'Live app',
           position: 'right',
@@ -95,6 +100,7 @@ const config: Config = {
           title: 'Read',
           items: [
             {label: 'Start here', to: '/docs/intro'},
+            {label: 'Watch the demo', href: 'https://youtu.be/8QPGWYpUmVY'},
             {label: 'How the AI works', to: '/docs/how-it-works/ai-integration'},
             {label: 'Judging alignment', to: '/docs/judging-alignment'},
           ],

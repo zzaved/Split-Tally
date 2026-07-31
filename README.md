@@ -4,8 +4,18 @@
 statement and it reads every line. And when you need the money before your friend can pay, sell
 what you are owed on The Exchange.
 
-Built for the AI Designathon at MERGE 2026, category **Design Eng**. `BUILD.MD` is the spec this
-repository implements.
+Built for the AI Designathon at MERGE 2026, category **Design Eng**, by
+[Pablo Azevedo](https://github.com/zzaved). `BUILD.MD` is the spec this repository implements.
+
+**[Open the live app](https://split-tally-seven.vercel.app)** ·
+**[Watch the demo](https://youtu.be/8QPGWYpUmVY)** ·
+**[Read the documentation](https://zzaved.github.io/Split-Tally/)** ·
+[Markdown copy of the docs](documentation/markdown)
+
+![The dashboard: what you are owed, what you owe, the Tally Score and the weekly tally](documentation/static/img/screens/dashboard.png)
+
+> Every screenshot in this repository is the running application against the real database.
+> Nothing here is a mockup.
 
 ---
 
@@ -17,6 +27,10 @@ halves fit together. Creditors who needed money early sold their halves at a dis
 market in what people were owed.
 
 Split Tally is that stick, including the market.
+
+![Saying an expense to the orb: it confirms once, then writes the expense, the split rows and the feed entry](documentation/static/img/screens/voice-sheet.gif)
+
+*Say it once. It confirms once. Then the ledger moves.*
 
 ---
 
@@ -186,6 +200,17 @@ wired up in `components/voice/clientTools.ts`.
 | `log_cash_spending` | `description`, `amount`, `category?` | Check-in mode → `personal_transactions` |
 | `complete_checkin` | `summary` | Stores the two-sentence recap that closes a weekly tally |
 | `fix_last_entry` | `what?` | Takes the last entry back out so it can be restated |
+
+---
+
+## What it looks like
+
+| | |
+|---|---|
+| ![The Exchange, with the AI price and the debtor's Tally Score](documentation/static/img/screens/exchange.png) | ![A bank statement read into transactions, every row checkable before anything is saved](documentation/static/img/screens/import-review.png) |
+| **The Exchange.** A tally you are owed, priced by Claude against the debtor's record, sold at a discount so you are paid today. | **Statement snap.** A screenshot of your bank app read into rows, categorised, and shown for review before a single one is written. |
+| ![The score page: the arithmetic behind the number, line by line](documentation/static/img/screens/score.png) | ![The dashboard on a phone, with the bottom tabs and the docked orb](documentation/static/img/screens/dashboard-375.png) |
+| **The Tally Score.** Not a number handed down: the starting fifty, every bonus and every penalty, beside the settlement it came from. | **At 375px.** The same product, designed for the width most people will open it at. |
 
 ---
 
@@ -386,3 +411,21 @@ a colon when what follows explains, and a comma when it is an aside.
   history is visible.
 
 See `PROGRESS.md` for what is finished and what is deliberately deferred.
+
+---
+
+## Where everything is
+
+| | |
+|---|---|
+| The live app | https://split-tally-seven.vercel.app |
+| The demo video | https://youtu.be/8QPGWYpUmVY |
+| Documentation | https://zzaved.github.io/Split-Tally/ |
+| The same documentation as plain Markdown | [`documentation/markdown`](documentation/markdown) |
+| How the AI works, in detail | [ai-integration](https://zzaved.github.io/Split-Tally/docs/how-it-works/ai-integration) |
+| The agents that built and tested this | [agents](https://zzaved.github.io/Split-Tally/docs/project/agents) |
+| Criterion by criterion, for judging | [judging-alignment](https://zzaved.github.io/Split-Tally/docs/judging-alignment) |
+| What testing found, including a wrong finding | [quality](https://zzaved.github.io/Split-Tally/docs/project/quality) |
+| The spec this implements | [`BUILD.MD`](BUILD.MD) |
+| The QA map and its findings | [`QA.md`](QA.md), [`QA-FINDINGS.md`](QA-FINDINGS.md) |
+| Build log, and what is deferred | [`PROGRESS.md`](PROGRESS.md) |

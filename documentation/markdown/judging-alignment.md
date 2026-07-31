@@ -7,6 +7,9 @@ number, or a screen on the live deployment.
 Live app: **https://split-tally-seven.vercel.app**. Repository:
 **https://github.com/zzaved/Split-Tally**. Demo login is one tap from the landing page.
 
+The two minute forty five second demo covers all four criteria in the same order as this page:
+**https://youtu.be/8QPGWYpUmVY**
+
 **Table 4: criterion to evidence map**
 
 | Criterion | Weight | The evidence, in one line | Where to verify |
