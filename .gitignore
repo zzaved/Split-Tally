@@ -40,3 +40,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Video and recording workspace, never deployed
+/compreensao/
+
+# Docusaurus
+/documentation/node_modules
+/documentation/build
+/documentation/.docusaurus
