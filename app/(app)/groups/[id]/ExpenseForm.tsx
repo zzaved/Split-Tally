@@ -255,9 +255,15 @@ export function ExpenseForm({
                     name={`value:${member.id}`}
                     inputMode="decimal"
                     value={values[member.id] ?? ""}
-                    onChange={(e) =>
-                      setValues((v) => ({ ...v, [member.id]: e.currentTarget.value }))
-                    }
+                    onChange={(e) => {
+                      // Read the value here, not inside the updater. React can
+                      // replay a queued updater during a later render, and by
+                      // then `currentTarget` is null: unchecking somebody after
+                      // typing an amount threw straight through the reducer and
+                      // took the whole form with it.
+                      const next = e.currentTarget.value;
+                      setValues((v) => ({ ...v, [member.id]: next }));
+                    }}
                     placeholder={mode === "percent" ? "%" : mode === "shares" ? "1" : "0"}
                     className="tabular w-24 rounded-well border border-navy/15 bg-cream px-3 py-1.5 text-right text-14 focus:border-cobalt focus:outline-none focus:ring-2 focus:ring-cobalt/25"
                     aria-label={`${member.name} ${mode === "percent" ? "percentage" : mode === "shares" ? "shares" : "amount"}`}
